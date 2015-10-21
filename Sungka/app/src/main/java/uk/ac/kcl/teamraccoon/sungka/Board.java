@@ -28,45 +28,45 @@ public class Board {
     public void switchPlayer(){
         if (currentPlayer == Player.PLAYER_ONE){
             currentPlayer = Player.PLAYER_TWO;
+            if(!checkTrays(currentPlayer)) {
+                switchPlayer();
+            }
         } else {
             currentPlayer = Player.PLAYER_ONE;
+            if(!checkTrays(currentPlayer)) {
+                switchPlayer();
+            }
         }
     }
 
-    public void takeTurn(int selectedTrayIndex){
+    public void takeTurn(int selectedTrayIndex) {
 
         //assume that player selects the right tray (on his side, not the store, not empty)
 
         //first checks if player CAN take turn
-        if(checkTrays(currentPlayer)){
-            int shellsInHand = arrayOfTrays[selectedTrayIndex];
-            arrayOfTrays[selectedTrayIndex] = 0;
-            int currentIndex = selectedTrayIndex + 1;
 
-            while (shellsInHand > 0) {
+        int shellsInHand = arrayOfTrays[selectedTrayIndex];
+        arrayOfTrays[selectedTrayIndex] = 0;
+        int currentIndex = selectedTrayIndex + 1;
 
-                if ( (currentPlayer == Player.PLAYER_ONE && currentIndex%16 == player2store) ||
-                        (currentPlayer == Player.PLAYER_TWO && currentIndex%16 == player1store) ){
-                    currentIndex ++;
-                }
-                else {
+        while (shellsInHand > 0) {
 
-                    arrayOfTrays[currentIndex%16] ++;
-                    currentIndex ++;
-                    shellsInHand --;
-                }
+            if ((currentPlayer == Player.PLAYER_ONE && currentIndex % 16 == player2store) ||
+                    (currentPlayer == Player.PLAYER_TWO && currentIndex % 16 == player1store)) {
+                currentIndex++;
+            } else {
+
+                arrayOfTrays[currentIndex % 16]++;
+                currentIndex++;
+                shellsInHand--;
             }
-
-            //make currentIndex the real index
-            currentIndex = --currentIndex%16;
-
-            //check if empty tray or store
-            checkLastTray(currentIndex);
-
-
-        } else {
-            switchPlayer();
         }
+
+        //make currentIndex the real index
+        currentIndex = --currentIndex % 16;
+
+        //check if empty tray or store
+        checkLastTray(currentIndex);
 
     }
 
@@ -76,6 +76,20 @@ public class Board {
      * @return true if at least one the player's tray is not empty. False otherwise.
      */
     public boolean checkTrays(Enum player){
+        int[] indices = getPlayerTrayIndices(player);
+        int indexStart = indices[0];
+        int indexEnd = indices[1];
+
+        for(int i = indexStart; i <= indexEnd; i++){
+            if (arrayOfTrays[i] > 0){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public int[] getPlayerTrayIndices(Enum player){
         int indexStart;
         int indexEnd;
 
@@ -87,24 +101,60 @@ public class Board {
             indexEnd = 14;
         }
 
-        for(int i = indexStart; i <= indexEnd; i++){
-            if (arrayOfTrays[i] > 0){
-                return true;
-            }
-        }
-
-        return false;
+        return new int[]{indexStart, indexEnd};
     }
 
     public void checkLastTray(int index) {
-        if(currentPlayer == Player.PLAYER_ONE){
-            if(index == player1store){
-                //If it's game over
-                if(!(checkTrays(Player.PLAYER_ONE) && checkTrays(Player.PLAYER_TWO))){
-                    //TODO: GAMEOVER
-                }
+        if (index == player1store || index == player2store) {
+            //If it's game over
+            if (isGameOver()) {
+                //TODO: GAMEOVER
+
+                //if the current player can't do his extra turn, else let him take a turn again
+            } else if (!checkTrays(currentPlayer)) {
+                switchPlayer();
             }
         }
+
+
+        int[] trayIndices = getPlayerTrayIndices(currentPlayer);
+        int indexStart = trayIndices[0];
+        int indexEnd = trayIndices[1];
+
+
+        //if the last shell is in player's side
+        if (index <= indexEnd && index >= indexStart) {
+            // check if last tray was empty
+            if (arrayOfTrays[index] == 1) {
+                //player's side and opponent's side
+                int opponentTray = 14 - index;
+
+                //empty the trays
+                arrayOfTrays[index] = 0;
+
+                //update the store
+                arrayOfTrays[indexEnd + 1] = arrayOfTrays[indexEnd + 1] + 1 + arrayOfTrays[opponentTray];
+                arrayOfTrays[opponentTray] = 0;
+
+                if (isGameOver()) {
+                    //TODO: GAMEOVER
+                } else {
+                    switchPlayer();
+                }
+            } else {
+                switchPlayer();
+            }
+        } else {
+            switchPlayer();
+        }
+
+    }
+
+    public boolean isGameOver(){
+        if(!(checkTrays(Player.PLAYER_ONE) && checkTrays(Player.PLAYER_TWO))) {
+            return true;
+        }
+        return false;
     }
 
 }
