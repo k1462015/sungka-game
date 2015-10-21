@@ -6,7 +6,7 @@ package uk.ac.kcl.teamraccoon.sungka;
 public class Board {
 
 
-    public int arrayOfButtons[] = new int[16];
+    public int arrayOfTrays[] = new int[16];
     public int player2store = 15;
     public int player1store = 7;
 
@@ -16,12 +16,12 @@ public class Board {
 
         //initialise the trays with 7
         for(int i = 0; i<15; i++){
-            arrayOfButtons[i] = 7;
+            arrayOfTrays[i] = 7;
         }
 
         //initialise the store with 0
-        arrayOfButtons[player1store] = 0;
-        arrayOfButtons[player2store] = 0;
+        arrayOfTrays[player1store] = 0;
+        arrayOfTrays[player2store] = 0;
 
     }
 
@@ -37,8 +37,27 @@ public class Board {
 
         //assume that player selects the right tray (on his side, not the store, not empty)
 
+        //first checks if player CAN take turn
         if(checkTrays(currentPlayer)){
+            int shellsInHand = arrayOfTrays[selectedTrayIndex];
+            arrayOfTrays[selectedTrayIndex] = 0;
+            int currentIndex = selectedTrayIndex + 1;
 
+            while (shellsInHand > 0) {
+
+                if ( (currentPlayer == Player.PLAYER_ONE && currentIndex%16 == player2store) ||
+                        (currentPlayer == Player.PLAYER_TWO && currentIndex%16 == player1store) ){
+                    currentIndex ++;
+                }
+                else {
+
+                    arrayOfTrays[currentIndex%16] ++;
+                    currentIndex ++;
+                    shellsInHand --;
+                }
+            }
+        } else {
+            switchPlayer();
         }
 
     }
@@ -61,7 +80,7 @@ public class Board {
         }
 
         for(int i = indexStart; i <= indexEnd; i++){
-            if (arrayOfButtons[i] > 0){
+            if (arrayOfTrays[i] > 0){
                 return true;
             }
         }
