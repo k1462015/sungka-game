@@ -56,6 +56,14 @@ public class Board {
                     shellsInHand --;
                 }
             }
+
+            //make currentIndex the real index
+            currentIndex = --currentIndex%16;
+
+            //check if empty tray or store
+            checkLastTray(currentIndex);
+
+
         } else {
             switchPlayer();
         }
@@ -86,6 +94,17 @@ public class Board {
         }
 
         return false;
+    }
+
+    public void checkLastTray(int index) {
+        if(currentPlayer == Player.PLAYER_ONE){
+            if(index == player1store){
+                //If it's game over
+                if(!(checkTrays(Player.PLAYER_ONE) && checkTrays(Player.PLAYER_TWO))){
+                    //TODO: GAMEOVER
+                }
+            }
+        }
     }
 
 }
