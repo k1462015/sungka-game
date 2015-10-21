@@ -25,4 +25,48 @@ public class Board {
 
     }
 
+    public void switchPlayer(){
+        if (currentPlayer == Player.PLAYER_ONE){
+            currentPlayer = Player.PLAYER_TWO;
+        } else {
+            currentPlayer = Player.PLAYER_ONE;
+        }
+    }
+
+    public void takeTurn(int selectedTrayIndex){
+
+        //assume that player selects the right tray (on his side, not the store, not empty)
+
+        if(checkTrays(currentPlayer)){
+
+        }
+
+    }
+
+    /**
+     * Checks if trays are empty or not for current player.
+     * @param player current player
+     * @return true if at least one the player's tray is not empty. False otherwise.
+     */
+    public boolean checkTrays(Enum player){
+        int indexStart;
+        int indexEnd;
+
+        if(player == Player.PLAYER_ONE){
+            indexStart = 0;
+            indexEnd = 6;
+        } else {
+            indexStart = 8;
+            indexEnd = 14;
+        }
+
+        for(int i = indexStart; i <= indexEnd; i++){
+            if (arrayOfButtons[i] > 0){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
