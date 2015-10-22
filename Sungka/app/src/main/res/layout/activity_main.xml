@@ -19,12 +19,6 @@
         android:orientation="vertical"
         android:id="@+id/layout_p2_store">
 
-        <!--<Button-->
-            <!--android:id="@+id/i15"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:text="Hi, I'm P2 store" />-->
-
     </LinearLayout>
 
     <LinearLayout
@@ -40,49 +34,6 @@
             android:orientation="horizontal"
             android:layout_weight="1"
             android:id="@+id/layout_p2_trays">
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i14"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i13"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i12"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i11"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i10"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i9"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i8"-->
-                <!--android:layout_weight="1"/>-->
-
 
         </LinearLayout>
 
@@ -103,50 +54,7 @@
             android:layout_weight="1"
             android:id="@+id/layout_p1_trays">
 
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i0"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i1"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i2"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i3"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i4"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i5"-->
-                <!--android:layout_weight="1"/>-->
-
-            <!--<Button-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/i6"-->
-                <!--android:layout_weight="1"/>-->
-
         </LinearLayout>
-
 
     </LinearLayout>
 
@@ -158,11 +66,6 @@
         android:orientation="vertical"
         android:id="@+id/layout_p1_store">
 
-        <!--<Button-->
-            <!--android:id="@+id/i7"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:text="Hi, I'm P1 store" />-->
     </LinearLayout>
 
 </LinearLayout>

@@ -13,10 +13,10 @@ public class Board {
 
     private Enum currentPlayer = Player.PLAYER_ONE;
 
-    public Board(){
+    public Board() {
 
         //initialise the trays with 7
-        for(int i = 0; i<15; i++){
+        for (int i = 0; i < 15; i++) {
             arrayOfTrays[i] = 7;
         }
 
@@ -34,15 +34,15 @@ public class Board {
         return currentPlayer;
     }
 
-    private void switchPlayer(){
-        if (currentPlayer == Player.PLAYER_ONE){
+    private void switchPlayer() {
+        if (currentPlayer == Player.PLAYER_ONE) {
             currentPlayer = Player.PLAYER_TWO;
-            if(!checkTrays(currentPlayer)) {
+            if (!checkTrays(currentPlayer)) {
                 switchPlayer();
             }
         } else {
             currentPlayer = Player.PLAYER_ONE;
-            if(!checkTrays(currentPlayer)) {
+            if (!checkTrays(currentPlayer)) {
                 switchPlayer();
             }
         }
@@ -81,16 +81,17 @@ public class Board {
 
     /**
      * Checks if trays are empty or not for current player.
+     *
      * @param player current player
      * @return true if at least one the player's tray is not empty. False otherwise.
      */
-    private boolean checkTrays(Enum player){
+    private boolean checkTrays(Enum player) {
         int[] indices = getPlayerTrayIndices(player);
         int indexStart = indices[0];
         int indexEnd = indices[1];
 
-        for(int i = indexStart; i <= indexEnd; i++){
-            if (arrayOfTrays[i] > 0){
+        for (int i = indexStart; i <= indexEnd; i++) {
+            if (arrayOfTrays[i] > 0) {
                 return true;
             }
         }
@@ -98,11 +99,11 @@ public class Board {
         return false;
     }
 
-    private int[] getPlayerTrayIndices(Enum player){
+    private int[] getPlayerTrayIndices(Enum player) {
         int indexStart;
         int indexEnd;
 
-        if(player == Player.PLAYER_ONE){
+        if (player == Player.PLAYER_ONE) {
             indexStart = 0;
             indexEnd = 6;
         } else {
@@ -116,12 +117,9 @@ public class Board {
     private void checkLastTray(int index) {
         if (index == player1store || index == player2store) {
             Log.i("MyApp", "it landed on player's side");
-            //If it's game over
-            if (isGameOver()) {
-                //TODO: GAMEOVER
 
-                //if the current player can't do his extra turn, else let him take a turn again
-            } else if (!checkTrays(currentPlayer)) {
+            //if the current player can't do his extra turn, else let him take a turn again
+            if (!checkTrays(currentPlayer) && !(isGameOver())) {
                 switchPlayer();
             }
             return;
@@ -148,7 +146,7 @@ public class Board {
                 arrayOfTrays[opponentTray] = 0;
 
                 if (isGameOver()) {
-                    //TODO: GAMEOVER
+
                 } else {
                     switchPlayer();
                 }
@@ -161,8 +159,8 @@ public class Board {
 
     }
 
-    public boolean isGameOver(){
-        if(!(checkTrays(Player.PLAYER_ONE)) && !(checkTrays(Player.PLAYER_TWO))) {
+    public boolean isGameOver() {
+        if (!(checkTrays(Player.PLAYER_ONE)) && !(checkTrays(Player.PLAYER_TWO))) {
             return true;
         }
         return false;
