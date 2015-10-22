@@ -23,7 +23,36 @@ public class MainActivity extends AppCompatActivity {
         //initialises the game board with trays = 7, store = 0
         gameBoard = new Board();
         setupBoardLayout();
+        Button resetButton = (Button) findViewById(R.id.resetButton);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //First Remove and reset current board
+                resetBoard();
+                //Sets up board again
+                setupBoardLayout();
+                //Updates board to show corresponding number
+                updateBoard();
+            }
+        });
 
+    }
+
+    /**
+     * Clears all linear layouts on the board
+     * And reinitilises board object
+     */
+    public void resetBoard(){
+        LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
+        layout_p2_store.removeAllViews();
+        LinearLayout layout_p1_store = (LinearLayout) findViewById(R.id.layout_p1_store);
+        layout_p1_store.removeAllViews();
+        LinearLayout layout_p2_trays = (LinearLayout) findViewById(R.id.layout_p2_trays);
+        layout_p2_trays.removeAllViews();
+        LinearLayout layout_p1_trays = (LinearLayout) findViewById(R.id.layout_p1_trays);
+        layout_p1_trays.removeAllViews();;
+
+        gameBoard = new Board();
     }
 
     public void updateBoard() {
