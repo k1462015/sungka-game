@@ -122,7 +122,6 @@ public class Board {
 
                 //if the current player can't do his extra turn, else let him take a turn again
             } else if (!checkTrays(currentPlayer)) {
-                Log.i("MyApp", "it switched playes, but WHYYY");
                 switchPlayer();
             }
             return;
@@ -163,7 +162,7 @@ public class Board {
     }
 
     public boolean isGameOver(){
-        if(!(checkTrays(Player.PLAYER_ONE) && checkTrays(Player.PLAYER_TWO))) {
+        if(!(checkTrays(Player.PLAYER_ONE)) && !(checkTrays(Player.PLAYER_TWO))) {
             return true;
         }
         return false;

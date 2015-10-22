@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
 
     Board gameBoard;
     Button[] arrayOfBoardButtons;
+    TextView gameStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
 
+
         for (int i = 0; i < 16; i++) {
             arrayOfBoardButtons[i].setText(arrayOfTrays[i] + "");
         }
@@ -35,26 +38,41 @@ public class MainActivity extends AppCompatActivity {
 
         if (gameBoard.getCurrentPlayer() == Player.PLAYER_ONE) {
 
+            gameStatus.setText("Player 1's turn");
+
             //enables all the trays for player one that are not 0 and disables the opposite side
             for (int i = 14; i > 7; i--) {
                 arrayOfBoardButtons[i].setEnabled(false);
                 if (arrayOfTrays[14 - i] != 0) {
-                    arrayOfBoardButtons[14-i].setEnabled(true);
+                    arrayOfBoardButtons[14 - i].setEnabled(true);
                 } else {
-                    arrayOfBoardButtons[14-i].setEnabled(false);
+                    arrayOfBoardButtons[14 - i].setEnabled(false);
                 }
 
             }
         } else {
+
+            gameStatus.setText("Player 2's turn");
 
             //enables all the trays for player two that are not 0 and disables the opposite side
             for (int i = 0; i < 7; i++) {
                 arrayOfBoardButtons[i].setEnabled(false);
                 if (arrayOfTrays[14 - i] != 0) {
                     arrayOfBoardButtons[14 - i].setEnabled(true);
-                }else {
-                    arrayOfBoardButtons[14-i].setEnabled(false);
+                } else {
+                    arrayOfBoardButtons[14 - i].setEnabled(false);
                 }
+            }
+        }
+
+
+        if (gameBoard.isGameOver()) {
+            if (arrayOfTrays[7] > arrayOfTrays[15]) {
+                gameStatus.setText("Player 1 won!");
+            } else if (arrayOfTrays[7] < arrayOfTrays[15]) {
+                gameStatus.setText("Player 2 won!");
+            } else {
+                gameStatus.setText("It's a draw!");
             }
         }
 
@@ -63,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
     public void setupBoardLayout() {
 
         arrayOfBoardButtons = new Button[16];
+        gameStatus = (TextView) findViewById(R.id.game_status);
+        gameStatus.setText("Player 1's turn");
 
         LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
         LinearLayout layout_p1_store = (LinearLayout) findViewById(R.id.layout_p1_store);
