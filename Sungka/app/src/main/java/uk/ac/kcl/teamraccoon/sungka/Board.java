@@ -1,16 +1,17 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.util.Log;
+
 /**
  * Created by ana on 21/10/15.
  */
 public class Board {
 
+    private int arrayOfTrays[] = new int[16];
+    private int player2store = 15;
+    private int player1store = 7;
 
-    public int arrayOfTrays[] = new int[16];
-    public int player2store = 15;
-    public int player1store = 7;
-
-    public Enum currentPlayer = Player.PLAYER_ONE;
+    private Enum currentPlayer = Player.PLAYER_ONE;
 
     public Board(){
 
@@ -25,7 +26,15 @@ public class Board {
 
     }
 
-    public void switchPlayer(){
+    public int[] getArrayOfTrays() {
+        return arrayOfTrays;
+    }
+
+    public Enum getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    private void switchPlayer(){
         if (currentPlayer == Player.PLAYER_ONE){
             currentPlayer = Player.PLAYER_TWO;
             if(!checkTrays(currentPlayer)) {
@@ -75,7 +84,7 @@ public class Board {
      * @param player current player
      * @return true if at least one the player's tray is not empty. False otherwise.
      */
-    public boolean checkTrays(Enum player){
+    private boolean checkTrays(Enum player){
         int[] indices = getPlayerTrayIndices(player);
         int indexStart = indices[0];
         int indexEnd = indices[1];
@@ -89,7 +98,7 @@ public class Board {
         return false;
     }
 
-    public int[] getPlayerTrayIndices(Enum player){
+    private int[] getPlayerTrayIndices(Enum player){
         int indexStart;
         int indexEnd;
 
@@ -104,16 +113,19 @@ public class Board {
         return new int[]{indexStart, indexEnd};
     }
 
-    public void checkLastTray(int index) {
+    private void checkLastTray(int index) {
         if (index == player1store || index == player2store) {
+            Log.i("MyApp", "it landed on player's side");
             //If it's game over
             if (isGameOver()) {
                 //TODO: GAMEOVER
 
                 //if the current player can't do his extra turn, else let him take a turn again
             } else if (!checkTrays(currentPlayer)) {
+                Log.i("MyApp", "it switched playes, but WHYYY");
                 switchPlayer();
             }
+            return;
         }
 
 
