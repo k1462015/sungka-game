@@ -25,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateBoard(){
 
+        int[] arrayOfTrays = gameBoard.getArrayOfTrays();
+
+        for(int i=0; i<16; i++){
+            boardButtons[i].setText(arrayOfTrays[i] + "");
+        }
 
     }
 
@@ -64,5 +69,7 @@ public class MainActivity extends AppCompatActivity {
             boardButtons[14-i] = tempTrayp2;
             layout_p2_trays.addView(tempTrayp2);
         }
+
+        updateBoard();
     }
 }
