@@ -39,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 14; i > 7; i--) {
                 arrayOfBoardButtons[i].setEnabled(false);
                 if (arrayOfTrays[14 - i] != 0) {
-                    arrayOfBoardButtons[14 - i].setEnabled(true);
+                    arrayOfBoardButtons[14-i].setEnabled(true);
+                } else {
+                    arrayOfBoardButtons[14-i].setEnabled(false);
                 }
 
             }
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
                 arrayOfBoardButtons[i].setEnabled(false);
                 if (arrayOfTrays[14 - i] != 0) {
                     arrayOfBoardButtons[14 - i].setEnabled(true);
+                }else {
+                    arrayOfBoardButtons[14-i].setEnabled(false);
                 }
             }
         }
