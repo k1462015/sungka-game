@@ -31,6 +31,10 @@ public class Board {
         return arrayOfTrays;
     }
 
+    public void setArrayOfTrays(int[] arrayOfTrays){
+        this.arrayOfTrays = arrayOfTrays;
+    }
+
     public Enum getCurrentPlayer() {
         return currentPlayer;
     }
@@ -117,7 +121,7 @@ public class Board {
 
     private void checkLastTray(int index) {
         if (index == player1store || index == player2store) {
-            Log.i("MyApp", "it landed on player's side");
+//            Log.i("MyApp", "it landed on player's side");
 
             //if the current player can't do his extra turn, else let him take a turn again
             if (!checkTrays(currentPlayer) && !(isGameOver())) {
