@@ -62,7 +62,7 @@ public class BoardTest {
         int startingBoard[] = {0,0,0,0,0,0,1,26,1,7,7,7,7,7,7,28};
         board.setArrayOfTrays(startingBoard);
         board.takeTurn(6);
-        assertEquals("Should have switched to player two",Player.PLAYER_TWO,board.getCurrentPlayer());
+        assertEquals("Should have switched to player two", Player.PLAYER_TWO, board.getCurrentPlayer());
     }
 
     @Test
@@ -76,6 +76,16 @@ public class BoardTest {
         board.setArrayOfTrays(startingBoard);
         board.takeTurn(3);
         assertArrayEquals(board.getArrayOfTrays(),expectedBoard);
+    }
+
+    @Test
+    public void isGameOver(){
+        Board board = new Board();
+        board.setCurrentPlayer(Player.PLAYER_TWO);
+        int[] startingBoard = {0,0,0,0,0,0,0,47,0,0,0,0,0,0,1,50};
+        board.setArrayOfTrays(startingBoard);
+        board.takeTurn(14);
+        assertTrue("Game should have ended but didn't",board.isGameOver());
     }
 
 
