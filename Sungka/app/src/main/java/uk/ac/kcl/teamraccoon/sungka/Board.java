@@ -11,6 +11,10 @@ public class Board {
     private int player2store = 15;
     private int player1store = 7;
 
+    public void setCurrentPlayer(Enum currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
     private Enum currentPlayer = Player.PLAYER_ONE;
 
     public Board() {
@@ -20,7 +24,7 @@ public class Board {
             arrayOfTrays[i] = 7;
         }
 
-        //initialise the store with 0
+        //initialise the store with zero
         arrayOfTrays[player1store] = 0;
         arrayOfTrays[player2store] = 0;
 
