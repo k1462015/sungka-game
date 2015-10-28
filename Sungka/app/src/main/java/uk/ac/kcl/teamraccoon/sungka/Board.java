@@ -2,9 +2,6 @@ package uk.ac.kcl.teamraccoon.sungka;
 
 import android.util.Log;
 
-/**
- * Created by ana on 21/10/15.
- */
 public class Board {
 
     private int arrayOfTrays[] = new int[16];
