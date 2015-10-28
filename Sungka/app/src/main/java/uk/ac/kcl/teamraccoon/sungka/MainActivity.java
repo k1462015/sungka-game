@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
+        playerChosen = false;
         setupBoardLayout();
         //Sets up timer for initially selecting first player
         setUpTimer();
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //First Remove and reset current board
+                playerChosen = false;
                 resetBoard();
             }
         });
@@ -58,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             int elapsedTime = (int) System.currentTimeMillis() - startTime;
             int seconds = elapsedTime / 1000;
-            gameStatus.setText(seconds+"");
+            gameStatus.setText((3-seconds)+"");
             handler.postDelayed(this,0);
-            if(seconds == 5){
+            if(seconds == 3){
                 gameStatus.setText("SELECT YOUR PIT!!");
                 handler.removeCallbacks(this);
                 enableBoard();
@@ -81,9 +83,16 @@ public class MainActivity extends AppCompatActivity {
      * Loops around entire board and enables all buttons
      */
     public void enableBoard(){
-        for (Button button: arrayOfBoardButtons){
-            button.setEnabled(true );
+        int[] arrayOfTrays = gameBoard.getArrayOfTrays();
+        for(int i = 0;i < arrayOfBoardButtons.length;i++){
+            Button button = arrayOfBoardButtons[i];
+            if(arrayOfTrays[i] == 0){
+                button.setEnabled(false);
+            }else{
+                button.setEnabled(true);
+            }
         }
+
     }
 
 
@@ -109,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
     public void updateBoard() {
 
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
-        playerChosen = false;
 
 
         for (int i = 0; i < 16; i++) {
@@ -119,9 +127,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (gameBoard.getCurrentPlayer() == Player.PLAYER_ONE) {
-
-            gameStatus.setText("Player 1's turn");
-
             //enables all the trays for player one that are not zero and disables the opposite side
             for (int i = 14; i > 7; i--) {
                 arrayOfBoardButtons[i].setEnabled(false);
@@ -132,9 +137,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
+            if(!playerChosen){
+                gameStatus.setText("HURRY!");
+            }else{
+                gameStatus.setText("Player 1's turn");
+            }
         } else {
 
-            gameStatus.setText("Player 2's turn");
 
             //enables all the trays for player two that are not zero and disables the opposite side
             for (int i = 0; i < 7; i++) {
@@ -144,6 +153,11 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     arrayOfBoardButtons[14 - i].setEnabled(false);
                 }
+            }
+            if(!playerChosen){
+                gameStatus.setText("HURRY!");
+            }else{
+                gameStatus.setText("Player 2's turn");
             }
         }
 
@@ -221,11 +235,19 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if(!playerChosen){
                         gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                        gameBoard.takeTurn(p1index);
                         updateBoard();
-                        playerChosen = true;
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_ONE){
+                            enableBoard();
+                        }else{
+                            playerChosen = true;
+                            gameStatus.setText("Player 2's turn");
+                        }
+
+                    }else{
+                        gameBoard.takeTurn(p1index);
+                        updateBoard();
                     }
-                    gameBoard.takeTurn(p1index);
-                    updateBoard();
                 }
             });
 
@@ -242,11 +264,19 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if(!playerChosen){
                         gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                        gameBoard.takeTurn(p2index);
                         updateBoard();
-                        playerChosen = true;
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            enableBoard();
+                        }else{
+                            playerChosen = true;
+                            gameStatus.setText("Player 1's turn");
+                        }
+                    }else{
+                        gameBoard.takeTurn(p2index);
+                        updateBoard();
                     }
-                    gameBoard.takeTurn(p2index);
-                    updateBoard();
+
                 }
             });
         }
