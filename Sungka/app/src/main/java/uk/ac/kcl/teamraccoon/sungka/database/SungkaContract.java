@@ -34,7 +34,7 @@ public class SungkaContract {
         // Table name
         public static final String TABLE_NAME = "player";
         // A unique name of a player
-        public static final String PLAYER_NAME = "player_name";
+        public static final String COLUMN_PLAYER_NAME = "player_name";
         // The number of games played by a player
         public static final String COLUMN_GAMES_PLAYED = "games_played";
         // The number of games won by a player
