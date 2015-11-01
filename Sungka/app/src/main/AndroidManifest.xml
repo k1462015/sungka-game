@@ -22,6 +22,9 @@
             android:name=".data.StatisticsProvider"
             android:authorities="@string/content_authority"
             android:exported="false" />
+
+        <activity android:name=".HighScoresActivity" >
+        </activity>
     </application>
 
 </manifest>
