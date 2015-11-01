@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.2"
+        android:layout_weight="0.25"
         android:src="@android:drawable/btn_star"/>
 
     <TextView

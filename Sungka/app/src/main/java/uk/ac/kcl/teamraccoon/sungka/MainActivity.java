@@ -1,9 +1,9 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -42,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
                 resetBoard();
             }
         });
-
-
     }
 
     /**
@@ -161,15 +159,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         if (gameBoard.isGameOver()) {
-            if (arrayOfTrays[7] > arrayOfTrays[15]) {
-                gameStatus.setText("Player 1 won!");
-            } else if (arrayOfTrays[7] < arrayOfTrays[15]) {
-                gameStatus.setText("Player 2 won!");
-            } else {
-                gameStatus.setText("It's a draw!");
-            }
+            displayDialog();
         }
 
     }
@@ -282,5 +273,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateBoard();
+    }
+
+    // Display a dialog to save game result and show statistics
+    private void displayDialog() {
+        int[] arrayOfTrays = gameBoard.getArrayOfTrays();
+
+        Bundle bundleDialog = new Bundle();
+        int[] scores = {arrayOfTrays[7], arrayOfTrays[15]};
+        bundleDialog.putIntArray("SCORES", scores);
+
+        AddScoreFragment addScoreFragment = new AddScoreFragment();
+        addScoreFragment.setArguments(bundleDialog);
+        addScoreFragment.show(getFragmentManager(), "dialog");
     }
 }

@@ -18,6 +18,16 @@
         android:fontFamily="sans-serif"
         android:text="@string/save_score" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:gravity="center_vertical"
+        android:fontFamily="sans-serif"
+        android:id="@+id/dialog_statistics"/>
+
     <EditText
         android:id="@+id/player_one_name"
         android:layout_width="match_parent"
