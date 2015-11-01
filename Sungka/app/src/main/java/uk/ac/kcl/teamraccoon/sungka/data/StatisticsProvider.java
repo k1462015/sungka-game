@@ -115,7 +115,7 @@ public class StatisticsProvider extends ContentProvider {
         return returnUri;
     }
 
-    //Deleter rows from a provider
+    // Delete rows from a provider
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
