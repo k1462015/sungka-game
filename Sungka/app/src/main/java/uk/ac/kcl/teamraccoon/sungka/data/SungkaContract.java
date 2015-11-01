@@ -1,4 +1,4 @@
-package uk.ac.kcl.teamraccoon.sungka.database;
+package uk.ac.kcl.teamraccoon.sungka.data;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -28,8 +28,6 @@ public class SungkaContract {
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLAYER;
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLAYER;
 
         // Table name
         public static final String TABLE_NAME = "player";
@@ -41,7 +39,7 @@ public class SungkaContract {
         public static final String COLUMN_GAMES_WON = "games_won";
         // The number of games lost by a player
         public static final String COLUMN_GAMES_LOST = "games_lost";
-        // The highest scores achieved by a player
+        // The highest score achieved by a player
         public static final String COLUMN_HIGH_SCORE = "high_score";
 
         public static Uri buildPlayerUri(long id) {
@@ -58,8 +56,6 @@ public class SungkaContract {
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_HIGH_SCORES;
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_HIGH_SCORES;
 
         // Table name
         public static final String TABLE_NAME = "high_scores";

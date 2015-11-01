@@ -1,11 +1,11 @@
-package uk.ac.kcl.teamraccoon.sungka.database;
+package uk.ac.kcl.teamraccoon.sungka.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import uk.ac.kcl.teamraccoon.sungka.database.SungkaContract.PlayerEntry;
-import uk.ac.kcl.teamraccoon.sungka.database.SungkaContract.HighScoresEntry;
+import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract.PlayerEntry;
+import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract.HighScoresEntry;
 
 /**
  * Manages a local database for Sungka statistics data.
@@ -40,7 +40,7 @@ public class SungkaDbHelper extends SQLiteOpenHelper {
                 HighScoresEntry.COLUMN_PLAYER + " TEXT NOT NULL, " +
                 HighScoresEntry.COLUMN_SCORE + " INTEGER NOT NULL, " +
 
-                // Set up the column player as a foreign key to the player table.
+                // Set up the column player as a foreign key to the player table
                 " FOREIGN KEY (" + HighScoresEntry.COLUMN_PLAYER + ") REFERENCES " +
                 PlayerEntry.TABLE_NAME + " (" + PlayerEntry.COLUMN_PLAYER_NAME + ") " +
 
