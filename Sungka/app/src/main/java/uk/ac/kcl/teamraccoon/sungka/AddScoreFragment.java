@@ -7,7 +7,9 @@ import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -15,6 +17,9 @@ import android.widget.TextView;
 
 import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract;
 
+// TODO: Protecting against malicious input
+// TODO: Refactor!
+// TODO: Comments
 
 /**
  * Display a dialog to save game scores.
@@ -79,10 +84,12 @@ public class AddScoreFragment extends DialogFragment {
 
         if(!playerOneName.isEmpty()) {
             insertScore(playerOneName, mScores[0]);
+            updateUserData(playerOneName, 0);
         }
 
         if(!playerTwoName.isEmpty()) {
             insertScore(playerTwoName, mScores[1]);
+            updateUserData(playerTwoName, 1);
         }
     }
 
@@ -93,6 +100,77 @@ public class AddScoreFragment extends DialogFragment {
 
         getActivity().getContentResolver().insert(
                 SungkaContract.HighScoresEntry.CONTENT_URI,
+                values
+        );
+    }
+
+    private void updateUserData(String playerName, int playerIndex) {
+        int[] userData = getUserData(playerName);
+        boolean isWinner = mScores[playerIndex] > mScores[(playerIndex + 1) % 2];
+        if(userData == null) { createUserRow(playerName, mScores[playerIndex],
+                isWinner); }
+        else {
+            ContentValues values = new ContentValues();
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, userData[0] + 1);
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, isWinner ? userData[1] + 1 : userData[1]);
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isWinner ? userData[2]  : userData[2] + 1);
+            values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE,
+                    mScores[playerIndex] > userData[3] ? mScores[playerIndex] : userData[3]);
+
+            String selectionClause = SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME
+                + " = ?";
+            String[] selectionArgs = {playerName};
+
+            getActivity().getContentResolver().update(
+                    SungkaContract.PlayerEntry.CONTENT_URI,
+                    values,
+                    selectionClause,
+                    selectionArgs
+            );
+        }
+    }
+
+    private int[] getUserData(String playerName) {
+
+        String selectionClause = SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME
+                + " = ?";
+
+        String[] selectionArgs = {playerName};
+
+        Cursor cursor = getActivity().getContentResolver().query(
+                SungkaContract.PlayerEntry.CONTENT_URI,
+                null,
+                selectionClause,
+                selectionArgs,
+                null);
+
+        if (cursor == null) {
+            Log.e(AddScoreFragment.class.getName(), "An internal error occurred");
+        } else if (cursor.getCount() < 1) {
+            return null;
+        } else if (cursor.moveToNext()) {
+            int[] returnValues = {
+                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_WON)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE))
+            };
+            return returnValues;
+        }
+
+        return null;
+    }
+
+    private void createUserRow(String playerName, int score, boolean isWinner) {
+        ContentValues values = new ContentValues();
+        values.put(SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME, playerName);
+        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, 1);
+        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, isWinner ? 1 : 0);
+        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isWinner ? 0 : 1);
+        values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE, score);
+
+        getActivity().getContentResolver().insert(
+                SungkaContract.PlayerEntry.CONTENT_URI,
                 values
         );
     }
