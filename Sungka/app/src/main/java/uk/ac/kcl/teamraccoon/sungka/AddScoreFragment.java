@@ -7,9 +7,7 @@ import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -105,11 +103,12 @@ public class AddScoreFragment extends DialogFragment {
     }
 
     private void updateUserData(String playerName, int playerIndex) {
-        int[] userData = getUserData(playerName);
+        int[] userData = new PlayerData().retrieveUserData(playerName, getActivity());
         boolean isWinner = mScores[playerIndex] > mScores[(playerIndex + 1) % 2];
         if(userData == null) { createUserRow(playerName, mScores[playerIndex],
                 isWinner); }
         else {
+            // TODO: fix a bug - when it's draw the app increments column_games_lost
             ContentValues values = new ContentValues();
             values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, userData[0] + 1);
             values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, isWinner ? userData[1] + 1 : userData[1]);
@@ -128,37 +127,6 @@ public class AddScoreFragment extends DialogFragment {
                     selectionArgs
             );
         }
-    }
-
-    private int[] getUserData(String playerName) {
-
-        String selectionClause = SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME
-                + " = ?";
-
-        String[] selectionArgs = {playerName};
-
-        Cursor cursor = getActivity().getContentResolver().query(
-                SungkaContract.PlayerEntry.CONTENT_URI,
-                null,
-                selectionClause,
-                selectionArgs,
-                null);
-
-        if (cursor == null) {
-            Log.e(AddScoreFragment.class.getName(), "An internal error occurred");
-        } else if (cursor.getCount() < 1) {
-            return null;
-        } else if (cursor.moveToNext()) {
-            int[] returnValues = {
-                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_WON)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE))
-            };
-            return returnValues;
-        }
-
-        return null;
     }
 
     private void createUserRow(String playerName, int score, boolean isWinner) {

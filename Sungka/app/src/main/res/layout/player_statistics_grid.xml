@@ -1,0 +1,49 @@
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detail_additional_pane"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="2"
+    android:background="#455A64"
+    android:paddingBottom="24dp"
+    android:paddingEnd="32dp"
+    android:paddingLeft="32dp"
+    android:paddingRight="32dp"
+    android:paddingStart="32dp"
+    android:paddingTop="24dp"
+    app:columnCount="2">
+
+    <TextView style="@style/PlayerStatisticsTextRight"
+        android:id="@+id/games_played_label"
+        android:layout_height="wrap_content"
+        android:text="Games played"
+        app:layout_columnWeight="1"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
+
+    <TextView style="@style/PlayerStatisticsTextLeft"
+        android:id="@+id/games_played_number"
+        app:layout_gravity="fill" />
+
+    <TextView style="@style/PlayerStatisticsTextRight"
+        android:id="@+id/games_won_label"
+        android:text="Games won"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
+
+    <TextView style="@style/PlayerStatisticsTextLeft"
+        android:id="@+id/games_won_number"
+        app:layout_gravity="fill"/>
+
+    <TextView style="@style/PlayerStatisticsTextRight"
+        android:id="@+id/games_lost_label"
+        android:text="Games lost"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
+
+    <TextView style="@style/PlayerStatisticsTextLeft"
+        android:id="@+id/games_lost_number"
+        app:layout_gravity="fill" />
+</android.support.v7.widget.GridLayout>
+
