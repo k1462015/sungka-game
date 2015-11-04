@@ -107,12 +107,12 @@ public class AddScoreFragment extends DialogFragment {
         boolean isWinner = mScores[playerIndex] > mScores[(playerIndex + 1) % 2];
         boolean isLoser = mScores[playerIndex] < mScores[(playerIndex + 1) % 2];
         if(userData == null) { createUserRow(playerName, mScores[playerIndex],
-                isWinner); }
+                isWinner, isLoser); }
         else {
             ContentValues values = new ContentValues();
             values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, userData[0] + 1);
             values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, isWinner ? userData[1] + 1 : userData[1]);
-            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isLoser ? userData[2] + 1  : userData[2]);
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isLoser ? userData[2] +1  : userData[2]);
             values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE,
                     mScores[playerIndex] > userData[3] ? mScores[playerIndex] : userData[3]);
 
@@ -129,12 +129,12 @@ public class AddScoreFragment extends DialogFragment {
         }
     }
 
-    private void createUserRow(String playerName, int score, boolean isWinner) {
+    private void createUserRow(String playerName, int score, boolean isWinner, boolean isLoser) {
         ContentValues values = new ContentValues();
         values.put(SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME, playerName);
         values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, 1);
         values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, isWinner ? 1 : 0);
-        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isWinner ? 0 : 1);
+        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isLoser ? 1 : 0);
         values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE, score);
 
         getActivity().getContentResolver().insert(

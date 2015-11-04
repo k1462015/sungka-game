@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 resetBoard();
             }
         });
+        displayDialog();
     }
 
     /**
