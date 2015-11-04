@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        int aiTrayIndex = SungkaAI.takeTurn(gameBoard);
+                        int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
                         Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
                         Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
                         gameBoard.takeTurn(aiTrayIndex);

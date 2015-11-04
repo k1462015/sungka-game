@@ -32,11 +32,11 @@ public class SungkaAI {
 															// enemy store is
 															// bad
 		for (int i = 0; i <= 6; i++) {
-			score -= (double) shellsArray[i] / 2; // shells on enemy side is bad
+			score -= (double) shellsArray[i] / 10; // shells on enemy side is bad
 		}
 
 		for (int i = 8; i <= 14; i++) {
-			score += (double) shellsArray[i] / 2; // shells on own side is good
+			score += (double) shellsArray[i] / 10; // shells on own side is good
 		}
 		if (difficulty == HARD) { // extra checks for hard difficulty
 			for (int i = 0; i <= 6; i++) { // possible steals from enemy are bad
