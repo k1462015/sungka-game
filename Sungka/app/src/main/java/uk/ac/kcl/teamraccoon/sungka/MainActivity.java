@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         Log.i("MYAPP","ONSTOP IS BEING CALLED");
+        if(backgroundMusic != null){
+            backgroundMusic.pause();
+        }
 //        int[] arrayOfTrays = gameBoard.getArrayOfTrays();
 //
 //        // We need an Editor object to make preference changes.
@@ -115,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.i("MYAPP", "WIPED TRAY DATA");
+        if(backgroundMusic != null){
+            backgroundMusic.release();
+        }
 //        this.getSharedPreferences("TRAYDATA",0).edit().clear().commit();
     }
 
@@ -228,7 +234,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        backgroundMusic.pause();
+        if(backgroundMusic != null){
+            backgroundMusic.pause();
+        }
     }
 
     public void updateBoard(final int selectedTray) {
