@@ -120,6 +120,23 @@
         </LinearLayout>
 
     </LinearLayout>
+    <ImageView
+        android:id="@+id/p2_indicator"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="90dp"
+        android:layout_height="100dp"
+        android:background="@drawable/p2indicator"
+        android:layout_alignParentRight="true"
+        />
+    <ImageView
+        android:id="@+id/p1_indicator"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="90dp"
+        android:layout_height="100dp"
+        android:background="@drawable/p1indicator"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        />
 
     <!--<LinearLayout-->
         <!--android:layout_width="0dp"-->

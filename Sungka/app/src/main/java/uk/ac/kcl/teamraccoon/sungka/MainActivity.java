@@ -17,8 +17,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mp;
     MediaPlayer backgroundMusic;
     TextView shellsInHandDisplay;
+    ImageView p1Indicator;
+    ImageView p2Inicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
         mp = MediaPlayer.create(getApplicationContext(), R.raw.gong);
         mp.start();
         mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+
+        p1Indicator = (ImageView) findViewById(R.id.p1_indicator);
+        p1Indicator.setVisibility(View.INVISIBLE);
+        p2Inicator = (ImageView) findViewById(R.id.p2_indicator);
+        p2Inicator.setVisibility(View.INVISIBLE);
 
         shellsInHandDisplay = (TextView) findViewById(R.id.shellInHandDisplay);
 //        shellStatus = (TextView) findViewById(R.id.handStatus);
@@ -475,9 +484,14 @@ public class MainActivity extends AppCompatActivity {
                 gameStatus.setText("HURRY!");
             }else{
                 gameStatus.setText("Player 1's turn");
+                p1Indicator.setVisibility(View.VISIBLE);
+                p2Inicator.setVisibility(View.INVISIBLE);
             }
-        } else {
 
+
+
+
+        } else {
 
             //enables all the trays for player two that are not zero and disables the opposite side
             for (int i = 0; i < 7; i++) {
@@ -492,6 +506,8 @@ public class MainActivity extends AppCompatActivity {
                 gameStatus.setText("HURRY!");
             }else{
                 gameStatus.setText("Player 2's turn");
+                p1Indicator.setVisibility(View.INVISIBLE);
+                p2Inicator.setVisibility(View.VISIBLE);
             }
         }
 
@@ -589,14 +605,19 @@ public class MainActivity extends AppCompatActivity {
                         updateBoard(p1index);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_ONE){
                             enableBoard();
+                            Toast.makeText(getApplicationContext(), "Player 1 got an additional turn!", Toast.LENGTH_SHORT).show();
                         }else{
                             playerChosen = true;
                             gameStatus.setText("Player 2's turn");
+
                         }
 
                     }else{
                         gameBoard.takeTurn(p1index);
                         updateBoard(p1index);
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_ONE){
+                            Toast.makeText(getApplicationContext(), "Player 1 got an additional turn!", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });
@@ -618,6 +639,7 @@ public class MainActivity extends AppCompatActivity {
                         updateBoard(p2index);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             enableBoard();
+                            Toast.makeText(getApplicationContext(), "Player 2 got an additional turn!", Toast.LENGTH_SHORT).show();
                         }else{
                             playerChosen = true;
                             gameStatus.setText("Player 1's turn");
@@ -625,6 +647,9 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         gameBoard.takeTurn(p2index);
                         updateBoard(p2index);
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            Toast.makeText(getApplicationContext(), "Player 2 got an additional turn!", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                 }
