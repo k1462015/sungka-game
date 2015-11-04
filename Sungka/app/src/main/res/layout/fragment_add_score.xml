@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="uk.ac.kcl.teamraccoon.sungka.AddScoreFragment">
+    tools:context="uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment">
 
     <TextView
         android:layout_width="match_parent"

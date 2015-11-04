@@ -1,4 +1,4 @@
-package uk.ac.kcl.teamraccoon.sungka;
+package uk.ac.kcl.teamraccoon.sungka.highscores;
 
 
 import android.app.Fragment;
@@ -11,21 +11,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import uk.ac.kcl.teamraccoon.sungka.R;
 import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract;
 
-
-/**
- *
- */
 public class HighScoresFragment extends Fragment {
-
 
     public HighScoresFragment() {}
 
     public interface CallbackHighScores {
         void onItemSelected(String playerName);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

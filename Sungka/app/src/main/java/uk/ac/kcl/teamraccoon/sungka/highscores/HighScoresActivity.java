@@ -1,11 +1,13 @@
-package uk.ac.kcl.teamraccoon.sungka;
+package uk.ac.kcl.teamraccoon.sungka.highscores;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import uk.ac.kcl.teamraccoon.sungka.R;
+
 public class HighScoresActivity extends AppCompatActivity implements HighScoresFragment.CallbackHighScores {
 
-    static final String PLAYER_TAG = "PLAYER_NAME";
+    static final String PLAYER_TAG = "uk.ac.kcl.teamraccoon.sungka.HighScoresActivity.PLAYER_NAME";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

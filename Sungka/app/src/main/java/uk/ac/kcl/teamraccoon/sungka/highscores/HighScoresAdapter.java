@@ -1,4 +1,4 @@
-package uk.ac.kcl.teamraccoon.sungka;
+package uk.ac.kcl.teamraccoon.sungka.highscores;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import uk.ac.kcl.teamraccoon.sungka.R;
 import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract;
 
 public class HighScoresAdapter extends CursorAdapter {
@@ -32,6 +33,6 @@ public class HighScoresAdapter extends CursorAdapter {
                 cursor.getColumnIndexOrThrow(SungkaContract.HighScoresEntry.COLUMN_SCORE));
 
         tvPlayerName.setText(playerName);
-        tvPlayerScore.setText(Integer.toString(playerScore));
+        tvPlayerScore.setText("" + playerScore);
     }
 }

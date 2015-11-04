@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -42,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
                 resetBoard();
             }
         });
-        displayDialog();
     }
 
     /**
@@ -282,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle bundleDialog = new Bundle();
         int[] scores = {arrayOfTrays[7], arrayOfTrays[15]};
-        bundleDialog.putIntArray("SCORES", scores);
+        bundleDialog.putIntArray(AddScoreFragment.BUNDLE_TAG, scores);
 
         AddScoreFragment addScoreFragment = new AddScoreFragment();
         addScoreFragment.setArguments(bundleDialog);

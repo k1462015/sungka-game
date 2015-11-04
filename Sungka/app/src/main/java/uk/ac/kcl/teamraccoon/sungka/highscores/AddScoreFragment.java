@@ -1,4 +1,4 @@
-package uk.ac.kcl.teamraccoon.sungka;
+package uk.ac.kcl.teamraccoon.sungka.highscores;
 
 
 import android.app.AlertDialog;
@@ -13,11 +13,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import uk.ac.kcl.teamraccoon.sungka.R;
+import uk.ac.kcl.teamraccoon.sungka.data.PlayerData;
 import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract;
-
-// TODO: Protecting against malicious input
-// TODO: Refactor!
-// TODO: Comments
 
 /**
  * Display a dialog to save game scores.
@@ -26,6 +24,8 @@ public class AddScoreFragment extends DialogFragment {
 
     private int[] mScores;
     private View rootView;
+
+    static final public String BUNDLE_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.SCORES";
 
     public AddScoreFragment() {}
 
@@ -38,8 +38,7 @@ public class AddScoreFragment extends DialogFragment {
 
         TextView tvStatistics = (TextView) rootView.findViewById(R.id.dialog_statistics);
 
-        String statistics = "Player One: " + mScores[0] +
-                "\nPlayer Two: " + mScores[1];
+        String statistics =  getString(R.string.add_score_players, mScores[0], mScores[1]);
 
         tvStatistics.setText(statistics);
 
@@ -63,7 +62,7 @@ public class AddScoreFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle dialogBundle = this.getArguments();
-        mScores = dialogBundle.getIntArray("SCORES");
+        mScores = dialogBundle.getIntArray(BUNDLE_TAG);
     }
 
     @Override
@@ -103,28 +102,32 @@ public class AddScoreFragment extends DialogFragment {
     }
 
     private void updateUserData(String playerName, int playerIndex) {
-        int[] userData = new PlayerData().retrieveUserData(playerName, getActivity());
+        int[] userData = PlayerData.retrieveUserData(playerName, getActivity());
         boolean isWinner = mScores[playerIndex] > mScores[(playerIndex + 1) % 2];
         boolean isLoser = mScores[playerIndex] < mScores[(playerIndex + 1) % 2];
-        if(userData == null) { createUserRow(playerName, mScores[playerIndex],
-                isWinner, isLoser); }
-        else {
-            ContentValues values = new ContentValues();
-            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, userData[0] + 1);
-            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, isWinner ? userData[1] + 1 : userData[1]);
-            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isLoser ? userData[2] +1  : userData[2]);
-            values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE,
-                    mScores[playerIndex] > userData[3] ? mScores[playerIndex] : userData[3]);
 
-            String selectionClause = SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME
-                + " = ?";
-            String[] selectionArgs = {playerName};
+        if(userData == null) {
+            createUserRow(playerName, mScores[playerIndex], isWinner, isLoser);
+        } else {
+            ContentValues values = new ContentValues();
+
+            int gamesWon = isWinner ? userData[PlayerData.INDEX_GAMES_WON] + 1 : userData[PlayerData.INDEX_GAMES_WON];
+            int gamesLost = isLoser ? userData[PlayerData.INDEX_GAMES_LOST] + 1  : userData[PlayerData.INDEX_GAMES_LOST];
+            int highScore = mScores[playerIndex] > userData[PlayerData.INDEX_HIGH_SCORE]
+                    ? mScores[playerIndex] : userData[PlayerData.INDEX_HIGH_SCORE];
+
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, userData[PlayerData.INDEX_GAMES_PLAYED] + 1);
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, gamesWon);
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, gamesLost);
+            values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE, highScore);
+
+            String selectionClause = SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME + " = ?";
 
             getActivity().getContentResolver().update(
                     SungkaContract.PlayerEntry.CONTENT_URI,
                     values,
                     selectionClause,
-                    selectionArgs
+                    new String[] {playerName}
             );
         }
     }
@@ -142,4 +145,5 @@ public class AddScoreFragment extends DialogFragment {
                 values
         );
     }
+
 }

@@ -6,13 +6,13 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:padding="5dp"
-    tools:context="uk.ac.kcl.teamraccoon.sungka.HighScoresActivity">
+    tools:context="uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresActivity">
 
     <!-- This layout is a two-pane layout for the Items master/detail flow. -->
 
     <fragment
         android:id="@+id/fragment_high_scores"
-        android:name="uk.ac.kcl.teamraccoon.sungka.HighScoresFragment"
+        android:name="uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
