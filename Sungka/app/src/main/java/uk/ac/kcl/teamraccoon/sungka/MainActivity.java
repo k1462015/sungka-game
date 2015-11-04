@@ -1,5 +1,7 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +15,10 @@ public class MainActivity extends AppCompatActivity {
     Board gameBoard;
     Button[] arrayOfBoardButtons;
     TextView gameStatus;
+    int startTime;
+    Handler handler = new Handler();
+    boolean playerChosen;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,27 +26,79 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        //initialises the game board with trays = 7, store = 0
+        //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
+        playerChosen = false;
         setupBoardLayout();
+        //Sets up timer for initially selecting first player
+        setUpTimer();
+
         Button resetButton = (Button) findViewById(R.id.resetButton);
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //First Remove and reset current board
+                playerChosen = false;
                 resetBoard();
-                //Sets up board again
-                setupBoardLayout();
-                //Updates board to show corresponding number
-                updateBoard();
             }
         });
+
 
     }
 
     /**
+     * Starts the countdown needed at the beginning of the game
+     */
+    public void setUpTimer(){
+        startTime = (int) System.currentTimeMillis();
+        disableBoard();
+        handler.postDelayed(startTimer, 0);
+    }
+
+    public Runnable startTimer = new Runnable(){
+        @Override
+        public void run() {
+            int elapsedTime = (int) System.currentTimeMillis() - startTime;
+            int seconds = elapsedTime / 1000;
+            gameStatus.setText((3-seconds)+"");
+            handler.postDelayed(this,0);
+            if(seconds == 3){
+                gameStatus.setText("SELECT YOUR PIT!!");
+                handler.removeCallbacks(this);
+                enableBoard();
+            }
+        }
+    };
+
+    /**
+     * Loops around entire board and disables all buttons
+     */
+    public void disableBoard(){
+        for (Button button: arrayOfBoardButtons){
+            button.setEnabled(false);
+        }
+    }
+
+    /**
+     * Loops around entire board and enables all buttons
+     */
+    public void enableBoard(){
+        int[] arrayOfTrays = gameBoard.getArrayOfTrays();
+        for(int i = 0;i < arrayOfBoardButtons.length;i++){
+            Button button = arrayOfBoardButtons[i];
+            if(arrayOfTrays[i] == 0){
+                button.setEnabled(false);
+            }else{
+                button.setEnabled(true);
+            }
+        }
+
+    }
+
+
+    /**
      * Clears all linear layouts on the board
-     * And reinitilises board object
+     * Also setups up a new board and starts the timer
      */
     public void resetBoard(){
         LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
@@ -50,9 +108,11 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layout_p2_trays = (LinearLayout) findViewById(R.id.layout_p2_trays);
         layout_p2_trays.removeAllViews();
         LinearLayout layout_p1_trays = (LinearLayout) findViewById(R.id.layout_p1_trays);
-        layout_p1_trays.removeAllViews();;
+        layout_p1_trays.removeAllViews();
 
         gameBoard = new Board();
+        setupBoardLayout();
+        setUpTimer();
     }
 
     public void updateBoard() {
@@ -62,14 +122,12 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < 16; i++) {
             arrayOfBoardButtons[i].setText(arrayOfTrays[i] + "");
+            setButtonImage(arrayOfBoardButtons[i],arrayOfTrays[i]);
         }
 
 
         if (gameBoard.getCurrentPlayer() == Player.PLAYER_ONE) {
-
-            gameStatus.setText("Player 1's turn");
-
-            //enables all the trays for player one that are not 0 and disables the opposite side
+            //enables all the trays for player one that are not zero and disables the opposite side
             for (int i = 14; i > 7; i--) {
                 arrayOfBoardButtons[i].setEnabled(false);
                 if (arrayOfTrays[14 - i] != 0) {
@@ -79,11 +137,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
+            if(!playerChosen){
+                gameStatus.setText("HURRY!");
+            }else{
+                gameStatus.setText("Player 1's turn");
+            }
         } else {
 
-            gameStatus.setText("Player 2's turn");
 
-            //enables all the trays for player two that are not 0 and disables the opposite side
+            //enables all the trays for player two that are not zero and disables the opposite side
             for (int i = 0; i < 7; i++) {
                 arrayOfBoardButtons[i].setEnabled(false);
                 if (arrayOfTrays[14 - i] != 0) {
@@ -91,6 +153,11 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     arrayOfBoardButtons[14 - i].setEnabled(false);
                 }
+            }
+            if(!playerChosen){
+                gameStatus.setText("HURRY!");
+            }else{
+                gameStatus.setText("Player 2's turn");
             }
         }
 
@@ -105,6 +172,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    public void setButtonImage(Button btn,int number){
+        Drawable background;
+        if(number > 6){
+            background = this.getDrawable(R.drawable.sixplus);
+        }else{
+            switch(number){
+                case 0: background = this.getDrawable(R.drawable.zero); break;
+                case 1: background = this.getDrawable(R.drawable.one); break;
+                case 2: background = this.getDrawable(R.drawable.two); break;
+                case 3: background = this.getDrawable(R.drawable.three); break;
+                case 4: background = this.getDrawable(R.drawable.four); break;
+                case 5: background = this.getDrawable(R.drawable.five); break;
+                case 6: background = this.getDrawable(R.drawable.six); break;
+                default: background = this.getDrawable(R.drawable.zero);break;
+
+            }
+        }
+        btn.setBackground(background);
     }
 
     public void setupBoardLayout() {
@@ -146,8 +233,21 @@ public class MainActivity extends AppCompatActivity {
             tempTrayp1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    gameBoard.takeTurn(p1index);
-                    updateBoard();
+                    if(!playerChosen){
+                        gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                        gameBoard.takeTurn(p1index);
+                        updateBoard();
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_ONE){
+                            enableBoard();
+                        }else{
+                            playerChosen = true;
+                            gameStatus.setText("Player 2's turn");
+                        }
+
+                    }else{
+                        gameBoard.takeTurn(p1index);
+                        updateBoard();
+                    }
                 }
             });
 
@@ -162,8 +262,21 @@ public class MainActivity extends AppCompatActivity {
             tempTrayp2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    gameBoard.takeTurn(p2index);
-                    updateBoard();
+                    if(!playerChosen){
+                        gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                        gameBoard.takeTurn(p2index);
+                        updateBoard();
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            enableBoard();
+                        }else{
+                            playerChosen = true;
+                            gameStatus.setText("Player 1's turn");
+                        }
+                    }else{
+                        gameBoard.takeTurn(p2index);
+                        updateBoard();
+                    }
+
                 }
             });
         }

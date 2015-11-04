@@ -2,14 +2,15 @@ package uk.ac.kcl.teamraccoon.sungka;
 
 import android.util.Log;
 
-/**
- * Created by ana on 21/10/15.
- */
 public class Board {
 
     private int arrayOfTrays[] = new int[16];
     private int player2store = 15;
     private int player1store = 7;
+
+    public void setCurrentPlayer(Enum currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
 
     private Enum currentPlayer = Player.PLAYER_ONE;
 
@@ -20,7 +21,7 @@ public class Board {
             arrayOfTrays[i] = 7;
         }
 
-        //initialise the store with 0
+        //initialise the store with zero
         arrayOfTrays[player1store] = 0;
         arrayOfTrays[player2store] = 0;
 
@@ -28,6 +29,10 @@ public class Board {
 
     public int[] getArrayOfTrays() {
         return arrayOfTrays;
+    }
+
+    public void setArrayOfTrays(int[] arrayOfTrays){
+        this.arrayOfTrays = arrayOfTrays;
     }
 
     public Enum getCurrentPlayer() {
@@ -116,7 +121,7 @@ public class Board {
 
     private void checkLastTray(int index) {
         if (index == player1store || index == player2store) {
-            Log.i("MyApp", "it landed on player's side");
+//            Log.i("MyApp", "it landed on player's side");
 
             //if the current player can't do his extra turn, else let him take a turn again
             if (!checkTrays(currentPlayer) && !(isGameOver())) {
