@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Sungka</string>
     <string name="title_activity_main_menu">MainMenu</string>
+    <string name="title_activity_pause_menu">PauseMenu</string>
 </resources>

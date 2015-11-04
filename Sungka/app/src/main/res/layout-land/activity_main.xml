@@ -12,13 +12,38 @@
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
     android:background="@drawable/background">
 
+    <!--<LinearLayout-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_weight="1"-->
+        <!--android:orientation="vertical"-->
+        <!-->-->
+
+        <Button
+            android:id="@+id/shellsInHand"
+            android:layout_gravity="center_horizontal"
+            android:textSize="7dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:text="Shells in hand"
+            android:background="@drawable/zero" />
+        <!--<TextView-->
+            <!--android:id="@+id/handStatus"-->
+            <!--android:textColor="#FFF"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="3"-->
+            <!--android:text="Shells in hand: 3"/>-->
+    <!--</LinearLayout>-->
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="2"
         android:orientation="vertical"
-        android:id="@+id/layout_p2_store">
+        android:id="@+id/layout_p2_store"
+        android:background="#00ffffff">
 
     </LinearLayout>
 
@@ -34,15 +59,17 @@
             android:layout_height="0dp"
             android:orientation="horizontal"
             android:layout_weight="1"
-            android:id="@+id/layout_p2_trays">
+            android:id="@+id/layout_p2_trays"
+            android:background="#00ffffff">
 
 
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/middleLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
@@ -61,6 +88,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="2"
                 android:text="Restart"/>
+
+
         </LinearLayout>
 
 
@@ -70,7 +99,8 @@
             android:layout_height="0dp"
             android:orientation="horizontal"
             android:layout_weight="1"
-            android:id="@+id/layout_p1_trays">
+            android:id="@+id/layout_p1_trays"
+            android:background="#00ffffff">
 
         </LinearLayout>
 
@@ -82,7 +112,8 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="2"
         android:orientation="vertical"
-        android:id="@+id/layout_p1_store">
+        android:id="@+id/layout_p1_store"
+        android:background="#00ffffff">
 
     </LinearLayout>
 

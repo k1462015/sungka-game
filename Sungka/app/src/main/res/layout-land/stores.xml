@@ -6,4 +6,4 @@
     android:textAlignment="gravity"
     android:textSize="16dp"
     android:gravity="top"
-    android:textColor="#FFFFFF" />
+    android:textColor="@drawable/button_text_color" />
