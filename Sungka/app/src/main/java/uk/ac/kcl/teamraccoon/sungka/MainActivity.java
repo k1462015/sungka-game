@@ -2,12 +2,15 @@ package uk.ac.kcl.teamraccoon.sungka;
 
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     int startTime;
     Handler handler = new Handler();
     boolean playerChosen;
+    boolean aiChosen;
 
 
     @Override
@@ -28,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
         //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
-        playerChosen = false;
+//        playerChosen = false;
         setupBoardLayout();
         //Sets up timer for initially selecting first player
-        setUpTimer();
+//        setUpTimer();
 
         Button resetButton = (Button) findViewById(R.id.resetButton);
         resetButton.setOnClickListener(new View.OnClickListener() {
@@ -43,8 +47,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        //Assume User chooses to play against Ai
+        playerChosen = true;
+        aiChosen = true;
+        if(aiChosen){
+           gameStatus.setText("Player 1's Move");
+        }else{
+           setUpTimer();
+        }
     }
+
 
     /**
      * Starts the countdown needed at the beginning of the game
@@ -112,7 +124,13 @@ public class MainActivity extends AppCompatActivity {
 
         gameBoard = new Board();
         setupBoardLayout();
-        setUpTimer();
+        playerChosen = true;
+        aiChosen = true;
+        if(aiChosen){
+            gameStatus.setText("Player 1's Move");
+        }else{
+            setUpTimer();
+        }
     }
 
     public void updateBoard() {
@@ -157,7 +175,11 @@ public class MainActivity extends AppCompatActivity {
             if(!playerChosen){
                 gameStatus.setText("HURRY!");
             }else{
-                gameStatus.setText("Player 2's turn");
+                if(aiChosen){
+                    gameStatus.setText("Ai's turn");
+                }else{
+                    gameStatus.setText("Player 2's turn");
+                }
             }
         }
 
@@ -192,6 +214,37 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         btn.setBackground(background);
+    }
+
+    public void makeAiMove(){
+        Log.i("MYAPP", "STARTING AI MOVE");
+        updateBoard();
+        disableBoard();
+        simulateAiMove();
+    }
+
+    public void simulateAiMove(){
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int aiTrayIndex = SungkaAI.takeTurn(gameBoard);
+                        Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
+                        Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
+                        gameBoard.takeTurn(aiTrayIndex);
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            Toast.makeText(getApplicationContext(), "Ai gets another go! "+aiTrayIndex, Toast.LENGTH_SHORT).show();
+                            makeAiMove();
+                        }else{
+                            updateBoard();
+                        }
+                    }
+                });
+                handler.removeCallbacks(this);
+            }
+        },2500);
     }
 
     public void setupBoardLayout() {
@@ -247,6 +300,9 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         gameBoard.takeTurn(p1index);
                         updateBoard();
+                        if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            makeAiMove();
+                        }
                     }
                 }
             });
@@ -273,8 +329,11 @@ public class MainActivity extends AppCompatActivity {
                             gameStatus.setText("Player 1's turn");
                         }
                     }else{
-                        gameBoard.takeTurn(p2index);
-                        updateBoard();
+                        //Just in case-Inputs should be ignored if ai is chosen
+                        if(!aiChosen){
+                            gameBoard.takeTurn(p2index);
+                            updateBoard();
+                        }
                     }
 
                 }
