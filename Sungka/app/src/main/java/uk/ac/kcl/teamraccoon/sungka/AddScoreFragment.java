@@ -105,14 +105,14 @@ public class AddScoreFragment extends DialogFragment {
     private void updateUserData(String playerName, int playerIndex) {
         int[] userData = new PlayerData().retrieveUserData(playerName, getActivity());
         boolean isWinner = mScores[playerIndex] > mScores[(playerIndex + 1) % 2];
+        boolean isLoser = mScores[playerIndex] < mScores[(playerIndex + 1) % 2];
         if(userData == null) { createUserRow(playerName, mScores[playerIndex],
                 isWinner); }
         else {
-            // TODO: fix a bug - when it's draw the app increments column_games_lost
             ContentValues values = new ContentValues();
             values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, userData[0] + 1);
             values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, isWinner ? userData[1] + 1 : userData[1]);
-            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isWinner ? userData[2]  : userData[2] + 1);
+            values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, isLoser ? userData[2] + 1  : userData[2]);
             values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE,
                     mScores[playerIndex] > userData[3] ? mScores[playerIndex] : userData[3]);
 
