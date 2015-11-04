@@ -36,16 +36,19 @@ public class MainActivity extends AppCompatActivity {
     TranslateAnimation anim;
     MediaPlayer mp;
     MediaPlayer backgroundMusic;
+    TextView shellsInHandDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         shellsInHandButton = (Button) findViewById(R.id.shellsInHand);
+        shellsInHandButton.setVisibility(View.VISIBLE);
         mp = MediaPlayer.create(getApplicationContext(), R.raw.gong);
         mp.start();
         mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
 
+        shellsInHandDisplay = (TextView) findViewById(R.id.shellInHandDisplay);
 //        shellStatus = (TextView) findViewById(R.id.handStatus);
 
         //initialises the game board with trays = 7, store = zero
@@ -225,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         shellsInHandButton.setVisibility(View.VISIBLE);
         disableBoard();
         if(playerChosen && selectedTray != -1){
+            shellsInHandDisplay.setText("Shells in Hand: "+arrayOfBoardButtons[selectedTray].getText().toString());
             setButtonImage(arrayOfBoardButtons[selectedTray], 0);
             Thread thread = new Thread() {
                 @Override
@@ -306,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 //Decrease shellsInHand
                                 shellsInHandButton.setText(shellsInHand + "");
+                                shellsInHandDisplay.setText("Shells In Hand: "+shellsInHand);
 //                                        shellStatus.setText(shellsInHand+"");
 
                                 //Update shell count on tray

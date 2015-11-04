@@ -1,16 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="9"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:orientation="horizontal"
     android:id="@+id/main_layout"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity"
     android:background="@drawable/background">
+
+    <TextView
+        android:id="@+id/shellInHandDisplay"
+        android:layout_gravity="center_horizontal"
+        android:textSize="12dp"
+        android:layout_width="120dp"
+        android:layout_height="100dp"
+        android:text="Shells in hand"
+        android:textAlignment="center"
+        android:gravity="top"
+        android:paddingTop="10dp"
+        android:textColor="#FFF"
+        android:background="@drawable/square"/>
+    <Button
+        android:id="@+id/shellsInHand"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/shell"
+        android:layout_alignBottom="@id/shellInHandDisplay"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="9"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:id="@+id/layout_p2_store"
+            android:background="#00ffffff">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:orientation="vertical"
+            android:id="@+id/layout_trays">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:id="@+id/layout_p2_trays"
+                android:background="#00ffffff">
+
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/middleLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
+                    android:layout_weight="3"
+                    android:text="GAME STATUS"
+                    android:id="@+id/game_status"
+                    android:gravity="center_vertical"
+                    android:textColor="#FFFFFF"/>
+                <Button
+                    android:id="@+id/resetButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:text="Restart"/>
+
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:id="@+id/layout_p1_trays"
+                android:background="#00ffffff">
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:id="@+id/layout_p1_store"
+            android:background="#00ffffff">
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <!--<LinearLayout-->
         <!--android:layout_width="0dp"-->
@@ -19,14 +128,14 @@
         <!--android:orientation="vertical"-->
         <!-->-->
 
-        <Button
-            android:id="@+id/shellsInHand"
-            android:layout_gravity="center_horizontal"
-            android:textSize="7dp"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:text="Shells in hand"
-            android:background="@drawable/zero" />
+        <!--<Button-->
+            <!--android:id="@+id/shellsInHand"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:textSize="7dp"-->
+            <!--android:layout_width="50dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:text="Shells in hand"-->
+            <!--android:background="@drawable/zero" />-->
         <!--<TextView-->
             <!--android:id="@+id/handStatus"-->
             <!--android:textColor="#FFF"-->
@@ -36,85 +145,6 @@
             <!--android:text="Shells in hand: 3"/>-->
     <!--</LinearLayout>-->
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="2"
-        android:orientation="vertical"
-        android:id="@+id/layout_p2_store"
-        android:background="#00ffffff">
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="5"
-        android:orientation="vertical"
-        android:id="@+id/layout_trays">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:layout_weight="1"
-            android:id="@+id/layout_p2_trays"
-            android:background="#00ffffff">
 
 
-
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/middleLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:textSize="30dp"
-                android:textAlignment="center"
-                android:layout_weight="3"
-                android:text="GAME STATUS"
-                android:id="@+id/game_status"
-                android:gravity="center_vertical"
-                android:textColor="#FFFFFF"/>
-            <Button
-                android:id="@+id/resetButton"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:text="Restart"/>
-
-
-        </LinearLayout>
-
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:layout_weight="1"
-            android:id="@+id/layout_p1_trays"
-            android:background="#00ffffff">
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="2"
-        android:orientation="vertical"
-        android:id="@+id/layout_p1_store"
-        android:background="#00ffffff">
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
