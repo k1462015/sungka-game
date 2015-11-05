@@ -12,11 +12,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
     android:background="@drawable/background">
-    <ImageView
-        android:id="@+id/shell"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/shell"/>
+
     <Button
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
@@ -28,79 +24,69 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
             android:layout_weight="2"
-            android:orientation="vertical"
-            android:id="@+id/layout_p2_store">
-
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:id="@+id/layout_p2_trays">
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="6"
-            android:orientation="vertical"
-            android:id="@+id/layout_trays">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="horizontal"
-                android:layout_weight="1"
-                android:id="@+id/layout_p2_trays">
-
-
-            </LinearLayout>
+            <!-- MIDDLE -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="2"
-                android:orientation="vertical">
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2"
+                    android:orientation="vertical"
+                    android:id="@+id/layout_p2_store">
+                </LinearLayout>
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:textSize="30dp"
                     android:textAlignment="center"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:text="GAME STATUS"
                     android:id="@+id/game_status"
                     android:gravity="center_vertical"
                     android:textColor="#FFFFFF"/>
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2"
+                    android:orientation="vertical"
+                    android:id="@+id/layout_p1_store">
+
+                </LinearLayout>
             </LinearLayout>
 
-
-
+            <!-- BOTTOM-->
             <LinearLayout
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="horizontal"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:id="@+id/layout_p1_trays">
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:id="@+id/layout_p1_store">
-
-        </LinearLayout>
-
     </LinearLayout>
-
-
     <Button
         android:id="@+id/resetButton"
         android:layout_width="50dp"
@@ -108,4 +94,9 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:text="R"/>
+    <ImageView
+        android:id="@+id/shell"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/shell"/>
 </RelativeLayout>
