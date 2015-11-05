@@ -1,5 +1,6 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,29 +40,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         shell = (ImageView) findViewById(R.id.shell);
-
+        Intent intent = getIntent();
+        String option = intent.getStringExtra(MainMenu.GAME_OPTION);
+        if(option.equals("P1P2")){
+            aiChosen = false;
+            playerChosen = false;
+        }
+        if(option.equals("P1Comp")){
+            aiChosen = true;
+            playerChosen = true;
+        }
+        if(option.equals("Multiplayer")){
+            //Needs to be decided
+        }
         //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
-        aiChosen = false;
-        playerChosen = false;
         setupBoardLayout();
-        //Sets up timer for initially selecting first player
-//        setUpTimer();
-
         Button resetButton = (Button) findViewById(R.id.resetButton);
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //First Remove and reset current board
-                playerChosen = false;
-                aiChosen = false;
+                if(!aiChosen){
+                    playerChosen = false;
+                }
                 handler.removeCallbacks(aiMove);
                 resetBoard();
             }
         });
-        //Assume User chooses to play against Ai
-//        playerChosen = true;
-//        aiChosen = true;
         if(aiChosen){
            gameStatus.setText("Player 1's Move");
         }else{
@@ -136,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
 
         gameBoard = new Board();
         setupBoardLayout();
-//        playerChosen = true;
-//        aiChosen = true;
         if(aiChosen){
             gameStatus.setText("Player 1's Move");
         }else{
@@ -232,15 +236,16 @@ public class MainActivity extends AppCompatActivity {
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             simulateAiMove();
                         }
-                    }
-                    if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), "Ai gets another go!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        simulateAiMove();
+                    }else{
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Ai gets another go!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            simulateAiMove();
+                        }
                     }
                 }else{
                     runOnUiThread(new Runnable() {
@@ -344,18 +349,6 @@ public class MainActivity extends AppCompatActivity {
         btn.setBackground(background);
     }
 
-    public void makeAiMove(){
-        Log.i("MYAPP", "STARTING AI MOVE");
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                updateBoard();
-//                disableBoard();
-//            }
-//        });
-
-        simulateAiMove();
-    }
 
     public void simulateAiMove(){
         aiMove = new Runnable() {
@@ -375,12 +368,6 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
                         gameBoard.takeTurn(aiTrayIndex);
                         updateBoard(aiTrayIndex,Player.PLAYER_TWO);
-//                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-//                            Toast.makeText(getApplicationContext(), "Ai gets another go! "+aiTrayIndex, Toast.LENGTH_SHORT).show();
-//                            makeAiMove();
-//                        }else{
-//                            updateBoard();
-//                        }
                     }
                 });
                 handler.removeCallbacks(this);
@@ -443,10 +430,6 @@ public class MainActivity extends AppCompatActivity {
                         disableBoard();
                         gameBoard.takeTurn(p1index);
                         updateBoard(p1index,Player.PLAYER_ONE);
-
-//                        if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-//                            makeAiMove();
-//                        }
                     }
                 }
             });
