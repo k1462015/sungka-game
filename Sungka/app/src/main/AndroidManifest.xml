@@ -10,12 +10,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="landscape" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize">
         </activity>
 
         <provider
@@ -23,7 +19,20 @@
             android:authorities="@string/content_authority"
             android:exported="false" />
 
-        <activity android:name=".highscores.HighScoresActivity" android:screenOrientation="landscape" >
+        <activity
+            android:name=".highscores.HighScoresActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity
+            android:name=".MainMenu"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
