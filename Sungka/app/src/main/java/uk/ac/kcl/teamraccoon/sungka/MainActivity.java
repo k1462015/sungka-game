@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
-//        playerChosen = false;
+        aiChosen = false;
+        playerChosen = false;
         setupBoardLayout();
         //Sets up timer for initially selecting first player
 //        setUpTimer();
@@ -53,13 +54,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //First Remove and reset current board
                 playerChosen = false;
+                aiChosen = false;
                 handler.removeCallbacks(aiMove);
                 resetBoard();
             }
         });
         //Assume User chooses to play against Ai
-        playerChosen = true;
-        aiChosen = true;
+//        playerChosen = true;
+//        aiChosen = true;
         if(aiChosen){
            gameStatus.setText("Player 1's Move");
         }else{
@@ -134,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
         gameBoard = new Board();
         setupBoardLayout();
-        playerChosen = true;
-        aiChosen = true;
+//        playerChosen = true;
+//        aiChosen = true;
         if(aiChosen){
             gameStatus.setText("Player 1's Move");
         }else{
@@ -225,11 +227,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     index++;
                 }
-                if(methodCaller == Player.PLAYER_ONE){
-                    if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                        simulateAiMove();
+                if(aiChosen){
+                    if(methodCaller == Player.PLAYER_ONE){
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            simulateAiMove();
+                        }
                     }
-                }else{
                     if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                         runOnUiThread(new Runnable() {
                             @Override
@@ -239,7 +242,17 @@ public class MainActivity extends AppCompatActivity {
                         });
                         simulateAiMove();
                     }
+                }else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateBoard();
+                        }
+                    });
                 }
+
+
+
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -253,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         animThread.start();
-//        handler.post(animThread);
     }
 
     public void updateBoard() {
@@ -431,6 +443,7 @@ public class MainActivity extends AppCompatActivity {
                         disableBoard();
                         gameBoard.takeTurn(p1index);
                         updateBoard(p1index,Player.PLAYER_ONE);
+
 //                        if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
 //                            makeAiMove();
 //                        }
@@ -461,10 +474,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }else{
                         //Just in case-Inputs should be ignored if ai is chosen
-                        if(!aiChosen){
-                            gameBoard.takeTurn(p2index);
-                            updateBoard();
-                        }
+                        disableBoard();
+                        gameBoard.takeTurn(p2index);
+                        updateBoard(p2index,Player.PLAYER_TWO);
                     }
 
                 }
