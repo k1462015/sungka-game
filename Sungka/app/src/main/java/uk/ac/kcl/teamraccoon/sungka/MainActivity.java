@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -155,12 +156,6 @@ public class MainActivity extends AppCompatActivity {
         gameBoard = new Board();
         setupBoardLayout();
         startButton.setVisibility(View.VISIBLE);
-
-//        if(aiChosen){
-//            gameStatus.setText("Player 1's Move");
-//        }else{
-//            setUpTimer();
-//        }
     }
 
     /**
@@ -416,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < 7; i++) {
             Button tempTrayp1 = (Button) getLayoutInflater().inflate(R.layout.tray, layout_p1_trays, false);
-            tempTrayp1.setText("Tray " + i);
+            setButtonImage(tempTrayp1,0);
             arrayOfBoardButtons[i] = tempTrayp1;
             layout_p1_trays.addView(tempTrayp1);
 
@@ -446,7 +441,6 @@ public class MainActivity extends AppCompatActivity {
 
 
             Button tempTrayp2 = (Button) getLayoutInflater().inflate(R.layout.tray, layout_p2_trays, false);
-            tempTrayp2.setText("Tray " + (14 - i));
             arrayOfBoardButtons[14 - i] = tempTrayp2;
             layout_p2_trays.addView(tempTrayp2);
 
@@ -507,5 +501,21 @@ public class MainActivity extends AppCompatActivity {
         AddScoreFragment addScoreFragment = new AddScoreFragment();
         addScoreFragment.setArguments(bundleDialog);
         addScoreFragment.show(getFragmentManager(), "dialog");
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        //Adjust all button sizes to be perfectly circular
+        for(Button btn:arrayOfBoardButtons){
+            int newSize = Math.min(btn.getWidth(), btn.getHeight());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    newSize,newSize
+            );
+            params.gravity = Gravity.CENTER;
+            btn.setLayoutParams(params);
+
+        }
     }
 }
