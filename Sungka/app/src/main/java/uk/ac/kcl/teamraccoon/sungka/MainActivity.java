@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     TextView gameStatus;
     int startTime;
     Handler handler = new Handler();
+    Runnable aiMove;
     boolean playerChosen;
     boolean aiChosen;
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //First Remove and reset current board
                 playerChosen = false;
+                handler.removeCallbacks(aiMove);
                 resetBoard();
             }
         });
@@ -219,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void simulateAiMove(){
-        handler.postDelayed(new Runnable() {
+        aiMove = new Runnable() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -239,7 +241,29 @@ public class MainActivity extends AppCompatActivity {
                 });
                 handler.removeCallbacks(this);
             }
-        },2500);
+        };
+        handler.postDelayed(aiMove,2500);
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
+//                        Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
+//                        Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
+//                        gameBoard.takeTurn(aiTrayIndex);
+//                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+//                            Toast.makeText(getApplicationContext(), "Ai gets another go! "+aiTrayIndex, Toast.LENGTH_SHORT).show();
+//                            makeAiMove();
+//                        }else{
+//                            updateBoard();
+//                        }
+//                    }
+//                });
+//                handler.removeCallbacks(this);
+//            }
+//        },2500);
     }
 
     public void setupBoardLayout() {
