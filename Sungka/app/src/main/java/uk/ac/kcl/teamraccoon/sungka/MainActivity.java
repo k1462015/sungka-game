@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     boolean playerChosen;
     boolean aiChosen;
     ImageView shell;
+    Button startButton;
 
 
     @Override
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         shell = (ImageView) findViewById(R.id.shell);
+        startButton = (Button) findViewById(R.id.startButton);
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
         if(option.equals("P1P2")){
@@ -66,13 +68,23 @@ public class MainActivity extends AppCompatActivity {
                 }
                 handler.removeCallbacks(aiMove);
                 resetBoard();
+                gameStatus.setText(""); //Clears game status
             }
         });
-        if(aiChosen){
-           gameStatus.setText("Player 1's Move");
-        }else{
-           setUpTimer();
-        }
+        disableBoard(); //Disable board initially until user clicks start Game
+        gameStatus.setText(""); //Clears game status
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!aiChosen){
+                    setUpTimer();
+                }else{
+                    updateBoard();
+                }
+                startButton.setVisibility(View.INVISIBLE);
+            }
+        });
+
     }
 
 
@@ -142,11 +154,13 @@ public class MainActivity extends AppCompatActivity {
 
         gameBoard = new Board();
         setupBoardLayout();
-        if(aiChosen){
-            gameStatus.setText("Player 1's Move");
-        }else{
-            setUpTimer();
-        }
+        startButton.setVisibility(View.VISIBLE);
+
+//        if(aiChosen){
+//            gameStatus.setText("Player 1's Move");
+//        }else{
+//            setUpTimer();
+//        }
     }
 
     /**
@@ -380,7 +394,6 @@ public class MainActivity extends AppCompatActivity {
 
         arrayOfBoardButtons = new Button[16];
         gameStatus = (TextView) findViewById(R.id.game_status);
-        gameStatus.setText("Player 1's turn");
 
         LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
         LinearLayout layout_p1_store = (LinearLayout) findViewById(R.id.layout_p1_store);
@@ -396,9 +409,6 @@ public class MainActivity extends AppCompatActivity {
         storeButtonp1.setEnabled(false);
         storeButtonp2.setEnabled(false);
 
-        //setting the text for the buttons
-        storeButtonp1.setText("Player 1 store");
-        storeButtonp2.setText("Player 2 store");
 
         //adding the buttons to the layout
         layout_p1_store.addView(storeButtonp1);
