@@ -8,12 +8,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
+
+import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,13 +30,14 @@ public class MainActivity extends AppCompatActivity {
     Runnable aiMove;
     boolean playerChosen;
     boolean aiChosen;
+    ImageView shell;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        shell = (ImageView) findViewById(R.id.shell);
 
         //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
@@ -137,6 +142,119 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Update board method with Animations
+     * @param selectedIndex - Index to start animation from
+     */
+    public void updateBoard(int selectedIndex,Player playerCaller){
+        Log.i("MYAPP", "UPDATE BOARD WITH ANIMATION");
+        final Player methodCaller = playerCaller;
+        final int[] arrayOfTrays = gameBoard.getArrayOfTrays();
+        //First get the number of shells in that tray
+        final int numShellsInHand = Integer.parseInt(arrayOfBoardButtons[selectedIndex].getText().toString());
+
+        //Empty that tray by changing to empty tray image
+        setButtonImage(arrayOfBoardButtons[selectedIndex], 0);
+
+        //Get center X and center Y position of shell to translate
+        int[] shellPos = new int[2];
+        shell.getLocationInWindow(shellPos);
+        final float shellX = shellPos[0] + (shell.getWidth() / 2);
+        final float shellY = shellPos[1] + (shell.getWidth() / 2);
+
+        //Index to start animation from
+        final int startIndex = selectedIndex;
+        final Thread animThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("MYAPP","STARTING ANIMATION THREAD");
+                int index = startIndex + 1;
+                int remainingShells = numShellsInHand;
+                //Loops around board
+                while((index % 16) != startIndex){
+                    Log.i("MYAPP","ANIMATION INDEX: "+index);
+                    Log.i("MYAPP","REMAINING SHELLS: "+remainingShells);
+                    final int indexCount = index % 16;
+                    int newShellCount = gameBoard.getArrayOfTrays()[indexCount];
+                    int oldShellCount = Integer.parseInt(arrayOfBoardButtons[indexCount].getText().toString());
+                    final Button tray = arrayOfBoardButtons[indexCount];
+                    //If the value of tray doesn't change - Then do nothing
+                    if(newShellCount != oldShellCount){
+                        //Check if there are any shells in hand - If true then animate
+                        if(remainingShells > 0){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Get center position of tray on screen
+                                    int[] trayPos = new int[2];
+                                    tray.getLocationInWindow(trayPos);
+                                    float trayX = trayPos[0] + (tray.getWidth() / 2);
+                                    float trayY = trayPos[1] + (tray.getWidth() / 2);
+                                    //Animate shell to tray
+                                    float X_TRANSLATE = trayX - shellX;
+                                    float Y_TRANSLATE = trayY - shellY;
+                                    TranslateAnimation transAnim = new TranslateAnimation(0,X_TRANSLATE,0,Y_TRANSLATE);
+                                    Log.i("MYAPP","STARTING ANIMATIOn");
+                                    transAnim.setDuration(400);
+                                    transAnim.restrictDuration(400);
+                                    transAnim.setFillEnabled(true);
+                                    shell.startAnimation(transAnim);
+                                }
+                            });
+
+                            //Make Thread wait for same animation duration
+                            try {
+                                sleep(400);
+                                Log.i("MYAPP","MAKING THREAD WAIT FOR 500ms");
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            //Then update image of tray
+                            //Update shellCount text on tray
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.i("MYAPP","Updating images of buttons");
+                                    setButtonImage(tray, arrayOfTrays[indexCount]);
+                                    arrayOfBoardButtons[indexCount].setText(arrayOfTrays[indexCount]+"");
+                                }
+                            });
+                            remainingShells--;
+                        }
+                    }
+                    index++;
+                }
+                if(methodCaller == Player.PLAYER_ONE){
+                    if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                        simulateAiMove();
+                    }
+                }else{
+                    if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Ai gets another go!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        simulateAiMove();
+                    }
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBoard();
+                    }
+                });
+
+                //Ends thread
+                handler.removeCallbacks(this);
+            }
+        });
+        animThread.start();
+//        handler.post(animThread);
+    }
+
     public void updateBoard() {
 
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
@@ -215,8 +333,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void makeAiMove(){
         Log.i("MYAPP", "STARTING AI MOVE");
-        updateBoard();
-        disableBoard();
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                updateBoard();
+//                disableBoard();
+//            }
+//        });
+
         simulateAiMove();
     }
 
@@ -227,16 +351,23 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameStatus.setText("Ai's turn");
+                            }
+                        });
                         int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
                         Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
                         Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
                         gameBoard.takeTurn(aiTrayIndex);
-                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                            Toast.makeText(getApplicationContext(), "Ai gets another go! "+aiTrayIndex, Toast.LENGTH_SHORT).show();
-                            makeAiMove();
-                        }else{
-                            updateBoard();
-                        }
+                        updateBoard(aiTrayIndex,Player.PLAYER_TWO);
+//                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+//                            Toast.makeText(getApplicationContext(), "Ai gets another go! "+aiTrayIndex, Toast.LENGTH_SHORT).show();
+//                            makeAiMove();
+//                        }else{
+//                            updateBoard();
+//                        }
                     }
                 });
                 handler.removeCallbacks(this);
@@ -296,11 +427,12 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }else{
+                        disableBoard();
                         gameBoard.takeTurn(p1index);
-                        updateBoard();
-                        if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                            makeAiMove();
-                        }
+                        updateBoard(p1index,Player.PLAYER_ONE);
+//                        if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+//                            makeAiMove();
+//                        }
                     }
                 }
             });

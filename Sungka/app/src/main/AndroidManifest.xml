@@ -23,7 +23,7 @@
             android:authorities="@string/content_authority"
             android:exported="false" />
 
-        <activity android:name=".highscores.HighScoresActivity" >
+        <activity android:name=".highscores.HighScoresActivity" android:screenOrientation="landscape" >
         </activity>
     </application>
 
