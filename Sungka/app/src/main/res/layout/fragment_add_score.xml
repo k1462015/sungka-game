@@ -1,0 +1,53 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:scaleType="center"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:background="@android:color/holo_orange_light"
+        android:fontFamily="sans-serif"
+        android:text="@string/save_score" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:gravity="center_vertical"
+        android:fontFamily="sans-serif"
+        android:id="@+id/dialog_statistics"/>
+
+    <EditText
+        android:id="@+id/player_one_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="sans-serif"
+        android:hint="@string/player_one" />
+
+    <EditText
+        android:id="@+id/player_two_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif"
+        android:hint="@string/player_two"/>
+
+</LinearLayout>

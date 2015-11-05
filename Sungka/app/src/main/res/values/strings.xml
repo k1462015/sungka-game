@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Sungka</string>
+
+    <string name="save_score">Save scores</string>
+    <string name="cancel">Cancel</string>
+    <string name="player_one">Player One</string>
+    <string name="player_two">Player Two</string>
+
+    <string name="add_score_players">Player One: %1$s\nPlayer Two: %2$s</string>
+
+    <string name="content_authority">uk.ac.kcl.teamraccoon.sungka</string>
+
 </resources>

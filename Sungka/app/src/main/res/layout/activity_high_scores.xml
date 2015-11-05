@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:divider="?android:attr/dividerHorizontal"
+    android:orientation="horizontal"
+    android:padding="5dp"
+    tools:context="uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresActivity">
+
+    <!-- This layout is a two-pane layout for the Items master/detail flow. -->
+
+    <fragment
+        android:id="@+id/fragment_high_scores"
+        android:name="uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresFragment"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        tools:layout="@android:layout/list_content" />
+
+    <FrameLayout
+        android:id="@+id/player_data_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="5" />
+
+</LinearLayout>
