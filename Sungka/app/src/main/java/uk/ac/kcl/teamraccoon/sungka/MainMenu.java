@@ -31,8 +31,7 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void startMultiplayer(View view){
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.putExtra(GAME_OPTION,"Multiplayer");
+        Intent intent = new Intent(this,MultiplayerMenu.class);
         startActivity(intent);
     }
 
