@@ -43,8 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         shell = (ImageView) findViewById(R.id.shell);
         startButton = (Button) findViewById(R.id.startButton);
-        gameToast = new Toast(this);
-        gameToast.setDuration(Toast.LENGTH_SHORT);
+        gameToast = Toast.makeText(this,"Game Info",Toast.LENGTH_SHORT);
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
         if(option.equals("P1P2")){
