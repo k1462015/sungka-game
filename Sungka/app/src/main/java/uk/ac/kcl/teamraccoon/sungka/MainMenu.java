@@ -41,9 +41,6 @@ public class MainMenu extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void exitGame(View view){
-        System.exit(0);
-    }
 
     @Override
     protected void onResume() {
