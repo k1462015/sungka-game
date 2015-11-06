@@ -5,12 +5,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     boolean aiChosen;
     ImageView shell;
     Button startButton;
+    Toast gameToast;
 
 
     @Override
@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         shell = (ImageView) findViewById(R.id.shell);
         startButton = (Button) findViewById(R.id.startButton);
+        gameToast = new Toast(this);
+        gameToast.setDuration(Toast.LENGTH_SHORT);
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
         if(option.equals("P1P2")){
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                gameToast.cancel(); //Cancel any showing toasts
                 //First Remove and reset current board
                 if(!aiChosen){
                     playerChosen = false;
@@ -144,17 +147,9 @@ public class MainActivity extends AppCompatActivity {
      * Also setups up a new board and starts the timer
      */
     public void resetBoard(){
-        LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
-        layout_p2_store.removeAllViews();
-        LinearLayout layout_p1_store = (LinearLayout) findViewById(R.id.layout_p1_store);
-        layout_p1_store.removeAllViews();
-        LinearLayout layout_p2_trays = (LinearLayout) findViewById(R.id.layout_p2_trays);
-        layout_p2_trays.removeAllViews();
-        LinearLayout layout_p1_trays = (LinearLayout) findViewById(R.id.layout_p1_trays);
-        layout_p1_trays.removeAllViews();
-
         gameBoard = new Board();
-        setupBoardLayout();
+        updateBoard();
+        disableBoard();
         startButton.setVisibility(View.VISIBLE);
     }
 
@@ -171,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Empty that tray by changing to empty tray image
         setButtonImage(arrayOfBoardButtons[selectedIndex], 0);
-
+        scaleButton(arrayOfBoardButtons[selectedIndex]);
         //Get center X and center Y position of shell to translate
         int[] shellPos = new int[2];
         shell.getLocationInWindow(shellPos);
@@ -244,13 +239,22 @@ public class MainActivity extends AppCompatActivity {
                     if(methodCaller == Player.PLAYER_ONE){
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             simulateAiMove();
+                        }else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameToast.setText("Player 1 gets another go!");
+                                    gameToast.show();
+                                }
+                            });
                         }
                     }else{
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(getApplicationContext(), "Ai gets another go!", Toast.LENGTH_SHORT).show();
+                                    gameToast.setText("Ai gets another go!");
+                                    gameToast.show();
                                 }
                             });
                             simulateAiMove();
@@ -280,6 +284,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         animThread.start();
+    }
+
+    /**
+     * Animates increasing the views size
+     * @param view
+     */
+    public void scaleButton(final View view){
+        final int startWidth = view.getLayoutParams().width;
+        final int startHeight = view.getLayoutParams().height;
+
+        ScaleAnimation scale = new ScaleAnimation((float)1.0, (float)1.2, (float)1.0, (float)1.2);
+        scale.setDuration(200);
+        view.startAnimation(scale);
+
     }
 
     public void updateBoard() {
@@ -508,6 +526,10 @@ public class MainActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
 
         //Adjust all button sizes to be perfectly circular
+        resizeButtons();
+    }
+
+    public void resizeButtons(){
         for(Button btn:arrayOfBoardButtons){
             int newSize = Math.min(btn.getWidth(), btn.getHeight());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
