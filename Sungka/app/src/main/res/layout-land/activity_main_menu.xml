@@ -58,16 +58,6 @@
             android:layout_weight="3"
             android:layout_marginBottom="10dp"
             android:onClick="showHighScores"/>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/menu_exit_states"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_weight="3"
-            android:layout_marginBottom="10dp"
-            android:onClick="exitGame"/>
 
     </LinearLayout>
     <ImageView
