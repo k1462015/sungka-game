@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -161,13 +164,20 @@ public class MainActivity extends AppCompatActivity {
      * Update board method with Animations
      * @param selectedIndex - Index to start animation from
      */
-    public void updateBoard(int selectedIndex,Player playerCaller){
+    public void updateBoard(final int selectedIndex,Player playerCaller){
         Log.i("MYAPP", "UPDATE BOARD WITH ANIMATION");
         final Player methodCaller = playerCaller;
         final int[] arrayOfTrays = gameBoard.getArrayOfTrays();
         //First get the number of shells in that tray
         final int numShellsInHand = Integer.parseInt(arrayOfBoardButtons[selectedIndex].getText().toString());
 
+        //Gets a version of the board before any moves
+        int[] tempBoard = new int[16];
+        for(int i = 0; i < 16;i++){
+            int value = Integer.parseInt(arrayOfBoardButtons[i].getText().toString());
+            tempBoard[i] = value;
+        }
+        final int[] traysBefore = tempBoard;
         //Empty that tray by changing to empty tray image
         setButtonImage(arrayOfBoardButtons[selectedIndex], 0);
         scaleButton(arrayOfBoardButtons[selectedIndex]);
@@ -185,16 +195,24 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("MYAPP","STARTING ANIMATION THREAD");
                 int index = startIndex + 1;
                 int remainingShells = numShellsInHand;
+                int storeToIgnore = -1; //Need index of store to ignore
+                if(methodCaller == Player.PLAYER_ONE){
+                    storeToIgnore = 15;
+                }else{
+                    storeToIgnore = 7;
+                }
+
                 //Loops around board
-                while((index % 16) != startIndex){
+                while(remainingShells > 0){
                     Log.i("MYAPP","ANIMATION INDEX: "+index);
                     Log.i("MYAPP","REMAINING SHELLS: "+remainingShells);
                     final int indexCount = index % 16;
-                    int newShellCount = gameBoard.getArrayOfTrays()[indexCount];
-                    int oldShellCount = Integer.parseInt(arrayOfBoardButtons[indexCount].getText().toString());
+                    //Don't show shell going into enemies store
+//                    int newShellCount = gameBoard.getArrayOfTrays()[indexCount];
+                    final int oldShellCount = Integer.parseInt(arrayOfBoardButtons[indexCount].getText().toString());
                     final Button tray = arrayOfBoardButtons[indexCount];
                     //If the value of tray doesn't change - Then do nothing
-                    if(newShellCount != oldShellCount){
+                    if(index != storeToIgnore){
                         //Check if there are any shells in hand - If true then animate
                         if(remainingShells > 0){
                             runOnUiThread(new Runnable() {
@@ -230,8 +248,8 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     Log.i("MYAPP","Updating images of buttons");
-                                    setButtonImage(tray, arrayOfTrays[indexCount]);
-                                    arrayOfBoardButtons[indexCount].setText(arrayOfTrays[indexCount]+"");
+                                    setButtonImage(tray, oldShellCount + 1);
+                                    arrayOfBoardButtons[indexCount].setText((oldShellCount+1)+"");
                                 }
                             });
                             remainingShells--;
@@ -241,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(aiChosen){
                     if(methodCaller == Player.PLAYER_ONE){
+                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             simulateAiMove();
                         }else{
@@ -253,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
                     }else{
+                        checkIfCapturedTray("Ai",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -265,6 +285,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }else{
+                    if(methodCaller == Player.PLAYER_ONE){
+                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
+                    }else{
+                        checkIfCapturedTray("Player 2",traysBefore,startIndex,selectedIndex);
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -302,6 +327,58 @@ public class MainActivity extends AppCompatActivity {
         scale.setDuration(200);
         view.startAnimation(scale);
 
+    }
+
+    public void checkIfCapturedTray(final String nameOfPlayer,int[] traysBefore,int selectedTray,int totalShellsInHand){
+        //If Player didn't capture a tray - It should look like this
+        int[] actualTrayArrangement = gameBoard.getArrayOfTrays();
+        int whichTray = -1;
+        //Calculate how many loops there was
+        int noLoops = 0;
+        Log.i("MYAPP","Looped "+noLoops);
+        if(totalShellsInHand < 16){
+            noLoops = 0;
+        }else{
+            noLoops = totalShellsInHand / 16;
+        }
+        for(int i = 0;i < traysBefore.length;i++){
+            if(i > 0 && i < 7 || i > 7 && i < 15){
+                int currentTrayValue = actualTrayArrangement[i];
+                int oldTrayValue = traysBefore[i];
+                int difference = Math.abs(currentTrayValue - oldTrayValue);
+                if(i == selectedTray){
+                    if(currentTrayValue != noLoops){
+                        whichTray = i;
+                    }
+                }else
+                if(difference > 1){
+                    whichTray = i;
+                    break;
+                }
+            }
+        }
+        final int trayCapturedIndex = whichTray;
+        if(trayCapturedIndex != -1){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i("MYAPP",nameOfPlayer+" captured "+trayCapturedIndex);
+                    gameToast.setText(nameOfPlayer + " captured tray " + trayCapturedIndex);
+                    gameToast.show();
+                    makeTrayBlink(arrayOfBoardButtons[trayCapturedIndex]);
+                    makeTrayBlink(arrayOfBoardButtons[14 - trayCapturedIndex]);
+                }
+            });
+        }
+    }
+
+    public void makeTrayBlink(View view){
+        AlphaAnimation  blinkanimation= new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
+        blinkanimation.setDuration(300); // duration - half a second
+        blinkanimation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
+        blinkanimation.setRepeatCount(3); // Repeat animation infinitely
+        blinkanimation.setRepeatMode(Animation.REVERSE);
+        view.startAnimation(blinkanimation);
     }
 
     public void updateBoard() {
