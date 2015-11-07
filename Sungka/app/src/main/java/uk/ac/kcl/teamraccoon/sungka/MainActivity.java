@@ -14,7 +14,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
      * Update board method with Animations
      * @param selectedIndex - Index to start animation from
      */
-    public void updateBoard(int selectedIndex,Player playerCaller){
+    public void updateBoard(final int selectedIndex,Player playerCaller){
         Log.i("MYAPP", "UPDATE BOARD WITH ANIMATION");
         final Player methodCaller = playerCaller;
         final int[] arrayOfTrays = gameBoard.getArrayOfTrays();
