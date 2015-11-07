@@ -8,6 +8,8 @@ import android.view.View;
 
 public class MultiplayerMenu extends AppCompatActivity {
 
+    public final static String GAME_OPTION = "com.uk.ac.kcl.teamraccoon.sungka.OPTION_P1_P2";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,12 +20,14 @@ public class MultiplayerMenu extends AppCompatActivity {
     public void startAsClient(View view){
         //Something that makes it start as client
         Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtra(GAME_OPTION, "Client");
         startActivity(intent);
     }
 
     public void startAsHost(View view ){
         //Something that makes it starts as host
         Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtra(GAME_OPTION, "Server");
         startActivity(intent);
     }
 
