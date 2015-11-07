@@ -2,6 +2,7 @@ package uk.ac.kcl.teamraccoon.sungka;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView shell;
     Button startButton;
     Toast gameToast;
+    MediaPlayer trayCapturedSound;
 
 
     @Override
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         shell = (ImageView) findViewById(R.id.shell);
         startButton = (Button) findViewById(R.id.startButton);
         gameToast = Toast.makeText(this,"Game Info",Toast.LENGTH_SHORT);
+        trayCapturedSound = MediaPlayer.create(getApplicationContext(),R.raw.traycapturedsound);
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
         if(option != null && option.equals("P1P2")){
@@ -367,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
                     gameToast.show();
                     makeTrayBlink(arrayOfBoardButtons[trayCapturedIndex]);
                     makeTrayBlink(arrayOfBoardButtons[14 - trayCapturedIndex]);
+                    trayCapturedSound.start();
                 }
             });
         }
