@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -17,7 +19,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Random;
+
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
+import uk.ac.kcl.teamraccoon.sungka.online.OnlineClient;
+import uk.ac.kcl.teamraccoon.sungka.online.OnlineServer;
 
 import static java.lang.Thread.sleep;
 
@@ -32,10 +38,14 @@ public class MainActivity extends AppCompatActivity {
     Runnable aiMove;
     boolean playerChosen;
     boolean aiChosen;
+    boolean isServer;
+    boolean isClient;
+    boolean isMultiplayer;
     ImageView shell;
     Button startButton;
     Toast gameToast;
-
+    OnlineServer onlineServer;
+    OnlineClient onlineClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +59,18 @@ public class MainActivity extends AppCompatActivity {
         if(option != null && option.equals("P1P2")){
             aiChosen = false;
             playerChosen = false;
-        }else
-        if(option != null && option.equals("P1Comp")){
+        }else if(option != null && option.equals("P1Comp")){
             aiChosen = true;
             playerChosen = true;
-        }else
-        if(option != null && option.equals("Multiplayer")){
-            //Needs to be decided
-        }else{
+        }else if(option != null && option.equals("Server")){
+            isServer = true;
+            isMultiplayer = true;
+            aiChosen = false;
+        } else if(option !=null && option.equals("Client")){
+            isClient = true;
+            isMultiplayer = true;
+            aiChosen = false;
+        } else {
             //Since no option found - start as p1 vs p2
             aiChosen = false;
             playerChosen = false;
@@ -66,33 +80,38 @@ public class MainActivity extends AppCompatActivity {
         gameBoard = new Board();
         setupBoardLayout();
         Button resetButton = (Button) findViewById(R.id.resetButton);
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gameToast.cancel(); //Cancel any showing toasts
-                //First Remove and reset current board
-                if(!aiChosen){
-                    playerChosen = false;
+        if(!isMultiplayer ) {
+            resetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    gameToast.cancel(); //Cancel any showing toasts
+                    //First Remove and reset current board
+                    if (!aiChosen) {
+                        playerChosen = false;
+                    }
+                    handler.removeCallbacks(aiMove);
+                    resetBoard();
+                    gameStatus.setText(""); //Clears game status
                 }
-                handler.removeCallbacks(aiMove);
-                resetBoard();
-                gameStatus.setText(""); //Clears game status
-            }
-        });
-        disableBoard(); //Disable board initially until user clicks start Game
-        gameStatus.setText(""); //Clears game status
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!aiChosen){
-                    setUpTimer();
-                }else{
-                    updateBoard();
-                }
-                startButton.setVisibility(View.INVISIBLE);
-            }
-        });
+            });
 
+            disableBoard(); //Disable board initially until user clicks start Game
+            gameStatus.setText(""); //Clears game status
+            startButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!aiChosen) {
+                        setUpTimer();
+                    } else {
+                        updateBoard();
+                    }
+                    startButton.setVisibility(View.INVISIBLE);
+                }
+            });
+        } else {
+            ViewGroup tempViewGroup = (ViewGroup) resetButton.getParent();
+            tempViewGroup.removeView(resetButton);
+        }
     }
 
 
@@ -170,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Empty that tray by changing to empty tray image
         setButtonImage(arrayOfBoardButtons[selectedIndex], 0);
+        arrayOfBoardButtons[selectedIndex].setText("" + 0);
         scaleButton(arrayOfBoardButtons[selectedIndex]);
         //Get center X and center Y position of shell to translate
         int[] shellPos = new int[2];
@@ -544,4 +564,465 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
+
+
+
+//    private void setupOnlineBoardLayout() {
+//
+//        arrayOfBoardButtons = new Button[16];
+//        gameStatus = (TextView) findViewById(R.id.game_status);
+//        gameStatus.setText("Player 1's turn");
+//
+//        LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
+//        LinearLayout layout_p1_store = (LinearLayout) findViewById(R.id.layout_p1_store);
+//        LinearLayout layout_p2_trays = (LinearLayout) findViewById(R.id.layout_p2_trays);
+//        LinearLayout layout_p1_trays = (LinearLayout) findViewById(R.id.layout_p1_trays);
+//
+//        Button storeButtonp1 = (Button) getLayoutInflater().inflate(R.layout.stores, layout_p1_store, false);
+//        Button storeButtonp2 = (Button) getLayoutInflater().inflate(R.layout.stores, layout_p2_store, false);
+//
+//        //store buttons n the array
+//        arrayOfBoardButtons[7] = storeButtonp1;
+//        arrayOfBoardButtons[15] = storeButtonp2;
+//        storeButtonp1.setEnabled(false);
+//        storeButtonp2.setEnabled(false);
+//
+//        //setting the text for the buttons
+//        storeButtonp1.setText("0");
+//        storeButtonp2.setText("0");
+//
+//        //adding the buttons to the layout
+//        layout_p1_store.addView(storeButtonp1);
+//        layout_p2_store.addView(storeButtonp2);
+//
+//        for (int i = 0; i < 7; i++) {
+//            Button tempTrayp1 = (Button) getLayoutInflater().inflate(R.layout.tray, layout_p1_trays, false);
+//            tempTrayp1.setText("7");
+//            arrayOfBoardButtons[i] = tempTrayp1;
+//            layout_p1_trays.addView(tempTrayp1);
+//
+//            final int p1Index = i;
+//
+//            tempTrayp1.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Thread serverTurnThread = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameBoard.takeTurn(p1Index);
+//                            onlineServer.sendMove(p1Index);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    updateOnlineBoard();
+//                                    disableBoard();
+//                                    if(gameBoard.isGameOver()) {
+//                                        int[] finalScoresArray = gameBoard.getArrayOfTrays();
+//                                        if (finalScoresArray[15] > finalScoresArray [7]) {
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    gameStatus.setText("Game over. You lost :(");
+//                                                }
+//                                            });
+//                                        } else if(finalScoresArray[15] == finalScoresArray[7]) {
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    gameStatus.setText("Game over. You drew :/");
+//                                                }
+//                                            });
+//                                        } else {
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    gameStatus.setText("Game over. You won :)");
+//                                                }
+//                                            });
+//                                        }
+//                                    }
+//                                    else if (gameBoard.getCurrentPlayer() == Player.PLAYER_ONE) {
+//                                        enableOnlineServerButtons();
+//                                    } else {
+//                                        serverWaitForMove();
+//                                    }
+//                                }
+//                            });
+//
+//                        }
+//                    });
+//                    serverTurnThread.start();
+//                }
+//            });
+//
+//            Button tempTrayp2 = (Button) getLayoutInflater().inflate(R.layout.tray, layout_p2_trays, false);
+//            tempTrayp2.setText("7");
+//            arrayOfBoardButtons[14 - i] = tempTrayp2;
+//            layout_p2_trays.addView(tempTrayp2);
+//
+//            final int p2Index = 14 - i;
+//
+//            tempTrayp2.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Thread clientTurnThread = new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameBoard.takeTurn(p2Index);
+//                            onlineClient.sendMove(p2Index);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    updateOnlineBoard();
+//                                    disableBoard();
+//                                    if(gameBoard.isGameOver()) {
+//                                        int[] finalScoresArray = gameBoard.getArrayOfTrays();
+//                                        if (finalScoresArray[15] > finalScoresArray [7]) {
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    gameStatus.setText("Game over. You won :)");
+//                                                }
+//                                            });
+//                                        } else if(finalScoresArray[15] == finalScoresArray[7]) {
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    gameStatus.setText("Game over. You drew :/");
+//                                                }
+//                                            });
+//                                        } else {
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    gameStatus.setText("Game over. You lost :(");
+//                                                }
+//                                            });
+//                                        }
+//                                    }
+//                                    else if (gameBoard.getCurrentPlayer() == Player.PLAYER_TWO) {
+//                                        enableOnlineClientButtons();
+//                                    } else {
+//                                        clientWaitForMove();
+//                                    }
+//                                }
+//                            });
+//                        }
+//                    });
+//                    clientTurnThread.start();
+//                }
+//            });
+//        }
+//
+//    }
+//
+//    private void updateOnlineBoard() {
+//
+//        int[] arrayOfTrays = gameBoard.getArrayOfTrays();
+//
+//        for (int i = 0; i < 16; i++) {
+//            arrayOfBoardButtons[i].setText(arrayOfTrays[i] + "");
+//        }
+//
+//    }
+//
+//
+//    public void setGameModeOffline(View view) {
+//
+//        LinearLayout tempLinearLayout = (LinearLayout) findViewById(R.id.layout_p2_trays);
+//        tempLinearLayout.removeAllViews();
+//
+//        //initialises the game board with trays = 7, store = zero
+//        gameBoard = new Board();
+//        playerChosen = false;
+//        setupBoardLayout();
+//        //Sets up timer for initially selecting first player
+//        setUpTimer();
+//
+//        Button resetButton = (Button) findViewById(R.id.resetButton);
+//        resetButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //First Remove and reset current board
+//                playerChosen = false;
+//                resetBoard();
+//            }
+//        });
+//
+//    }
+//
+//    public void setGameModeOnlineServer(View view) {
+//
+//        gameMode = GameMode.ONLINE_SERVER;
+//
+//        LinearLayout tempLinearLayout = (LinearLayout) findViewById(R.id.layout_p2_trays);
+//        tempLinearLayout.removeAllViews();
+//
+//        gameBoard = new Board();
+//        setupOnlineBoardLayout();
+//        disableBoard();
+//
+//        Thread serverThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                String ipString = OnlineServer.getServerIP();
+//                Log.d("MainActivity", ipString);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        gameStatus.setText(ipString);
+//                    }
+//                });
+//                onlineServer = new OnlineServer();
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        gameStatus.setText("Connected to client");
+//                    }
+//                });
+//                if(chooseRandomPlayer() == Player.PLAYER_ONE) {
+//                    onlineServer.sendPlayer(Player.PLAYER_ONE);
+//                    gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameStatus.setText("Your turn...take a move");
+//                            enableOnlineServerButtons();
+//                        }
+//                    });
+//                } else {
+//                    onlineServer.sendPlayer(Player.PLAYER_TWO);
+//                    gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+//                    serverWaitForMove();
+//                }
+//            }
+//        });
+//        serverThread.start();
+//
+//    }
+//
+//    private void serverWaitForMove() {
+//
+//        Thread serverWaitForMoveThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        gameStatus.setText("Other player's turn...please wait");
+//                    }
+//                });
+//                int oppositionIndex = onlineServer.receiveMove();
+//                gameBoard.takeTurn(oppositionIndex);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        updateOnlineBoard();
+//                    }
+//                });
+//                if(gameBoard.isGameOver()) {
+//                    int[] finalScoresArray = gameBoard.getArrayOfTrays();
+//                    if (finalScoresArray[15] > finalScoresArray [7]) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                gameStatus.setText("Game over. You lost :(");
+//                            }
+//                        });
+//                    } else if(finalScoresArray[15] == finalScoresArray[7]) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                gameStatus.setText("Game over. You drew :/");
+//                            }
+//                        });
+//                    } else {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                gameStatus.setText("Game over. You won :)");
+//                            }
+//                        });
+//                    }
+//                }
+//                else if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO) {
+//                    serverWaitForMove();
+//                } else {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameStatus.setText("Your turn...take a move");
+//                            enableOnlineServerButtons();
+//                        }
+//                    });
+//                }
+//            }
+//        });
+//
+//        serverWaitForMoveThread.start();
+//
+//    }
+//
+//    public void setGameModeOnlineClient(View view) {
+//
+//        gameMode = GameMode.ONLINE_CLIENT;
+//
+//        LinearLayout tempLinearLayout = (LinearLayout) findViewById(R.id.layout_p2_trays);
+//        tempLinearLayout.removeAllViews();
+//
+//        gameBoard = new Board();
+//        setupOnlineBoardLayout();
+//        disableBoard();
+//        final LinearLayout tempLinearLayout2 = (LinearLayout) findViewById(R.id.central_linear_layout);
+//        getLayoutInflater().inflate(R.layout.ip_address_setter, tempLinearLayout2);
+//        final Button ipSetButton = (Button) findViewById(R.id.ip_set_button);
+//        final EditText ipEditText = (EditText) findViewById(R.id.ip_edit_text);
+//
+//        final Thread clientThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                onlineClient = new OnlineClient(ipEditText.getText().toString());
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        gameStatus.setText("Connected to server");
+//                    }
+//                });
+//                Player chosenPlayer = onlineClient.receivePlayer();
+//                if(chosenPlayer == Player.PLAYER_ONE) {
+//                    gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+//                    clientWaitForMove();
+//                } else {
+//                    gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameStatus.setText("Your turn...take a move");
+//                            enableOnlineClientButtons();
+//                        }
+//                    });
+//                }
+//            }
+//        });
+//
+//        ipSetButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ViewGroup tempViewGroup = (ViewGroup) tempLinearLayout2.getParent();
+//                tempViewGroup.removeView(tempLinearLayout2);
+//                gameStatus.setText("Attempting to connect to server...");
+//                clientThread.start();
+//            }
+//        });
+//    }
+//
+//    private void clientWaitForMove() {
+//
+//        Thread clientWaitForMoveThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        gameStatus.setText("Other player's turn...please wait");
+//                    }
+//                });
+//                int oppositionIndex = onlineClient.receiveMove();
+//                gameBoard.takeTurn(oppositionIndex);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        updateOnlineBoard();
+//                    }
+//                });
+//                if(gameBoard.isGameOver()) {
+//                    int[] finalScoresArray = gameBoard.getArrayOfTrays();
+//                    if (finalScoresArray[15] > finalScoresArray [7]) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                gameStatus.setText("Game over. You won :)");
+//                            }
+//                        });
+//                    } else if(finalScoresArray[15] == finalScoresArray[7]) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                gameStatus.setText("Game over. You drew :/");
+//                            }
+//                        });
+//                    } else {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                gameStatus.setText("Game over. You lost :(");
+//                            }
+//                        });
+//                    }
+//                }
+//                else if(gameBoard.getCurrentPlayer() == Player.PLAYER_ONE) {
+//                    clientWaitForMove();
+//                } else {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameStatus.setText("Your turn...take a move");
+//                            enableOnlineClientButtons();
+//                        }
+//                    });
+//                }
+//            }
+//        });
+//        clientWaitForMoveThread.start();
+//
+//    }
+//
+//    private Player chooseRandomPlayer() {
+//
+//        Random rand = new Random();
+//        int randIndex = rand.nextInt(2);
+//        Player chosenPlayer = null;
+//        if(randIndex == 0) {
+//            chosenPlayer = Player.PLAYER_ONE;
+//        } else if(randIndex == 1) {
+//            chosenPlayer = Player.PLAYER_TWO;
+//        }
+//
+//        return chosenPlayer;
+//
+//    }
+//
+//    private void enableOnlineServerButtons() {
+//
+//        int[] gameBoardTrays = gameBoard.getArrayOfTrays();
+//
+//        for(int i = 0; i <= 6; i++) {
+//
+//            if(gameBoardTrays[i] != 0) {
+//                arrayOfBoardButtons[i].setEnabled(true);
+//            }
+//
+//        }
+//
+//    }
+//
+//    private void enableOnlineClientButtons() {
+//
+//        int[] gameBoardTrays = gameBoard.getArrayOfTrays();
+//
+//        for(int i = 8; i <= 14; i++) {
+//
+//            if(gameBoardTrays[i] != 0) {
+//                arrayOfBoardButtons[i].setEnabled(true);
+//            }
+//
+//        }
+//
+//    }
+//
+//}
+
+
 }
