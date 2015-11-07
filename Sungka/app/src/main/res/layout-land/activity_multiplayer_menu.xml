@@ -25,7 +25,7 @@
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:layout_marginBottom="10dp"
-            android:onClick="startP1P2"/>
+            android:onClick="startAsClient"/>
         <ImageButton
             android:layout_width="match_parent"
             android:layout_height="80dp"
@@ -34,7 +34,7 @@
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:layout_marginBottom="10dp"
-            android:onClick="startP1Comp"/>
+            android:onClick="startAsHost"/>
 
 
     </LinearLayout>

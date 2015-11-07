@@ -1,5 +1,6 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,19 @@ public class MultiplayerMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer_menu);
+    }
+
+
+    public void startAsClient(View view){
+        //Something that makes it start as client
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void startAsHost(View view ){
+        //Something that makes it starts as host
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
