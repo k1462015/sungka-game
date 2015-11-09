@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.Random;
 
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer trayCapturedSound;
     OnlineServer onlineServer;
     OnlineClient onlineClient;
+    static String serverIP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         Button resetButton = (Button) findViewById(R.id.resetButton);
 
         if(!isMultiplayer ) {
+
             resetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -193,9 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
             } else if(isClient) {
 
-                finish();
-
-                final String serverIpAddress = "192.168.0.13";
+                final String serverIpAddress = serverIP;
                 Log.i("MainActivity", "client initialisation is called");
 
                 Thread clientThread = new Thread(new Runnable() {
@@ -913,6 +913,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return chosenPlayer;
+
+    }
+
+    public static void setServerIP(String ip) {
+
+        serverIP = ip;
 
     }
 

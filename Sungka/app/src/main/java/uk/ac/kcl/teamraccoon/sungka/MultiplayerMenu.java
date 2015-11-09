@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-public class MultiplayerMenu extends AppCompatActivity {
+import uk.ac.kcl.teamraccoon.sungka.online.SetIPAddressFragment;
+
+public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFragment.OnSetIPListener {
 
     public final static String GAME_OPTION = "com.uk.ac.kcl.teamraccoon.sungka.OPTION_P1_P2";
 
@@ -23,18 +25,28 @@ public class MultiplayerMenu extends AppCompatActivity {
         }
     }
 
-
-    public void startAsClient(View view){
-        //Something that makes it start as client
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.putExtra(GAME_OPTION, "Client");
-        startActivity(intent);
-    }
-
     public void startAsHost(View view ){
         //Something that makes it starts as host
         Intent intent = new Intent(this,MainActivity.class);
         intent.putExtra(GAME_OPTION, "Server");
+        startActivity(intent);
+    }
+
+    public void startAsClient(View view){
+        //Something that makes it start as client
+        displayIPDialog();
+    }
+
+    private void displayIPDialog() {
+
+        SetIPAddressFragment setIPDialog = new SetIPAddressFragment();
+        setIPDialog.show(getFragmentManager(), "fragment_set_ipaddress");
+
+    }
+
+    private void startClient(String serverIP) {
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtra(GAME_OPTION, "Client");
         startActivity(intent);
     }
 
@@ -52,5 +64,13 @@ public class MultiplayerMenu extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
             }
         }
+    }
+
+    @Override
+    public void OnDialogDismissed(String serverIP) {
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtra(GAME_OPTION, "Client");
+        startActivity(intent);
+        MainActivity.setServerIP(serverIP);
     }
 }

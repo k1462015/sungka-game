@@ -89,7 +89,7 @@ public class OnlineClient {
             Log.e("OnlineClient","" + Log.getStackTraceString(e));
         }
 
-        return -1;
+        return -69;
 
     }
 
