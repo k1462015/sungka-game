@@ -340,28 +340,26 @@ public class MainActivity extends AppCompatActivity {
         int shellsInHand = traysBefore[selectedTray];
         Log.i("MYAPP","SHELLS IN HAND: "+shellsInHand);
         traysBefore[selectedTray] = 0;  //Clear selected tray
-        int index = selectedTray + 1;
-        //Carry out move on traysBefore
-        for(int i =0;i < shellsInHand;i++){
+        int index = selectedTray;
+        //Distribute shells
+        while(shellsInHand != 0){
+            index++;
             int trayIndex = index % 16;
             if(player == Player.PLAYER_ONE){
                 if(trayIndex != 15){
                     traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
-                }else{
-                    i--;
                 }
             }
             if(player == Player.PLAYER_TWO){
                 if(trayIndex != 7){
                     traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
-                }else{
-                    i--;
                 }
             }
-            index++;
+            shellsInHand--;
         }
+
         //Find last tray and check if == 1 and on players side
-        final int lastTrayIndex = (index % 16)-1;
+        final int lastTrayIndex = index % 16;
         boolean isTrayCaptured = false;
         if(traysBefore[lastTrayIndex] == 1){
             if(player == Player.PLAYER_ONE && (lastTrayIndex > 0 && lastTrayIndex < 7)){
