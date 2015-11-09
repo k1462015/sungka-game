@@ -5,6 +5,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 public class MultiplayerMenu extends AppCompatActivity {
 
@@ -14,6 +15,12 @@ public class MultiplayerMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer_menu);
+        Intent intent = getIntent();
+        String option = intent.getStringExtra(MainActivity.GAME_EXIT);
+        if(option != null && option.equals("HostConnectFail")) {
+            Toast toast = Toast.makeText(this,"Server not initialised or incorrect IP address",Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
 

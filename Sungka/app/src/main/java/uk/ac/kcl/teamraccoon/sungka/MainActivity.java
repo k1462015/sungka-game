@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -22,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Random;
 
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
@@ -32,6 +35,7 @@ import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String GAME_EXIT = "com.uk.ac.kcl.teamraccoon.sungka.EXIT_TOAST";
 
     Board gameBoard;
     Button[] arrayOfBoardButtons;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isServer;
     boolean isClient;
     boolean isMultiplayer;
+    boolean clientHasConnected = false;
     ImageView shell;
     Button startButton;
     Toast gameToast;
@@ -54,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.activity_main);
         shell = (ImageView) findViewById(R.id.shell);
         startButton = (Button) findViewById(R.id.startButton);
@@ -64,27 +72,44 @@ public class MainActivity extends AppCompatActivity {
         if(option != null && option.equals("P1P2")){
             aiChosen = false;
             playerChosen = false;
-        }else if(option != null && option.equals("P1Comp")){
+            isMultiplayer = false;
+            isClient = false;
+            isServer = false;
+        } else if(option != null && option.equals("P1Comp")){
             aiChosen = true;
             playerChosen = true;
-        }else if(option != null && option.equals("Server")){
+            isMultiplayer = false;
+            isClient = false;
+            isServer = false;
+        } else if(option != null && option.equals("Server")){
             isServer = true;
+            isClient = false;
             isMultiplayer = true;
             aiChosen = false;
+            playerChosen = true;
         } else if(option !=null && option.equals("Client")){
             isClient = true;
+            isServer = false;
             isMultiplayer = true;
             aiChosen = false;
+            playerChosen = true;
         } else {
             //Since no option found - start as p1 vs p2
             aiChosen = false;
             playerChosen = false;
+            isMultiplayer = false;
+            isClient = false;
+            isServer = false;
         }
 
         //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
         setupBoardLayout();
+        disableBoard(); //Disable board initially until user clicks start Game
+        gameStatus.setText(""); //Clears game status
+
         Button resetButton = (Button) findViewById(R.id.resetButton);
+
         if(!isMultiplayer ) {
             resetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -100,8 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            disableBoard(); //Disable board initially until user clicks start Game
-            gameStatus.setText(""); //Clears game status
+
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -114,8 +138,117 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } else {
+            //remove restart button as not neccessary in multiplayer
             ViewGroup tempViewGroup = (ViewGroup) resetButton.getParent();
             tempViewGroup.removeView(resetButton);
+            tempViewGroup = (ViewGroup) startButton.getParent();
+            tempViewGroup.removeView(startButton);
+
+            if(isServer) {
+
+                Thread serverThread = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        final String ipString = OnlineServer.getServerIP();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameStatus.setText(ipString);
+                            }
+                        });
+                        onlineServer = new OnlineServer();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameStatus.setText("Connected to client");
+                            }
+                        });
+                        if(chooseRandomPlayer() == Player.PLAYER_ONE) {
+                            onlineServer.sendPlayer(Player.PLAYER_ONE);
+                            gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("You start...take a move");
+                                    updateBoard();
+                                }
+                            });
+                        } else {
+                            onlineServer.sendPlayer(Player.PLAYER_TWO);
+                            gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("Other player starts...please wait");
+                                    updateBoard();
+                                }
+                            });
+                            serverWaitForMove();
+                        }
+                    }
+                });
+
+                serverThread.start();
+
+            } else if(isClient) {
+
+                finish();
+
+                final String serverIpAddress = "192.168.0.13";
+                Log.i("MainActivity", "client initialisation is called");
+
+                Thread clientThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean connectedSuccesfully;
+                        //checks to see if a connection can be made at serverIpAddress
+                        try {
+                            onlineClient = new OnlineClient(serverIpAddress);
+                            connectedSuccesfully = true;
+                        } catch (IOException e) {
+
+                            connectedSuccesfully = false;
+                        }
+
+                        if(connectedSuccesfully == true) {
+                            clientHasConnected = true;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("Connected to server");
+                                }
+                            });
+                            Player chosenPlayer = onlineClient.receivePlayer();
+                            if (chosenPlayer == Player.PLAYER_ONE) {
+                                gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("Other player starts...please wait");
+                                        updateBoard();
+                                    }
+                                });
+                                clientWaitForMove();
+                            } else {
+                                gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("You start...take a move");
+                                        updateBoard();
+                                    }
+                                });
+                            }
+                        } else {
+                            Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+                            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"HostConnectFail");
+                            startActivity(returnMultiplayerMenuIntent);
+                        }
+                    }
+                });
+                clientThread.start();
+            }
         }
     }
 
@@ -312,16 +445,7 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         checkIfCapturedTray("Player 2",traysBefore,startIndex,selectedIndex);
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateBoard();
-                        }
-                    });
                 }
-
-
-
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -357,7 +481,7 @@ public class MainActivity extends AppCompatActivity {
         int whichTray = -1;
         //Calculate how many loops there was
         int noLoops = 0;
-        Log.i("MYAPP","Looped "+noLoops);
+        Log.i("MYAPP", "Looped " + noLoops);
         if(totalShellsInHand < 16){
             noLoops = 0;
         }else{
@@ -419,43 +543,72 @@ public class MainActivity extends AppCompatActivity {
             //enables all the trays for player one that are not zero and disables the opposite side
             for (int i = 14; i > 7; i--) {
                 arrayOfBoardButtons[i].setEnabled(false);
-                if (arrayOfTrays[14 - i] != 0) {
-                    arrayOfBoardButtons[14 - i].setEnabled(true);
-                } else {
-                    arrayOfBoardButtons[14 - i].setEnabled(false);
+                //player one's buttons should never be enabled for host
+                if(!isClient) {
+                    if (arrayOfTrays[14 - i] != 0) {
+                        arrayOfBoardButtons[14 - i].setEnabled(true);
+                    } else {
+                        arrayOfBoardButtons[14 - i].setEnabled(false);
+                    }
                 }
-
             }
-            if(!playerChosen){
-                gameStatus.setText("HURRY!");
-            }else{
-                gameStatus.setText("Player 1's turn");
+            if(!isMultiplayer) {
+                if (!playerChosen) {
+                    gameStatus.setText("HURRY!");
+                } else {
+                    gameStatus.setText("Player 1's turn");
+                }
+            } else {
+                if(isServer) {
+                    gameStatus.setText("Your turn!");
+                } else {
+                    gameStatus.setText("Other player's turn");
+                }
             }
-        } else {
+        } else if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO) {
 
 
             //enables all the trays for player two that are not zero and disables the opposite side
             for (int i = 0; i < 7; i++) {
                 arrayOfBoardButtons[i].setEnabled(false);
-                if (arrayOfTrays[14 - i] != 0) {
-                    arrayOfBoardButtons[14 - i].setEnabled(true);
-                } else {
-                    arrayOfBoardButtons[14 - i].setEnabled(false);
+                //player two's buttons should never be enabled for server
+                if(!isServer) {
+                    if (arrayOfTrays[14 - i] != 0) {
+                        arrayOfBoardButtons[14 - i].setEnabled(true);
+                    } else {
+                        arrayOfBoardButtons[14 - i].setEnabled(false);
+                    }
                 }
             }
-            if(!playerChosen){
-                gameStatus.setText("HURRY!");
-            }else{
-                if(aiChosen){
-                    gameStatus.setText("Ai's turn");
-                }else{
-                    gameStatus.setText("Player 2's turn");
+            if(!isMultiplayer) {
+                if (!playerChosen) {
+                    gameStatus.setText("HURRY!");
+                } else {
+                    if (aiChosen) {
+                        gameStatus.setText("Ai's turn");
+                    } else {
+                        gameStatus.setText("Player 2's turn");
+                    }
+                }
+            } else {
+                if(isClient) {
+                    gameStatus.setText("Your turn");
+                } else {
+                    gameStatus.setText("Other player's turn");
                 }
             }
         }
 
         if (gameBoard.isGameOver()) {
             displayDialog();
+        }
+
+        //check cases where it is multiplayer and needs to wait for opposition move
+        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO && isServer) {
+            serverWaitForMove();
+        } else if(gameBoard.getCurrentPlayer() == Player.PLAYER_ONE && isClient && clientHasConnected) {
+            Log.i("MainActivity","clientWaitForActivity called from update board");
+            clientWaitForMove();
         }
 
     }
@@ -553,7 +706,25 @@ public class MainActivity extends AppCompatActivity {
                             gameStatus.setText("Player 2's turn");
                         }
 
-                    }else{
+                    } else if(isServer) {
+                        Thread serverTurnThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameBoard.takeTurn(p1index);
+                                onlineServer.sendMove(p1index);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        disableBoard();
+                                        updateBoard(p1index,Player.PLAYER_ONE);
+                                    }
+                                });
+
+                            }
+                        });
+                        serverTurnThread.start();
+                    }
+                    else{
                         disableBoard();
                         gameBoard.takeTurn(p1index);
                         updateBoard(p1index,Player.PLAYER_ONE);
@@ -581,7 +752,23 @@ public class MainActivity extends AppCompatActivity {
                             playerChosen = true;
                             gameStatus.setText("Player 1's turn");
                         }
-                    }else{
+                    } else if(isClient) {
+                        Thread clientTurnThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameBoard.takeTurn(p2index);
+                                onlineClient.sendMove(p2index);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        disableBoard();
+                                        updateBoard(p2index,Player.PLAYER_TWO);
+                                    }
+                                });
+                            }
+                        });
+                        clientTurnThread.start();
+                    } else{
                         //Just in case-Inputs should be ignored if ai is chosen
                         disableBoard();
                         gameBoard.takeTurn(p2index);
@@ -645,9 +832,59 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void serverWaitForMove() {
 
+        Thread serverWaitForMoveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final int oppositionIndex = onlineServer.receiveMove();
+                gameBoard.takeTurn(oppositionIndex);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBoard(oppositionIndex, Player.PLAYER_TWO);
+                    }
+                });
+            }
+        });
 
+        serverWaitForMoveThread.start();
 
+    }
+
+    private void clientWaitForMove() {
+
+        Thread clientWaitForMoveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final int oppositionIndex = onlineClient.receiveMove();
+                gameBoard.takeTurn(oppositionIndex);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBoard(oppositionIndex, Player.PLAYER_ONE);
+                    }
+                });
+            }
+        });
+        clientWaitForMoveThread.start();
+
+    }
+
+    private Player chooseRandomPlayer() {
+
+        Random rand = new Random();
+        int randIndex = rand.nextInt(2);
+        Player chosenPlayer = null;
+        if(randIndex == 0) {
+            chosenPlayer = Player.PLAYER_ONE;
+        } else if(randIndex == 1) {
+            chosenPlayer = Player.PLAYER_TWO;
+        }
+
+        return chosenPlayer;
+
+    }
 
 //    private void setupOnlineBoardLayout() {
 //
@@ -868,7 +1105,7 @@ public class MainActivity extends AppCompatActivity {
 //                    runOnUiThread(new Runnable() {
 //                        @Override
 //                        public void run() {
-//                            gameStatus.setText("Your turn...take a move");
+//                            gameStatus.setText("You start...take a move");
 //                            enableOnlineServerButtons();
 //                        }
 //                    });
@@ -876,6 +1113,13 @@ public class MainActivity extends AppCompatActivity {
 //                    onlineServer.sendPlayer(Player.PLAYER_TWO);
 //                    gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
 //                    serverWaitForMove();
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameStatus.setText("Other player starts...please wait");
+//                            enableOnlineServerButtons();
+//                        }
+//                    });
 //                }
 //            }
 //        });
@@ -899,45 +1143,9 @@ public class MainActivity extends AppCompatActivity {
 //                runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {
-//                        updateOnlineBoard();
+//                        updateBoard();
 //                    }
 //                });
-//                if(gameBoard.isGameOver()) {
-//                    int[] finalScoresArray = gameBoard.getArrayOfTrays();
-//                    if (finalScoresArray[15] > finalScoresArray [7]) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                gameStatus.setText("Game over. You lost :(");
-//                            }
-//                        });
-//                    } else if(finalScoresArray[15] == finalScoresArray[7]) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                gameStatus.setText("Game over. You drew :/");
-//                            }
-//                        });
-//                    } else {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                gameStatus.setText("Game over. You won :)");
-//                            }
-//                        });
-//                    }
-//                }
-//                else if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO) {
-//                    serverWaitForMove();
-//                } else {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            gameStatus.setText("Your turn...take a move");
-//                            enableOnlineServerButtons();
-//                        }
-//                    });
-//                }
 //            }
 //        });
 //
@@ -963,7 +1171,7 @@ public class MainActivity extends AppCompatActivity {
 //        final Thread clientThread = new Thread(new Runnable() {
 //            @Override
 //            public void run() {
-//                onlineClient = new OnlineClient(ipEditText.getText().toString());
+//                onlineClient = new OnlineClient(serverIpAddress);
 //                runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {
@@ -972,6 +1180,12 @@ public class MainActivity extends AppCompatActivity {
 //                });
 //                Player chosenPlayer = onlineClient.receivePlayer();
 //                if(chosenPlayer == Player.PLAYER_ONE) {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            gameStatus.setText("Other player start...please wait");
+//                        }
+//                    });
 //                    gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
 //                    clientWaitForMove();
 //                } else {
@@ -979,8 +1193,8 @@ public class MainActivity extends AppCompatActivity {
 //                    runOnUiThread(new Runnable() {
 //                        @Override
 //                        public void run() {
-//                            gameStatus.setText("Your turn...take a move");
-//                            enableOnlineClientButtons();
+//                            gameStatus.setText("You start...take a move");
+//                            updateBoard();
 //                        }
 //                    });
 //                }
@@ -1014,45 +1228,9 @@ public class MainActivity extends AppCompatActivity {
 //                runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {
-//                        updateOnlineBoard();
+//                        updateBoard();
 //                    }
 //                });
-//                if(gameBoard.isGameOver()) {
-//                    int[] finalScoresArray = gameBoard.getArrayOfTrays();
-//                    if (finalScoresArray[15] > finalScoresArray [7]) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                gameStatus.setText("Game over. You won :)");
-//                            }
-//                        });
-//                    } else if(finalScoresArray[15] == finalScoresArray[7]) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                gameStatus.setText("Game over. You drew :/");
-//                            }
-//                        });
-//                    } else {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                gameStatus.setText("Game over. You lost :(");
-//                            }
-//                        });
-//                    }
-//                }
-//                else if(gameBoard.getCurrentPlayer() == Player.PLAYER_ONE) {
-//                    clientWaitForMove();
-//                } else {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            gameStatus.setText("Your turn...take a move");
-//                            enableOnlineClientButtons();
-//                        }
-//                    });
-//                }
 //            }
 //        });
 //        clientWaitForMoveThread.start();

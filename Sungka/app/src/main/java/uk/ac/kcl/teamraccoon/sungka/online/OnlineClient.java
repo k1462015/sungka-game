@@ -7,8 +7,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import uk.ac.kcl.teamraccoon.sungka.Player;
 
@@ -19,9 +21,9 @@ public class OnlineClient {
     private Socket clientConnection;
     private String serverIP;
 
-    public OnlineClient(String serverIP) {
+    public OnlineClient(String serverIP) throws IOException {
 
-        Log.d("OnlineClient", "OnlineClient class constructed");
+        Log.i("OnlineClient", "OnlineClient class constructed");
 
         this.serverIP = serverIP;
 
@@ -30,13 +32,17 @@ public class OnlineClient {
             //attempt to connect to ServerSocket with Socket clientConnection
             clientConnection = new Socket(InetAddress.getByName(serverIP), 6273);
 
+        } catch (UnknownHostException e) {
+            Log.e("OnlineClient", "Exception was caught with error message " + Log.getStackTraceString(e));
+        }
+        try {
+
             //initialise the streams for receiving data from and sending data to server
             initialiseStreams();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.e("OnlineClient", "Exception was caught with error message " + Log.getStackTraceString(e));
         }
-
     }
 
     /**
@@ -59,9 +65,9 @@ public class OnlineClient {
             Player chosenPlayer = (Player) inputStream.readObject();
             return  chosenPlayer;
         } catch(ClassNotFoundException e) {
-            Log.e("OnlineClient",e.getMessage());
+            Log.e("OnlineClient","" + Log.getStackTraceString(e));
         } catch(IOException e) {
-            Log.e("OnlineClient",e.getMessage());
+            Log.e("OnlineClient","" + Log.getStackTraceString(e));
         }
         return null;
     }
@@ -71,7 +77,7 @@ public class OnlineClient {
             outputStream.writeInt(index);
             outputStream.flush();
         } catch(IOException e) {
-            Log.e("OnlineServer",e.getMessage());
+            Log.e("OnlineClient","" + Log.getStackTraceString(e));
         }
     }
 
@@ -80,7 +86,7 @@ public class OnlineClient {
             int index = inputStream.readInt();
             return index;
         } catch (IOException e) {
-            Log.e("OnlineServer", e.getMessage());
+            Log.e("OnlineClient","" + Log.getStackTraceString(e));
         }
 
         return -1;

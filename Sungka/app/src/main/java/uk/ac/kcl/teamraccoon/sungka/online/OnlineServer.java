@@ -44,7 +44,7 @@ public class OnlineServer {
             Log.d("OnlineServer", "ObjectOutputStream outputStream and ObjectInputStream inputStream initialised");
 
         } catch (IOException e) {
-            Log.e("OnlineServer", "IOException was caught with error message " + e.getMessage() + " in OnlineServer constructor");
+            Log.e("OnlineServer","" + Log.getStackTraceString(e));
         }
 
     }
@@ -74,7 +74,7 @@ public class OnlineServer {
             }
 
         } catch(SocketException e) {
-            Log.e("OnlineServer",e.getMessage());
+            Log.e("OnlineServer","" + Log.getStackTraceString(e));
         }
 
         return null;
@@ -86,7 +86,7 @@ public class OnlineServer {
             outputStream.writeObject(chosenPlayer);
             outputStream.flush();
         } catch(IOException e) {
-            Log.e("OnlineServer",e.getMessage());
+            Log.e("OnlineServer","" + Log.getStackTraceString(e));
         }
     }
 
@@ -95,7 +95,7 @@ public class OnlineServer {
             outputStream.writeInt(index);
             outputStream.flush();
         } catch(IOException e) {
-            Log.e("OnlineServer",e.getMessage());
+            Log.e("OnlineServer","" + Log.getStackTraceString(e));
         }
     }
 
@@ -104,7 +104,7 @@ public class OnlineServer {
             int index = inputStream.readInt();
             return index;
         } catch (IOException e) {
-            Log.e("OnlineServer", e.getMessage());
+            Log.e("OnlineServer","" + Log.getStackTraceString(e));
         }
 
         return -1;
