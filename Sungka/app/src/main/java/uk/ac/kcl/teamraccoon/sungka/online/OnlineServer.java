@@ -118,25 +118,5 @@ public class OnlineServer {
 
     }
 
-    public void sendReady(boolean ready) {
-
-        try {
-            outputStream.writeBoolean(ready);
-            outputStream.flush();
-        } catch(IOException e) {
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
-        }
-
-    }
-
-    public void receiveReady() {
-
-        try {
-            inputStream.readBoolean();
-        } catch(IOException e) {
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
-        }
-    }
-
 }
 

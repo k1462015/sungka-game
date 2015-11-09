@@ -77,7 +77,7 @@ public class OnlineClient {
     public void sendMove(int index) {
         try {
             outputStream.writeInt(index);
-            Log.i("OnlineServer", "Client successfully sent move " + index);
+            Log.i("OnlineClient", "Client successfully sent move " + index);
             outputStream.flush();
         } catch(IOException e) {
             Log.e("OnlineClient","" + Log.getStackTraceString(e));
@@ -98,26 +98,6 @@ public class OnlineClient {
 
         return -1;
 
-    }
-
-    public void sendReady(boolean ready) {
-
-        try {
-            outputStream.writeBoolean(ready);
-            outputStream.flush();
-        } catch(IOException e) {
-            Log.e("OnlineClient","" + Log.getStackTraceString(e));
-        }
-
-    }
-
-    public void receiveReady() {
-
-        try {
-            inputStream.readBoolean();
-        } catch(IOException e) {
-            Log.e("OnlineClient","" + Log.getStackTraceString(e));
-        }
     }
 
 }
