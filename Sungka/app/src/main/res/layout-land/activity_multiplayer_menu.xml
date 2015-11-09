@@ -21,20 +21,20 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/menu_multiplayer_joingame_states"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="10dp"
-            android:onClick="startAsClient"/>
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@android:color/transparent"
             android:src="@drawable/menu_multiplayer_hostgame"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:layout_marginBottom="10dp"
             android:onClick="startAsHost"/>
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/menu_multiplayer_joingame_states"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="10dp"
+            android:onClick="startAsClient"/>
 
 
     </LinearLayout>
