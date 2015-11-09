@@ -60,6 +60,7 @@ public class OnlineClient {
 
     }
 
+    //receive a Player object from the server
     public Player receivePlayer() {
         try {
             Player chosenPlayer = (Player) inputStream.readObject();
@@ -72,25 +73,51 @@ public class OnlineClient {
         return null;
     }
 
+    //send a move in the form of a tray index integer to server
     public void sendMove(int index) {
         try {
             outputStream.writeInt(index);
+            Log.i("OnlineServer", "Client successfully sent move " + index);
             outputStream.flush();
         } catch(IOException e) {
             Log.e("OnlineClient","" + Log.getStackTraceString(e));
         }
     }
 
+    //receive a move in the from of a tray index integer from server
     public int receiveMove() {
+        Log.i("OnlineClient","Client attempting to receive move");
         try {
             int index = inputStream.readInt();
+            Log.d("OnlineClient", "Client successfully received move " + index);
             return index;
         } catch (IOException e) {
+            Log.i("OnlineClient","Client failed to receive move");
             Log.e("OnlineClient","" + Log.getStackTraceString(e));
         }
 
-        return -69;
+        return -1;
 
+    }
+
+    public void sendReady(boolean ready) {
+
+        try {
+            outputStream.writeBoolean(ready);
+            outputStream.flush();
+        } catch(IOException e) {
+            Log.e("OnlineClient","" + Log.getStackTraceString(e));
+        }
+
+    }
+
+    public void receiveReady() {
+
+        try {
+            inputStream.readBoolean();
+        } catch(IOException e) {
+            Log.e("OnlineClient","" + Log.getStackTraceString(e));
+        }
     }
 
 }

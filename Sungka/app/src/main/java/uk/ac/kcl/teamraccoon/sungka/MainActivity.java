@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isClient;
     boolean isMultiplayer;
     boolean clientHasConnected = false;
+    boolean isFirstTurn = true;
     ImageView shell;
     Button startButton;
     Toast gameToast;
@@ -740,6 +741,11 @@ public class MainActivity extends AppCompatActivity {
                         Thread serverTurnThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                if(isFirstTurn == false) {
+                                    onlineServer.receiveReady();
+                                } else {
+                                    isFirstTurn = false;
+                                }
                                 gameBoard.takeTurn(p1index);
                                 onlineServer.sendMove(p1index);
                                 runOnUiThread(new Runnable() {
@@ -786,6 +792,11 @@ public class MainActivity extends AppCompatActivity {
                         Thread clientTurnThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                if(isFirstTurn == false) {
+                                    onlineClient.receiveReady();
+                                } else {
+                                    isFirstTurn = false;
+                                }
                                 gameBoard.takeTurn(p2index);
                                 onlineClient.sendMove(p2index);
                                 runOnUiThread(new Runnable() {
@@ -867,6 +878,7 @@ public class MainActivity extends AppCompatActivity {
         Thread serverWaitForMoveThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                onlineServer.sendReady(true);
                 final int oppositionIndex = onlineServer.receiveMove();
                 gameBoard.takeTurn(oppositionIndex);
                 runOnUiThread(new Runnable() {
@@ -887,6 +899,7 @@ public class MainActivity extends AppCompatActivity {
         Thread clientWaitForMoveThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                onlineClient.sendReady(true);
                 final int oppositionIndex = onlineClient.receiveMove();
                 gameBoard.takeTurn(oppositionIndex);
                 runOnUiThread(new Runnable() {
