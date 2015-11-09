@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
      * Update board method with Animations
      * @param selectedIndex - Index to start animation from
      */
-    public void updateBoard(final int selectedIndex,Player playerCaller){
+    public void updateBoard(final int selectedIndex, final Player playerCaller){
         Log.i("MYAPP", "UPDATE BOARD WITH ANIMATION");
         final Player methodCaller = playerCaller;
         final int[] arrayOfTrays = gameBoard.getArrayOfTrays();
@@ -261,8 +261,9 @@ public class MainActivity extends AppCompatActivity {
                     index++;
                 }
                 if(aiChosen){
+                    checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
                     if(methodCaller == Player.PLAYER_ONE){
-                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
+//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             simulateAiMove();
                         }else{
@@ -275,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
                     }else{
-                        checkIfCapturedTray("Ai",traysBefore,startIndex,selectedIndex);
+//                        checkIfCapturedTray("Ai",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -288,11 +289,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }else{
-                    if(methodCaller == Player.PLAYER_ONE){
-                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
-                    }else{
-                        checkIfCapturedTray("Player 2",traysBefore,startIndex,selectedIndex);
-                    }
+//                    if(methodCaller == Player.PLAYER_ONE){
+//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
+//                    }else{
+//                        checkIfCapturedTray("Player 2",traysBefore,startIndex,selectedIndex);
+//                    }
+                    checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -332,47 +335,68 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void checkIfCapturedTray(final String nameOfPlayer,int[] traysBefore,int selectedTray,int totalShellsInHand){
-        //If Player didn't capture a tray - It should look like this
-        int[] actualTrayArrangement = gameBoard.getArrayOfTrays();
-        int whichTray = -1;
-        //Calculate how many loops there was
-        int noLoops = 0;
-        Log.i("MYAPP","Looped "+noLoops);
-        if(totalShellsInHand < 16){
-            noLoops = 0;
-        }else{
-            noLoops = totalShellsInHand / 16;
-        }
-        for(int i = 0;i < traysBefore.length;i++){
-            if(i > 0 && i < 7 || i > 7 && i < 15){
-                int currentTrayValue = actualTrayArrangement[i];
-                int oldTrayValue = traysBefore[i];
-                int difference = Math.abs(currentTrayValue - oldTrayValue);
-                if(i == selectedTray){
-                    if(currentTrayValue != noLoops){
-                        whichTray = i;
-                    }
-                }else
-                if(difference > 1){
-                    whichTray = i;
-                    break;
+    public void checkIfCapturedTray(final Player player,int[] traysBefore,int selectedTray){
+        //Get shells in hand from selected Tray
+        int shellsInHand = traysBefore[selectedTray];
+        Log.i("MYAPP","SHELLS IN HAND: "+shellsInHand);
+        traysBefore[selectedTray] = 0;  //Clear selected tray
+        int index = selectedTray + 1;
+        //Carry out move on traysBefore
+        for(int i =0;i < shellsInHand;i++){
+            int trayIndex = index % 16;
+            if(player == Player.PLAYER_ONE){
+                if(trayIndex != 15){
+                    traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
+                }else{
+                    i--;
                 }
             }
+            if(player == Player.PLAYER_TWO){
+                if(trayIndex != 7){
+                    traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
+                }else{
+                    i--;
+                }
+            }
+            index++;
         }
-        final int trayCapturedIndex = whichTray;
-        if(trayCapturedIndex != -1){
+        //Find last tray and check if == 1 and on players side
+        final int lastTrayIndex = (index % 16)-1;
+        boolean isTrayCaptured = false;
+        if(traysBefore[lastTrayIndex] == 1){
+            if(player == Player.PLAYER_ONE && (lastTrayIndex > 0 && lastTrayIndex < 7)){
+                isTrayCaptured = true;
+            }
+            if(player == Player.PLAYER_TWO && (lastTrayIndex > 7 && lastTrayIndex < 15)){
+                isTrayCaptured = true;
+            }
+        }
+        //If on players side show blink and toast
+        if(isTrayCaptured){
+            Log.i("MYAPP","TRAY CAPTURED");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i("MYAPP",nameOfPlayer+" captured "+trayCapturedIndex);
-                    gameToast.setText(nameOfPlayer + " captured tray " + trayCapturedIndex);
+                    String nameOfPlayer = null;
+                    if(player == Player.PLAYER_ONE){
+                        nameOfPlayer = "Player 1";
+                    }else{
+                        if(aiChosen){
+                            nameOfPlayer = "Ai";
+                        }else{
+                            nameOfPlayer = "Player 2";
+                        }
+                    }
+                    Log.i("MYAPP",nameOfPlayer+" captured "+lastTrayIndex);
+                    gameToast.setText(nameOfPlayer + " captured tray " + lastTrayIndex);
                     gameToast.show();
-                    makeTrayBlink(arrayOfBoardButtons[trayCapturedIndex]);
-                    makeTrayBlink(arrayOfBoardButtons[14 - trayCapturedIndex]);
+                    makeTrayBlink(arrayOfBoardButtons[lastTrayIndex]);
+                    makeTrayBlink(arrayOfBoardButtons[14 - lastTrayIndex]);
                     trayCapturedSound.start();
                 }
             });
+        }else{
+            Log.i("MYAPP","TRAY NOT CAPTURED");
         }
     }
 
