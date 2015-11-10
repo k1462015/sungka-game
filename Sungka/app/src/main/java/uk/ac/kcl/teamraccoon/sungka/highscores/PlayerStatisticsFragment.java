@@ -25,9 +25,10 @@ public class PlayerStatisticsFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_player_statistics, container, false);
         String playerName = getArguments().getString(HighScoresActivity.PLAYER_TAG);
-        int[] userData = PlayerData.retrieveUserData(playerName, getActivity());
-
-        displayUserData(userData, playerName);
+        if(playerName != null && !playerName.isEmpty()) {
+            int[] userData = PlayerData.retrieveUserData(playerName, getActivity());
+            displayUserData(userData, playerName);
+        }
 
         return rootView;
     }

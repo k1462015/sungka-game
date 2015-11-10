@@ -8,4 +8,10 @@
         android:layout_height="match_parent"
         android:id="@+id/lv_high_scores" />
 
+    <TextView android:id="@+id/empty_element"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/empty_high_scores" />
+
 </RelativeLayout>

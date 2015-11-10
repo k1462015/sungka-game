@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sungka</string>
+    <string name="app_name" translatable="false">Sungka</string>
 
     <string name="save_score">Save scores</string>
     <string name="cancel">Cancel</string>
@@ -8,9 +8,8 @@
 
     <string name="add_score_players">Player One: %1$s\nPlayer Two: %2$s</string>
 
-    <string name="content_authority">uk.ac.kcl.teamraccoon.sungka</string>
+    <string name="content_authority" translatable="false">uk.ac.kcl.teamraccoon.sungka</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="empty_high_scores">The high scores list is empty</string>
 
 </resources>
