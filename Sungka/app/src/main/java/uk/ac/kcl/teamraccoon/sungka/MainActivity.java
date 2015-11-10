@@ -350,7 +350,8 @@ public class MainActivity extends AppCompatActivity {
                 int storeToIgnore = -1; //Need index of store to ignore
                 if(methodCaller == Player.PLAYER_ONE){
                     storeToIgnore = 15;
-                }else{
+                }
+                if(methodCaller == Player.PLAYER_TWO){
                     storeToIgnore = 7;
                 }
 
@@ -364,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                     final int oldShellCount = Integer.parseInt(arrayOfBoardButtons[indexCount].getText().toString());
                     final Button tray = arrayOfBoardButtons[indexCount];
                     //If the value of tray doesn't change - Then do nothing
-                    if(index != storeToIgnore){
+                    if(indexCount != storeToIgnore){
                         //Check if there are any shells in hand - If true then animate
                         if(remainingShells > 0){
                             runOnUiThread(new Runnable() {
@@ -651,17 +652,17 @@ public class MainActivity extends AppCompatActivity {
     public void setButtonImage(Button btn,int number){
         Drawable background;
         if(number > 6){
-            background = this.getDrawable(R.drawable.sixplus);
+            background = getResources().getDrawable(R.drawable.sixplus);
         }else{
             switch(number){
-                case 0: background = this.getDrawable(R.drawable.zero); break;
-                case 1: background = this.getDrawable(R.drawable.one); break;
-                case 2: background = this.getDrawable(R.drawable.two); break;
-                case 3: background = this.getDrawable(R.drawable.three); break;
-                case 4: background = this.getDrawable(R.drawable.four); break;
-                case 5: background = this.getDrawable(R.drawable.five); break;
-                case 6: background = this.getDrawable(R.drawable.six); break;
-                default: background = this.getDrawable(R.drawable.zero);break;
+                case 0: background = getResources().getDrawable(R.drawable.zero); break;
+                case 1: background = getResources().getDrawable(R.drawable.one); break;
+                case 2: background = getResources().getDrawable(R.drawable.two); break;
+                case 3: background = getResources().getDrawable(R.drawable.three); break;
+                case 4: background = getResources().getDrawable(R.drawable.four); break;
+                case 5: background = getResources().getDrawable(R.drawable.five); break;
+                case 6: background = getResources().getDrawable(R.drawable.six); break;
+                default: background = getResources().getDrawable(R.drawable.zero);break;
 
             }
         }
