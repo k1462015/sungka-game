@@ -1,50 +1,254 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.ViewGroup;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.Random;
 
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
+import uk.ac.kcl.teamraccoon.sungka.online.OnlineClient;
+import uk.ac.kcl.teamraccoon.sungka.online.OnlineServer;
+
+import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String GAME_EXIT = "com.uk.ac.kcl.teamraccoon.sungka.EXIT_TOAST";
 
     Board gameBoard;
     Button[] arrayOfBoardButtons;
     TextView gameStatus;
     int startTime;
     Handler handler = new Handler();
+    Runnable aiMove;
     boolean playerChosen;
-
+    boolean aiChosen;
+    boolean isServer;
+    boolean isClient;
+    boolean isMultiplayer;
+    boolean clientHasConnected = false;
+    ImageView shell;
+    Button startButton;
+    Toast gameToast;
+    MediaPlayer trayCapturedSound;
+    OnlineServer onlineServer;
+    OnlineClient onlineClient;
+    static String serverIP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        setContentView(R.layout.activity_main);
+        shell = (ImageView) findViewById(R.id.shell);
+        startButton = (Button) findViewById(R.id.startButton);
+        gameToast = Toast.makeText(this,"Game Info",Toast.LENGTH_SHORT);
+        trayCapturedSound = MediaPlayer.create(getApplicationContext(),R.raw.traycapturedsound);
+        Intent intent = getIntent();
+        String option = intent.getStringExtra(MainMenu.GAME_OPTION);
+        if(option != null && option.equals("P1P2")){
+            aiChosen = false;
+            playerChosen = false;
+            isMultiplayer = false;
+            isClient = false;
+            isServer = false;
+        } else if(option != null && option.equals("P1Comp")){
+            aiChosen = true;
+            playerChosen = true;
+            isMultiplayer = false;
+            isClient = false;
+            isServer = false;
+        } else if(option != null && option.equals("Server")){
+            isServer = true;
+            isClient = false;
+            isMultiplayer = true;
+            aiChosen = false;
+            playerChosen = true;
+        } else if(option !=null && option.equals("Client")){
+            isClient = true;
+            isServer = false;
+            isMultiplayer = true;
+            aiChosen = false;
+            playerChosen = true;
+        } else {
+            //Since no option found - start as p1 vs p2
+            aiChosen = false;
+            playerChosen = false;
+            isMultiplayer = false;
+            isClient = false;
+            isServer = false;
+        }
 
         //initialises the game board with trays = 7, store = zero
         gameBoard = new Board();
-        playerChosen = false;
         setupBoardLayout();
-        //Sets up timer for initially selecting first player
-        setUpTimer();
+        disableBoard(); //Disable board initially until user clicks start Game
+        gameStatus.setText(""); //Clears game status
 
         Button resetButton = (Button) findViewById(R.id.resetButton);
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //First Remove and reset current board
-                playerChosen = false;
-                resetBoard();
+
+        if(!isMultiplayer ) {
+
+            resetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    gameToast.cancel(); //Cancel any showing toasts
+                    //First Remove and reset current board
+                    if (!aiChosen) {
+                        playerChosen = false;
+                    }
+                    handler.removeCallbacks(aiMove);
+                    resetBoard();
+                    gameStatus.setText(""); //Clears game status
+                }
+            });
+
+
+            startButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!aiChosen) {
+                        setUpTimer();
+                    } else {
+                        updateBoard();
+                    }
+                    startButton.setVisibility(View.INVISIBLE);
+                }
+            });
+        } else {
+            //remove restart button as not neccessary in multiplayer
+            ViewGroup tempViewGroup = (ViewGroup) resetButton.getParent();
+            tempViewGroup.removeView(resetButton);
+            tempViewGroup = (ViewGroup) startButton.getParent();
+            tempViewGroup.removeView(startButton);
+
+            if(isServer) {
+
+                Thread serverThread = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        final String ipString = OnlineServer.getServerIP();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameStatus.setText(ipString);
+                            }
+                        });
+                        onlineServer = new OnlineServer();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameStatus.setText("Connected to client");
+                            }
+                        });
+                        if(chooseRandomPlayer() == Player.PLAYER_ONE) {
+                            onlineServer.sendPlayer(Player.PLAYER_ONE);
+                            gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("You start...take a move");
+                                    updateBoard();
+                                }
+                            });
+                        } else {
+                            onlineServer.sendPlayer(Player.PLAYER_TWO);
+                            gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("Other player starts...please wait");
+                                }
+                            });
+                            serverWaitForMove();
+                        }
+                    }
+                });
+
+                serverThread.start();
+
+            } else if(isClient) {
+
+                final String serverIpAddress = serverIP;
+                Log.i("MainActivity", "client initialisation is called");
+
+                Thread clientThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean connectedSuccesfully;
+                        //checks to see if a connection can be made at serverIpAddress
+                        try {
+                            onlineClient = new OnlineClient(serverIpAddress);
+                            connectedSuccesfully = true;
+                        } catch (IOException e) {
+
+                            connectedSuccesfully = false;
+                        }
+
+                        if(connectedSuccesfully == true) {
+                            clientHasConnected = true;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("Connected to server");
+                                }
+                            });
+                            Player chosenPlayer = onlineClient.receivePlayer();
+                            if (chosenPlayer == Player.PLAYER_ONE) {
+                                gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("Other player starts...please wait");
+                                    }
+                                });
+                                clientWaitForMove();
+                            } else {
+                                gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("You start...take a move");
+                                        updateBoard();
+                                    }
+                                });
+                            }
+                        } else {
+                            Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+                            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"HostConnectFail");
+                            startActivity(returnMultiplayerMenuIntent);
+                        }
+                    }
+                });
+                clientThread.start();
             }
-        });
+        }
     }
+
 
     /**
      * Starts the countdown needed at the beginning of the game
@@ -101,21 +305,252 @@ public class MainActivity extends AppCompatActivity {
      * Also setups up a new board and starts the timer
      */
     public void resetBoard(){
-        LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
-        layout_p2_store.removeAllViews();
-        LinearLayout layout_p1_store = (LinearLayout) findViewById(R.id.layout_p1_store);
-        layout_p1_store.removeAllViews();
-        LinearLayout layout_p2_trays = (LinearLayout) findViewById(R.id.layout_p2_trays);
-        layout_p2_trays.removeAllViews();
-        LinearLayout layout_p1_trays = (LinearLayout) findViewById(R.id.layout_p1_trays);
-        layout_p1_trays.removeAllViews();
-
         gameBoard = new Board();
-        setupBoardLayout();
-        setUpTimer();
+        updateBoard();
+        disableBoard();
+        startButton.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Update board method with Animations
+     * @param selectedIndex - Index to start animation from
+     */
+    public void updateBoard(final int selectedIndex, final Player playerCaller){
+        Log.i("MainActivity","updateBoard(int,player) called");
+        final Player methodCaller = playerCaller;
+        final int[] arrayOfTrays = gameBoard.getArrayOfTrays();
+        //First get the number of shells in that tray
+        final int numShellsInHand = Integer.parseInt(arrayOfBoardButtons[selectedIndex].getText().toString());
+
+        //Gets a version of the board before any moves
+        int[] tempBoard = new int[16];
+        for(int i = 0; i < 16;i++){
+            int value = Integer.parseInt(arrayOfBoardButtons[i].getText().toString());
+            tempBoard[i] = value;
+        }
+        final int[] traysBefore = tempBoard;
+        //Empty that tray by changing to empty tray image
+        setButtonImage(arrayOfBoardButtons[selectedIndex], 0);
+        arrayOfBoardButtons[selectedIndex].setText("" + 0);
+        scaleButton(arrayOfBoardButtons[selectedIndex]);
+        //Get center X and center Y position of shell to translate
+        int[] shellPos = new int[2];
+        shell.getLocationInWindow(shellPos);
+        final float shellX = shellPos[0] + (shell.getWidth() / 2);
+        final float shellY = shellPos[1] + (shell.getWidth() / 2);
+
+        //Index to start animation from
+        final int startIndex = selectedIndex;
+        final Thread animThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("MYAPP","STARTING ANIMATION THREAD");
+                int index = startIndex + 1;
+                int remainingShells = numShellsInHand;
+                int storeToIgnore = -1; //Need index of store to ignore
+                if(methodCaller == Player.PLAYER_ONE){
+                    storeToIgnore = 15;
+                }
+                if(methodCaller == Player.PLAYER_TWO){
+                    storeToIgnore = 7;
+                }
+
+                //Loops around board
+                while(remainingShells > 0){
+                    Log.i("MYAPP","ANIMATION INDEX: "+index);
+                    Log.i("MYAPP","REMAINING SHELLS: "+remainingShells);
+                    final int indexCount = index % 16;
+                    //Don't show shell going into enemies store
+//                    int newShellCount = gameBoard.getArrayOfTrays()[indexCount];
+                    final int oldShellCount = Integer.parseInt(arrayOfBoardButtons[indexCount].getText().toString());
+                    final Button tray = arrayOfBoardButtons[indexCount];
+                    //If the value of tray doesn't change - Then do nothing
+                    if(indexCount != storeToIgnore){
+                        //Check if there are any shells in hand - If true then animate
+                        if(remainingShells > 0){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Get center position of tray on screen
+                                    int[] trayPos = new int[2];
+                                    tray.getLocationInWindow(trayPos);
+                                    float trayX = trayPos[0] + (tray.getWidth() / 2);
+                                    float trayY = trayPos[1] + (tray.getWidth() / 2);
+                                    //Animate shell to tray
+                                    float X_TRANSLATE = trayX - shellX;
+                                    float Y_TRANSLATE = trayY - shellY;
+                                    TranslateAnimation transAnim = new TranslateAnimation(0,X_TRANSLATE,0,Y_TRANSLATE);
+                                    Log.i("MYAPP","STARTING ANIMATIOn");
+                                    transAnim.setDuration(400);
+                                    transAnim.restrictDuration(400);
+                                    transAnim.setFillEnabled(true);
+                                    shell.startAnimation(transAnim);
+                                }
+                            });
+
+                            //Make Thread wait for same animation duration
+                            try {
+                                sleep(400);
+                                Log.i("MYAPP","MAKING THREAD WAIT FOR 500ms");
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            //Then update image of tray
+                            //Update shellCount text on tray
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.i("MYAPP","Updating images of buttons");
+                                    setButtonImage(tray, oldShellCount + 1);
+                                    arrayOfBoardButtons[indexCount].setText((oldShellCount+1)+"");
+                                }
+                            });
+                            remainingShells--;
+                        }
+                    }
+                    index++;
+                }
+                if(aiChosen){
+                    checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
+                    if(methodCaller == Player.PLAYER_ONE){
+//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            simulateAiMove();
+                        }else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameToast.setText("Player 1 gets another go!");
+                                    gameToast.show();
+                                }
+                            });
+                        }
+                    }else{
+//                        checkIfCapturedTray("Ai",traysBefore,startIndex,selectedIndex);
+                        if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameToast.setText("Ai gets another go!");
+                                    gameToast.show();
+                                }
+                            });
+                            simulateAiMove();
+                        }
+                    }
+                }else{
+//                    if(methodCaller == Player.PLAYER_ONE){
+//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
+//                    }else{
+//                        checkIfCapturedTray("Player 2",traysBefore,startIndex,selectedIndex);
+//                    }
+                    checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
+
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBoard();
+                    }
+                });
+
+                //Ends thread
+                handler.removeCallbacks(this);
+            }
+        });
+        animThread.start();
+    }
+
+    /**
+     * Animates increasing the views size
+     * @param view
+     */
+    public void scaleButton(final View view){
+        final int startWidth = view.getLayoutParams().width;
+        final int startHeight = view.getLayoutParams().height;
+
+        ScaleAnimation scale = new ScaleAnimation((float)1.0, (float)1.2, (float)1.0, (float)1.2);
+        scale.setDuration(200);
+        view.startAnimation(scale);
+
+    }
+
+    public void checkIfCapturedTray(final Player player,int[] traysBefore,int selectedTray){
+        //Get shells in hand from selected Tray
+        int shellsInHand = traysBefore[selectedTray];
+        Log.i("MYAPP","SHELLS IN HAND: "+shellsInHand);
+        traysBefore[selectedTray] = 0;  //Clear selected tray
+        int index = selectedTray;
+        //Distribute shells
+        while(shellsInHand != 0){
+            index++;
+            int trayIndex = index % 16;
+            if(player == Player.PLAYER_ONE){
+                if(trayIndex != 15){
+                    traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
+                }
+            }
+            if(player == Player.PLAYER_TWO){
+                if(trayIndex != 7){
+                    traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
+                }
+            }
+            shellsInHand--;
+        }
+
+        //Find last tray and check if == 1 and on players side
+        final int lastTrayIndex = index % 16;
+        boolean isTrayCaptured = false;
+        if(traysBefore[lastTrayIndex] == 1){
+            if(player == Player.PLAYER_ONE && (lastTrayIndex > 0 && lastTrayIndex < 7)){
+                isTrayCaptured = true;
+            }
+            if(player == Player.PLAYER_TWO && (lastTrayIndex > 7 && lastTrayIndex < 15)){
+                isTrayCaptured = true;
+            }
+        }
+        //If on players side show blink and toast
+        if(isTrayCaptured){
+            Log.i("MYAPP","TRAY CAPTURED");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String nameOfPlayer = null;
+                    if(player == Player.PLAYER_ONE){
+                        nameOfPlayer = "Player 1";
+                    }else{
+                        if(aiChosen){
+                            nameOfPlayer = "Ai";
+                        }else{
+                            nameOfPlayer = "Player 2";
+                        }
+                    }
+                    Log.i("MYAPP",nameOfPlayer+" captured "+lastTrayIndex);
+                    gameToast.setText(nameOfPlayer + " captured tray " + lastTrayIndex);
+                    gameToast.show();
+                    makeTrayBlink(arrayOfBoardButtons[lastTrayIndex]);
+                    makeTrayBlink(arrayOfBoardButtons[14 - lastTrayIndex]);
+                    trayCapturedSound.start();
+                }
+            });
+        }else{
+            Log.i("MYAPP","TRAY NOT CAPTURED");
+        }
+    }
+
+    public void makeTrayBlink(View view){
+        AlphaAnimation  blinkanimation= new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
+        blinkanimation.setDuration(300); // duration - half a second
+        blinkanimation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
+        blinkanimation.setRepeatCount(3); // Repeat animation infinitely
+        blinkanimation.setRepeatMode(Animation.REVERSE);
+        view.startAnimation(blinkanimation);
     }
 
     public void updateBoard() {
+
+        Log.i("MainActivity","updateBoard() called");
 
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
 
@@ -130,34 +565,59 @@ public class MainActivity extends AppCompatActivity {
             //enables all the trays for player one that are not zero and disables the opposite side
             for (int i = 14; i > 7; i--) {
                 arrayOfBoardButtons[i].setEnabled(false);
-                if (arrayOfTrays[14 - i] != 0) {
-                    arrayOfBoardButtons[14 - i].setEnabled(true);
-                } else {
-                    arrayOfBoardButtons[14 - i].setEnabled(false);
+                //player one's buttons should never be enabled for host
+                if(!isClient) {
+                    if (arrayOfTrays[14 - i] != 0) {
+                        arrayOfBoardButtons[14 - i].setEnabled(true);
+                    } else {
+                        arrayOfBoardButtons[14 - i].setEnabled(false);
+                    }
                 }
-
             }
-            if(!playerChosen){
-                gameStatus.setText("HURRY!");
-            }else{
-                gameStatus.setText("Player 1's turn");
+            if(!isMultiplayer) {
+                if (!playerChosen) {
+                    gameStatus.setText("HURRY!");
+                } else {
+                    gameStatus.setText("Player 1's turn");
+                }
+            } else {
+                if(isServer) {
+                    gameStatus.setText("Your turn!");
+                } else {
+                    gameStatus.setText("Other player's turn");
+                }
             }
-        } else {
+        } else if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO) {
 
 
             //enables all the trays for player two that are not zero and disables the opposite side
             for (int i = 0; i < 7; i++) {
                 arrayOfBoardButtons[i].setEnabled(false);
-                if (arrayOfTrays[14 - i] != 0) {
-                    arrayOfBoardButtons[14 - i].setEnabled(true);
-                } else {
-                    arrayOfBoardButtons[14 - i].setEnabled(false);
+                //player two's buttons should never be enabled for server
+                if(!isServer) {
+                    if (arrayOfTrays[14 - i] != 0) {
+                        arrayOfBoardButtons[14 - i].setEnabled(true);
+                    } else {
+                        arrayOfBoardButtons[14 - i].setEnabled(false);
+                    }
                 }
             }
-            if(!playerChosen){
-                gameStatus.setText("HURRY!");
-            }else{
-                gameStatus.setText("Player 2's turn");
+            if(!isMultiplayer) {
+                if (!playerChosen) {
+                    gameStatus.setText("HURRY!");
+                } else {
+                    if (aiChosen) {
+                        gameStatus.setText("Ai's turn");
+                    } else {
+                        gameStatus.setText("Player 2's turn");
+                    }
+                }
+            } else {
+                if(isClient) {
+                    gameStatus.setText("Your turn");
+                } else {
+                    gameStatus.setText("Other player's turn");
+                }
             }
         }
 
@@ -165,33 +625,81 @@ public class MainActivity extends AppCompatActivity {
             displayDialog();
         }
 
+        //check cases where it is multiplayer and needs to wait for opposition move
+        if(stillStartingBoard() == false) {
+            if (gameBoard.getCurrentPlayer() == Player.PLAYER_TWO && isServer) {
+                serverWaitForMove();
+            } else if (gameBoard.getCurrentPlayer() == Player.PLAYER_ONE && isClient && clientHasConnected) {
+                Log.i("MainActivity", "clientWaitForActivity called from update board");
+                clientWaitForMove();
+            }
+        }
+    }
+
+    public boolean stillStartingBoard() {
+        int[] toCheckArrayOfTrays = gameBoard.getArrayOfTrays();
+        for(int i = 0; i < 16; i++) {
+            if(i != 7 && i != 15) {
+                if(toCheckArrayOfTrays[i] != 7) {
+                    return  false;
+                }
+            }
+        }
+        Log.i("MainActivity","Still in starting position");
+        return  true;
     }
 
     public void setButtonImage(Button btn,int number){
         Drawable background;
         if(number > 6){
-            background = this.getDrawable(R.drawable.sixplus);
+            background = getResources().getDrawable(R.drawable.sixplus);
         }else{
             switch(number){
-                case 0: background = this.getDrawable(R.drawable.zero); break;
-                case 1: background = this.getDrawable(R.drawable.one); break;
-                case 2: background = this.getDrawable(R.drawable.two); break;
-                case 3: background = this.getDrawable(R.drawable.three); break;
-                case 4: background = this.getDrawable(R.drawable.four); break;
-                case 5: background = this.getDrawable(R.drawable.five); break;
-                case 6: background = this.getDrawable(R.drawable.six); break;
-                default: background = this.getDrawable(R.drawable.zero);break;
+                case 0: background = getResources().getDrawable(R.drawable.zero); break;
+                case 1: background = getResources().getDrawable(R.drawable.one); break;
+                case 2: background = getResources().getDrawable(R.drawable.two); break;
+                case 3: background = getResources().getDrawable(R.drawable.three); break;
+                case 4: background = getResources().getDrawable(R.drawable.four); break;
+                case 5: background = getResources().getDrawable(R.drawable.five); break;
+                case 6: background = getResources().getDrawable(R.drawable.six); break;
+                default: background = getResources().getDrawable(R.drawable.zero);break;
 
             }
         }
         btn.setBackground(background);
     }
 
+
+    public void simulateAiMove(){
+        aiMove = new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameStatus.setText("Ai's turn");
+                            }
+                        });
+                        int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
+                        Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
+                        Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
+                        gameBoard.takeTurn(aiTrayIndex);
+                        updateBoard(aiTrayIndex,Player.PLAYER_TWO);
+                    }
+                });
+                handler.removeCallbacks(this);
+            }
+        };
+        handler.postDelayed(aiMove, 2500);
+    }
+
     public void setupBoardLayout() {
 
         arrayOfBoardButtons = new Button[16];
         gameStatus = (TextView) findViewById(R.id.game_status);
-        gameStatus.setText("Player 1's turn");
 
         LinearLayout layout_p2_store = (LinearLayout) findViewById(R.id.layout_p2_store);
         LinearLayout layout_p1_store = (LinearLayout) findViewById(R.id.layout_p1_store);
@@ -207,9 +715,6 @@ public class MainActivity extends AppCompatActivity {
         storeButtonp1.setEnabled(false);
         storeButtonp2.setEnabled(false);
 
-        //setting the text for the buttons
-        storeButtonp1.setText("Player 1 store");
-        storeButtonp2.setText("Player 2 store");
 
         //adding the buttons to the layout
         layout_p1_store.addView(storeButtonp1);
@@ -217,7 +722,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < 7; i++) {
             Button tempTrayp1 = (Button) getLayoutInflater().inflate(R.layout.tray, layout_p1_trays, false);
-            tempTrayp1.setText("Tray " + i);
+            setButtonImage(tempTrayp1,0);
             arrayOfBoardButtons[i] = tempTrayp1;
             layout_p1_trays.addView(tempTrayp1);
 
@@ -237,16 +742,34 @@ public class MainActivity extends AppCompatActivity {
                             gameStatus.setText("Player 2's turn");
                         }
 
-                    }else{
+                    } else if(isServer) {
+                        Thread serverTurnThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameBoard.takeTurn(p1index);
+                                onlineServer.sendMove(p1index);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        disableBoard();
+                                        updateBoard(p1index,Player.PLAYER_ONE);
+                                    }
+                                });
+
+                            }
+                        });
+                        serverTurnThread.start();
+                    }
+                    else{
+                        disableBoard();
                         gameBoard.takeTurn(p1index);
-                        updateBoard();
+                        updateBoard(p1index,Player.PLAYER_ONE);
                     }
                 }
             });
 
 
             Button tempTrayp2 = (Button) getLayoutInflater().inflate(R.layout.tray, layout_p2_trays, false);
-            tempTrayp2.setText("Tray " + (14 - i));
             arrayOfBoardButtons[14 - i] = tempTrayp2;
             layout_p2_trays.addView(tempTrayp2);
 
@@ -265,9 +788,27 @@ public class MainActivity extends AppCompatActivity {
                             playerChosen = true;
                             gameStatus.setText("Player 1's turn");
                         }
-                    }else{
+                    } else if(isClient) {
+                        Thread clientTurnThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                gameBoard.takeTurn(p2index);
+                                onlineClient.sendMove(p2index);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        disableBoard();
+                                        updateBoard(p2index,Player.PLAYER_TWO);
+                                    }
+                                });
+                            }
+                        });
+                        clientTurnThread.start();
+                    } else{
+                        //Just in case-Inputs should be ignored if ai is chosen
+                        disableBoard();
                         gameBoard.takeTurn(p2index);
-                        updateBoard();
+                        updateBoard(p2index,Player.PLAYER_TWO);
                     }
 
                 }
@@ -275,6 +816,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updateBoard();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        View decorView = getWindow().getDecorView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }
+        }
     }
 
     // Display a dialog to save game result and show statistics
@@ -289,4 +846,87 @@ public class MainActivity extends AppCompatActivity {
         addScoreFragment.setArguments(bundleDialog);
         addScoreFragment.show(getFragmentManager(), "dialog");
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        //Adjust all button sizes to be perfectly circular
+        resizeButtons();
+    }
+
+    public void resizeButtons(){
+        for(Button btn:arrayOfBoardButtons){
+            int newSize = Math.min(btn.getWidth(), btn.getHeight());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    newSize,newSize
+            );
+            params.gravity = Gravity.CENTER;
+            btn.setLayoutParams(params);
+
+        }
+    }
+
+    private void serverWaitForMove() {
+
+        Log.i("MainActivity","serverWaitForMove() called");
+        Thread serverWaitForMoveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final int oppositionIndex = onlineServer.receiveMove();
+                gameBoard.takeTurn(oppositionIndex);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBoard(oppositionIndex, Player.PLAYER_TWO);
+                    }
+                });
+            }
+        });
+
+        serverWaitForMoveThread.start();
+
+    }
+
+    private void clientWaitForMove() {
+
+        Log.i("MainActivity","clientWaitForMove() called");
+        Thread clientWaitForMoveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final int oppositionIndex = onlineClient.receiveMove();
+                gameBoard.takeTurn(oppositionIndex);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBoard(oppositionIndex, Player.PLAYER_ONE);
+                    }
+                });
+            }
+        });
+        clientWaitForMoveThread.start();
+
+    }
+
+    private Player chooseRandomPlayer() {
+
+        Random rand = new Random();
+        int randIndex = rand.nextInt(2);
+        Player chosenPlayer = null;
+        if(randIndex == 0) {
+            chosenPlayer = Player.PLAYER_ONE;
+        } else if(randIndex == 1) {
+            chosenPlayer = Player.PLAYER_TWO;
+        }
+
+        return chosenPlayer;
+
+    }
+
+    public static void setServerIP(String ip) {
+
+        serverIP = ip;
+
+    }
+
 }

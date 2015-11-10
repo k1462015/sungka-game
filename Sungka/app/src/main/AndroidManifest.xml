@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.ac.kcl.teamraccoon.sungka" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,12 +12,9 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="landscape" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:noHistory="true">
         </activity>
 
         <provider
@@ -23,7 +22,26 @@
             android:authorities="@string/content_authority"
             android:exported="false" />
 
-        <activity android:name=".highscores.HighScoresActivity" >
+        <activity
+            android:name=".highscores.HighScoresActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name=".MainMenu"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MultiplayerMenu"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".MainMenu" >
         </activity>
     </application>
 
