@@ -8,8 +8,10 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -63,6 +65,13 @@ public class AddScoreFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         Bundle dialogBundle = this.getArguments();
         mScores = dialogBundle.getIntArray(BUNDLE_TAG);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().setCanceledOnTouchOutside(false);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
