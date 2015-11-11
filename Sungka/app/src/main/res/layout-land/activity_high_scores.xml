@@ -8,6 +8,13 @@
     android:padding="5dp"
     tools:context="uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="High Scores"
+        android:textAlignment="center"
+        android:textSize="40dp"/>
+
     <!-- This layout is a two-pane layout for the Items master/detail flow. -->
 
     <fragment

@@ -15,6 +15,7 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
+            android:theme="@style/AppFullScreenTheme"
             android:noHistory="true">
         </activity>
 
@@ -26,11 +27,13 @@
         <activity
             android:name=".highscores.HighScoresActivity"
             android:configChanges="orientation|screenSize"
+            android:theme="@style/AppFullScreenTheme"
             android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".MainMenu"
             android:configChanges="orientation|screenSize"
+            android:theme="@style/AppFullScreenTheme"
             android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +45,7 @@
             android:name=".MultiplayerMenu"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
+            android:theme="@style/AppFullScreenTheme"
             android:parentActivityName=".MainMenu" >
         </activity>
     </application>
