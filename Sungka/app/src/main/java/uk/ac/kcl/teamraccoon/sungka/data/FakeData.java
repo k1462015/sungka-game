@@ -14,20 +14,28 @@ public class FakeData {
 
     public FakeData(Context context) {
         this.context = context;
-        saveStatistics("Dominik", 13);
-        saveStatistics("Tahmidul", 14);
-        saveStatistics("Ana", 11);
-        saveStatistics("Ben", 11);
-        saveStatistics("Rosen", 12);
-        saveStatistics("Tim Cook", 12);
-        saveStatistics("Peter Thiel", 16);
-        saveStatistics("Elon Musk", 12);
-        saveStatistics("Larry Page", 12);
-        saveStatistics("HRH Reggie the Lion", 11);
-        saveStatistics("Virginia Woolf", 17);
-        saveStatistics("John Keats", 15);
-        saveStatistics("Peter Higgs", 17);
-        saveStatistics("James Clerk Maxwell", 18);
+        Random rnd = new Random();
+
+        String[] players = {"Dominik", "Tahmidul", "Ana", "Rosen", "Ben",
+                "Tim Cook", "Peter Thiel", "Elon Musk", "Larry Page", "HRH Reggie the Lion",
+                "Virginia Woolf", "John Keats", "Peter Higgs", "James Clerk Maxwell"};
+
+        for(int i=0; i<players.length; ++i){
+            String playerName = players[i];
+            int counter = rnd.nextInt(10) + 10;
+            for (int k = 0; k < counter; ++k) {
+                int randomInt = rnd.nextInt(81) + 8;
+                int[] mScores = {randomInt, 98 - randomInt};
+                int randomOpponent = rnd.nextInt(players.length);
+                while(randomOpponent == i) { randomOpponent = rnd.nextInt(players.length); }
+
+                insertScore(playerName, mScores[0]);
+                updateUserData(playerName, 0, mScores);
+
+                insertScore(players[randomOpponent], mScores[1]);
+                updateUserData(players[randomOpponent], 1, mScores);
+            }
+        }
 
     }
 
@@ -43,16 +51,6 @@ public class FakeData {
                 SungkaContract.HighScoresEntry.CONTENT_URI,
                 values
         );
-    }
-
-    private void saveStatistics(String playerName, int counter) {
-        Random rnd = new Random();
-        for(int i=0; i<counter; ++i) {
-            int randomInt = rnd.nextInt(90);
-            int[] mScores = {randomInt, 98 - randomInt};
-            insertScore(playerName, mScores[0]);
-            updateUserData(playerName, 0, mScores);
-        }
     }
 
     private void updateUserData(String playerName, int playerIndex, int[] mScores) {

@@ -28,6 +28,7 @@
             android:name=".highscores.HighScoresActivity"
             android:label="@string/high_scores"
             android:configChanges="orientation|screenSize"
+            android:theme="@style/HighScoresFullScreenTheme"
             android:screenOrientation="landscape" >
         </activity>
         <activity
