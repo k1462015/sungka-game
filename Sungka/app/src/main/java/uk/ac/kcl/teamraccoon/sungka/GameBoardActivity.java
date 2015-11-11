@@ -1,6 +1,8 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.Random;
 
+import uk.ac.kcl.teamraccoon.sungka.data.PlayerData;
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
 import uk.ac.kcl.teamraccoon.sungka.online.OnlineClient;
 import uk.ac.kcl.teamraccoon.sungka.online.OnlineServer;
@@ -56,6 +59,7 @@ public class GameBoardActivity extends AppCompatActivity {
     OnlineServer onlineServer;
     OnlineClient onlineClient;
     static String serverIP;
+    boolean stopGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +67,11 @@ public class GameBoardActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_game_board);
         shell = (ImageView) findViewById(R.id.shell);
         startButton = (Button) findViewById(R.id.startButton);
         gameToast = Toast.makeText(this,"Game Info",Toast.LENGTH_SHORT);
+        stopGame = false;
         trayCapturedSound = MediaPlayer.create(getApplicationContext(),R.raw.traycapturedsound);
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
@@ -116,14 +121,7 @@ public class GameBoardActivity extends AppCompatActivity {
             resetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    gameToast.cancel(); //Cancel any showing toasts
-                    //First Remove and reset current board
-                    if (!aiChosen) {
-                        playerChosen = false;
-                    }
-                    handler.removeCallbacks(aiMove);
-                    resetBoard();
-                    gameStatus.setText(""); //Clears game status
+                    restartDialog();
                 }
             });
 
@@ -326,17 +324,6 @@ public class GameBoardActivity extends AppCompatActivity {
 
 
     /**
-     * Clears all linear layouts on the board
-     * Also setups up a new board and starts the timer
-     */
-    public void resetBoard(){
-        gameBoard = new Board();
-        updateBoard();
-        disableBoard();
-        startButton.setVisibility(View.VISIBLE);
-    }
-
-    /**
      * Update board method with Animations
      * @param selectedIndex - Index to start animation from
      */
@@ -381,12 +368,11 @@ public class GameBoardActivity extends AppCompatActivity {
                 }
 
                 //Loops around board
-                while(remainingShells > 0){
+                while(remainingShells > 0 && !stopGame){
                     Log.i("MYAPP","ANIMATION INDEX: "+index);
                     Log.i("MYAPP","REMAINING SHELLS: "+remainingShells);
                     final int indexCount = index % 16;
                     //Don't show shell going into enemies store
-//                    int newShellCount = gameBoard.getArrayOfTrays()[indexCount];
                     final int oldShellCount = Integer.parseInt(arrayOfBoardButtons[indexCount].getText().toString());
                     final Button tray = arrayOfBoardButtons[indexCount];
                     //If the value of tray doesn't change - Then do nothing
@@ -438,39 +424,25 @@ public class GameBoardActivity extends AppCompatActivity {
                 if(aiChosen){
                     checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
                     if(methodCaller == Player.PLAYER_ONE){
-//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             simulateAiMove();
                         }else{
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameToast.setText("Player 1 gets another go!");
-                                    gameToast.show();
-                                }
-                            });
+                            updateGameStatus("Player 1 gets another go!");
                         }
                     }else{
-//                        checkIfCapturedTray("Ai",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameToast.setText("Ai gets another go!");
-                                    gameToast.show();
-                                }
-                            });
+                            updateGameStatus("Ai gets another go!");
                             simulateAiMove();
                         }
                     }
                 }else{
-//                    if(methodCaller == Player.PLAYER_ONE){
-//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
-//                    }else{
-//                        checkIfCapturedTray("Player 2",traysBefore,startIndex,selectedIndex);
-//                    }
-                    checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
-
+                    checkIfCapturedTray(playerCaller, traysBefore, selectedIndex);
+                    if(methodCaller == Player.PLAYER_ONE && gameBoard.getCurrentPlayer() == Player.PLAYER_ONE){
+                        updateGameStatus("Player 1 gets another go!");
+                    }
+                    if(methodCaller == Player.PLAYER_TWO && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                        updateGameStatus("Player 2 gets another go!");
+                    }
                 }
 
                 runOnUiThread(new Runnable() {
@@ -552,7 +524,7 @@ public class GameBoardActivity extends AppCompatActivity {
                         }
                     }
                     Log.i("MYAPP",nameOfPlayer+" captured "+lastTrayIndex);
-                    gameToast.setText(nameOfPlayer + " captured tray " + lastTrayIndex);
+                    gameToast.setText(nameOfPlayer + " captured a tray ");
                     gameToast.show();
                     makeTrayBlink(arrayOfBoardButtons[lastTrayIndex]);
                     makeTrayBlink(arrayOfBoardButtons[14 - lastTrayIndex]);
@@ -562,6 +534,18 @@ public class GameBoardActivity extends AppCompatActivity {
         }else{
             Log.i("MYAPP","TRAY NOT CAPTURED");
         }
+    }
+
+    public void updateGameStatus(final String text){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!stopGame) {
+                    gameToast.setText(text);
+                    gameToast.show();
+                }
+            }
+        });
     }
 
     public void makeTrayBlink(View view){
@@ -702,15 +686,9 @@ public class GameBoardActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameStatus.setText("Ai's turn");
-                            }
-                        });
+                        updateGameStatus("Ai's turn");
                         int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
                         Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
-                        Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
                         gameBoard.takeTurn(aiTrayIndex);
                         updateBoard(aiTrayIndex,Player.PLAYER_TWO);
                     }
@@ -966,8 +944,32 @@ public class GameBoardActivity extends AppCompatActivity {
 
     }
 
-    private void onEndActivity() {
+    public void restartDialog(){
+        AlertDialog alertbox = new AlertDialog.Builder(this)
+        .setMessage("Are you sure you want to restart the game?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+                finish();
+                handler.removeCallbacks(aiMove);
+                stopGame = true;
+                gameToast.cancel(); //Cancel any showing toasts
+                startActivity(getIntent());
+            }
+        })
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        })
+        .show();
+    }
+
+    public void returnToMainMenu(View view){
+        showBackDialog();
+    }
+    private void onEndActivity() {
         Log.i("GameBoardActivity", "onEndActivity actually gets called");
         if(onlineClient != null) {
             onlineClient.closeConnection();
@@ -984,9 +986,32 @@ public class GameBoardActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-        Log.i("GameBoardActivity","Back button pressed");
-        onEndActivity();
-        finish();
+        showBackDialog();
+    }
+
+    public void showBackDialog(){
+        AlertDialog alertbox = new AlertDialog.Builder(this)
+        .setMessage("Are you sure you want to return to the main menu?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+                Log.i("GameBoardActivity", "Back button pressed");
+                onEndActivity();
+                handler.removeCallbacks(aiMove);
+                stopGame = true;
+                gameToast.cancel(); //Cancel any showing toasts
+                startActivity(new Intent(getApplicationContext(), MainMenu.class));
+                finish();
+
+            }
+        })
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        })
+        .show();
     }
 
 }
