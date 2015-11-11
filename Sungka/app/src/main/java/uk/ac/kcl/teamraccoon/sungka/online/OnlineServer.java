@@ -31,6 +31,12 @@ public class OnlineServer {
 
         Log.d("OnlineServer", "ServerSocket serverSocket initialised");
 
+
+
+    }
+
+    public void findConnection() throws IOException {
+
         //listen for client to connect to server and accept the socket
         serverConnection = serverSocket.accept();
 
@@ -121,7 +127,15 @@ public class OnlineServer {
             serverSocket.close();
             Log.i("OnlineServer","onlineServer connection successfully closed");
         } catch (IOException e) {
-            Log.e("OnlineClient","IOException when closing client connection " + Log.getStackTraceString(e));
+            Log.e("OnlineServer","IOException when closing server connection " + Log.getStackTraceString(e));
+        }
+    }
+
+    public void closeServerSocket() {
+        try {
+            serverSocket.close();
+        } catch(IOException e) {
+            Log.e("OnlineServer","IOException when closing serverSocket");
         }
     }
 

@@ -6,7 +6,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -28,7 +28,8 @@ public class OnlineClient {
         try{
 
             //attempt to connect to ServerSocket with Socket clientConnection
-            clientConnection = new Socket(InetAddress.getByName(serverIP), 6273);
+            clientConnection = new Socket();
+            clientConnection.connect(new InetSocketAddress(serverIP,6273),3000);
 
         } catch (UnknownHostException e) {
             Log.e("OnlineClient", "Exception was caught with error message " + Log.getStackTraceString(e));

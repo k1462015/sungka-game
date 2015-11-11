@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isClient;
     boolean isMultiplayer;
     boolean clientHasConnected = false;
+    boolean serverStreamsInitialised = false;
     ImageView shell;
     Button startButton;
     Toast gameToast;
@@ -165,7 +166,9 @@ public class MainActivity extends AppCompatActivity {
 
                         try {
                             onlineServer = new OnlineServer();
+                            onlineServer.findConnection();
                             serverInitialised = true;
+                            serverStreamsInitialised = true;
                         } catch(IOException e) {
                             Log.e("MainActivity","onlineServer failed to initialise properly, " + Log.getStackTraceString(e));
                             serverInitialised = false;
@@ -981,8 +984,11 @@ public class MainActivity extends AppCompatActivity {
         if(onlineClient != null) {
             onlineClient.closeConnection();
         } else if(onlineServer != null) {
-            Log.i("MainActivity","in onEndActivity() knows it's a server");
-            onlineServer.closeConnection();
+            if(serverStreamsInitialised) {
+                onlineServer.closeConnection();
+            } else {
+                onlineServer.closeServerSocket();
+            }
         }
 
     }
