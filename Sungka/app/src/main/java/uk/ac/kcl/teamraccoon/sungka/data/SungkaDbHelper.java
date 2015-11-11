@@ -13,7 +13,7 @@ import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract.HighScoresEntry;
 public class SungkaDbHelper extends SQLiteOpenHelper {
 
     // The database version must be incremented when the database schema is changed
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "sungka.db";
 
@@ -39,6 +39,7 @@ public class SungkaDbHelper extends SQLiteOpenHelper {
                 HighScoresEntry._ID + " INTEGER PRIMARY KEY, " +
                 HighScoresEntry.COLUMN_PLAYER + " TEXT NOT NULL, " +
                 HighScoresEntry.COLUMN_SCORE + " INTEGER NOT NULL, " +
+                HighScoresEntry.COLUMN_DATE + " TEXT, " +
 
                 // Set up the column player as a foreign key to the player table
                 " FOREIGN KEY (" + HighScoresEntry.COLUMN_PLAYER + ") REFERENCES " +

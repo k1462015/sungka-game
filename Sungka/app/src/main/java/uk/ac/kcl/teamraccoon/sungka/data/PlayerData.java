@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import java.util.ArrayList;
+
+import uk.ac.kcl.teamraccoon.sungka.R;
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
 
 public class PlayerData {
@@ -38,5 +41,35 @@ public class PlayerData {
         }
 
         return null;
+    }
+
+    static public ArrayList<String[]> retrieveUserScores(String playerName, Context context) {
+
+        String selectionClause = SungkaContract.HighScoresEntry.COLUMN_PLAYER + " = ?";
+
+        Cursor cursor = context.getContentResolver().query(
+                SungkaContract.HighScoresEntry.CONTENT_URI,
+                null,
+                selectionClause,
+                new String[] {playerName},
+                null);
+
+        ArrayList<String[]> alPlayerScores = new ArrayList<>();
+
+        // Determine the column index of the column named "word"
+
+        if (cursor != null) {
+            int indexScore = cursor.getColumnIndexOrThrow(SungkaContract.HighScoresEntry.COLUMN_SCORE);
+            int indexDate = cursor.getColumnIndexOrThrow(SungkaContract.HighScoresEntry.COLUMN_DATE);
+            while (cursor.moveToNext()) {
+                String score = cursor.getString(indexScore);
+                String opponentScore = "" + (98 - Integer.parseInt(score));
+                score = context.getString(R.string.match_score, score, opponentScore);
+                String date = cursor.getString(indexDate);
+                alPlayerScores.add(new String[] {score, date});
+            }
+        }
+
+        return alPlayerScores;
     }
 }

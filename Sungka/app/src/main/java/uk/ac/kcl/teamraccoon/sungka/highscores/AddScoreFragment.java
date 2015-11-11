@@ -15,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import uk.ac.kcl.teamraccoon.sungka.R;
 import uk.ac.kcl.teamraccoon.sungka.data.PlayerData;
 import uk.ac.kcl.teamraccoon.sungka.data.SungkaContract;
@@ -103,6 +106,9 @@ public class AddScoreFragment extends DialogFragment {
         ContentValues values = new ContentValues();
         values.put(SungkaContract.HighScoresEntry.COLUMN_PLAYER, playerName);
         values.put(SungkaContract.HighScoresEntry.COLUMN_SCORE, score);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        values.put(SungkaContract.HighScoresEntry.COLUMN_DATE, dateFormat.format(new Date()));
 
         getActivity().getContentResolver().insert(
                 SungkaContract.HighScoresEntry.CONTENT_URI,
