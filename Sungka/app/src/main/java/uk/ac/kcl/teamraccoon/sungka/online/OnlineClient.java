@@ -3,11 +3,9 @@ package uk.ac.kcl.teamraccoon.sungka.online;
 
 import android.util.Log;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -98,6 +96,16 @@ public class OnlineClient {
 
         return -1;
 
+    }
+
+    public void closeConnection() {
+        try {
+            outputStream.close();
+            inputStream.close();
+            clientConnection.close();
+        } catch (IOException e) {
+            Log.e("OnlineClient","IOException when closing client connection " + Log.getStackTraceString(e));
+        }
     }
 
 }

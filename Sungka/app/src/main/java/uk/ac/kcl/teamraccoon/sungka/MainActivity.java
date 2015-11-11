@@ -159,32 +159,39 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         onlineServer = new OnlineServer();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameStatus.setText("Connected to client");
+
+                        if(onlineServer != null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("Connected to client");
+                                }
+                            });
+                            if (chooseRandomPlayer() == Player.PLAYER_ONE) {
+                                onlineServer.sendPlayer(Player.PLAYER_ONE);
+                                gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("You start...take a move");
+                                        updateBoard();
+                                    }
+                                });
+                            } else {
+                                onlineServer.sendPlayer(Player.PLAYER_TWO);
+                                gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("Other player starts...please wait");
+                                    }
+                                });
+                                serverWaitForMove();
                             }
-                        });
-                        if(chooseRandomPlayer() == Player.PLAYER_ONE) {
-                            onlineServer.sendPlayer(Player.PLAYER_ONE);
-                            gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameStatus.setText("You start...take a move");
-                                    updateBoard();
-                                }
-                            });
                         } else {
-                            onlineServer.sendPlayer(Player.PLAYER_TWO);
-                            gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameStatus.setText("Other player starts...please wait");
-                                }
-                            });
-                            serverWaitForMove();
+                            Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+                            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"ServerInitialiseFail");
+                            startActivity(returnMultiplayerMenuIntent);
                         }
                     }
                 });
@@ -193,23 +200,21 @@ public class MainActivity extends AppCompatActivity {
 
             } else if(isClient) {
 
-                final String serverIpAddress = serverIP;
+                final String serverIPAddress = serverIP;
                 Log.i("MainActivity", "client initialisation is called");
+                gameStatus.setText("Attempting to connect to server...please wait");
 
                 Thread clientThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        boolean connectedSuccesfully;
-                        //checks to see if a connection can be made at serverIpAddress
+                        //checks to see if a connection can be made at serverIPAddress
                         try {
-                            onlineClient = new OnlineClient(serverIpAddress);
-                            connectedSuccesfully = true;
+                            onlineClient = new OnlineClient(serverIPAddress);
                         } catch (IOException e) {
-
-                            connectedSuccesfully = false;
+                            Log.e("MainActivity","Error when initalising onlineClient " + Log.getStackTraceString(e));
                         }
 
-                        if(connectedSuccesfully == true) {
+                        if(onlineClient != null) {
                             clientHasConnected = true;
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -645,7 +650,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.i("MainActivity","Still in starting position");
+        Log.i("MainActivity", "Still in starting position");
         return  true;
     }
 
@@ -874,13 +879,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 final int oppositionIndex = onlineServer.receiveMove();
-                gameBoard.takeTurn(oppositionIndex);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateBoard(oppositionIndex, Player.PLAYER_TWO);
-                    }
-                });
+                if(oppositionIndex == -1) {
+                    endActivity();
+                } else {
+                    gameBoard.takeTurn(oppositionIndex);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateBoard(oppositionIndex, Player.PLAYER_TWO);
+                        }
+                    });
+                }
             }
         });
 
@@ -895,13 +904,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 final int oppositionIndex = onlineClient.receiveMove();
-                gameBoard.takeTurn(oppositionIndex);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateBoard(oppositionIndex, Player.PLAYER_ONE);
-                    }
-                });
+                if(oppositionIndex == -1) {
+                    endActivity();
+                } else {
+                    gameBoard.takeTurn(oppositionIndex);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateBoard(oppositionIndex, Player.PLAYER_ONE);
+                        }
+                    });
+                }
             }
         });
         clientWaitForMoveThread.start();
@@ -926,6 +939,16 @@ public class MainActivity extends AppCompatActivity {
     public static void setServerIP(String ip) {
 
         serverIP = ip;
+
+    }
+
+    private void endActivity() {
+
+        if(onlineClient != null) {
+            onlineClient.closeConnection();
+        } else if(onlineServer != null) {
+            onlineServer.closeConnection();
+        }
 
     }
 

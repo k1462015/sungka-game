@@ -2,7 +2,6 @@ package uk.ac.kcl.teamraccoon.sungka.online;
 
 import android.util.Log;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -116,6 +115,17 @@ public class OnlineServer {
 
         return -1;
 
+    }
+
+    public void closeConnection() {
+        try {
+            outputStream.close();
+            inputStream.close();
+            serverConnection.close();
+            serverSocket.close();
+        } catch (IOException e) {
+            Log.e("OnlineClient","IOException when closing client connection " + Log.getStackTraceString(e));
+        }
     }
 
 }

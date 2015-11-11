@@ -1,9 +1,12 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,19 +25,30 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
         if(option != null && option.equals("HostConnectFail")) {
             Toast toast = Toast.makeText(this,"Server not initialised or incorrect IP address",Toast.LENGTH_LONG);
             toast.show();
+        } else if(option != null && option.equals("ServerInitialiseFail")) {
+            Toast toast = Toast.makeText(this,"Server could not be initialised. Try again",Toast.LENGTH_LONG);
+            toast.show();
         }
     }
 
     public void startAsHost(View view ){
-        //Something that makes it starts as host
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.putExtra(GAME_OPTION, "Server");
-        startActivity(intent);
+        if(isConnectedToWifi()) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(GAME_OPTION, "Server");
+            startActivity(intent);
+        } else {
+            Toast toast = Toast.makeText(this,"You are not currently connected to WiFi",Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
     public void startAsClient(View view){
-        //Something that makes it start as client
-        displayIPDialog();
+        if(isConnectedToWifi()) {
+            displayIPDialog();
+        } else {
+            Toast toast = Toast.makeText(this,"You are not currently connected to WiFi",Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
     private void displayIPDialog() {
@@ -44,10 +58,12 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     }
 
-    private void startClient(String serverIP) {
+    @Override
+    public void OnDialogDismissed(String serverIP) {
         Intent intent = new Intent(this,MainActivity.class);
         intent.putExtra(GAME_OPTION, "Client");
         startActivity(intent);
+        MainActivity.setServerIP(serverIP);
     }
 
     @Override
@@ -66,15 +82,24 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
         }
     }
 
-    @Override
-    public void OnDialogDismissed(String serverIP) {
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.putExtra(GAME_OPTION, "Client");
-        startActivity(intent);
-        MainActivity.setServerIP(serverIP);
-    }
-
     public void returnToMainMenu(View view) {
         finish();
     }
+
+    private boolean isConnectedToWifi() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo currentActiveNetwork = connectivityManager.getActiveNetworkInfo();
+        if(currentActiveNetwork != null) {
+
+            if(currentActiveNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }
+
 }
