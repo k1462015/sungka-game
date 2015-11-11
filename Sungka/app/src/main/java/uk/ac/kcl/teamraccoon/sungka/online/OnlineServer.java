@@ -21,30 +21,25 @@ public class OnlineServer {
     private ServerSocket serverSocket;
     private Socket serverConnection;
 
-    public OnlineServer() {
+    public OnlineServer() throws IOException {
 
         Log.d("OnlineServer", "OnlineServer class constructed");
 
-        try {
 
-            //setup a new ServerSocket at port number 6273
-            serverSocket = new ServerSocket(6273);
+        //setup a new ServerSocket at port number 6273
+        serverSocket = new ServerSocket(6273);
 
-            Log.d("OnlineServer", "ServerSocket serverSocket initialised");
+        Log.d("OnlineServer", "ServerSocket serverSocket initialised");
 
-            //listen for client to connect to server and accept the socket
-            serverConnection = serverSocket.accept();
+        //listen for client to connect to server and accept the socket
+        serverConnection = serverSocket.accept();
 
-            Log.d("OnlineServer", "Connection with client made");
+        Log.d("OnlineServer", "Connection with client made");
 
-            //initialise the streams for receiving data from and sending data to client
-            initialiseStreams();
+        //initialise the streams for receiving data from and sending data to client
+        initialiseStreams();
 
-            Log.d("OnlineServer", "ObjectOutputStream outputStream and ObjectInputStream inputStream initialised");
-
-        } catch (IOException e) {
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
-        }
+        Log.d("OnlineServer", "ObjectOutputStream outputStream and ObjectInputStream inputStream initialised");
 
     }
 
@@ -119,10 +114,12 @@ public class OnlineServer {
 
     public void closeConnection() {
         try {
+            Log.i("OnlineServer","onlineServer closeConnection() called");
             outputStream.close();
             inputStream.close();
             serverConnection.close();
             serverSocket.close();
+            Log.i("OnlineServer","onlineServer connection successfully closed");
         } catch (IOException e) {
             Log.e("OnlineClient","IOException when closing client connection " + Log.getStackTraceString(e));
         }

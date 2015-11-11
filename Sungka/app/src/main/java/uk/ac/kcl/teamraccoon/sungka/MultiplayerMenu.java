@@ -1,5 +1,6 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -20,22 +21,34 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer_menu);
-        Intent intent = getIntent();
-        String option = intent.getStringExtra(MainActivity.GAME_EXIT);
-        if(option != null && option.equals("HostConnectFail")) {
-            Toast toast = Toast.makeText(this,"Server not initialised or incorrect IP address",Toast.LENGTH_LONG);
-            toast.show();
-        } else if(option != null && option.equals("ServerInitialiseFail")) {
-            Toast toast = Toast.makeText(this,"Server could not be initialised. Try again",Toast.LENGTH_LONG);
-            toast.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                String option = data.getStringExtra(MainActivity.GAME_EXIT);
+                if(option.equals("HostConnectFail")) {
+                    Toast toast = Toast.makeText(this,"Server not initialised or incorrect IP address",Toast.LENGTH_LONG);
+                    toast.show();
+                } else if(option.equals("ServerInitialiseFail")) {
+                    Toast toast = Toast.makeText(this,"Server could not be initialised. Try again",Toast.LENGTH_LONG);
+                    toast.show();
+                } else if(option.equals("ConnectionLostToClient") || option.equals("ConnectionLostToServer")) {
+                    Toast toast = Toast.makeText(this,"Sorry, connection with opponent was lost",Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
         }
+
     }
 
     public void startAsHost(View view ){
         if(isConnectedToWifi()) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra(GAME_OPTION, "Server");
-            startActivity(intent);
+            startActivityForResult(intent, 1);
         } else {
             Toast toast = Toast.makeText(this,"You are not currently connected to WiFi",Toast.LENGTH_LONG);
             toast.show();
@@ -62,7 +75,7 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
     public void OnDialogDismissed(String serverIP) {
         Intent intent = new Intent(this,MainActivity.class);
         intent.putExtra(GAME_OPTION, "Client");
-        startActivity(intent);
+        startActivityForResult(intent,1);
         MainActivity.setServerIP(serverIP);
     }
 

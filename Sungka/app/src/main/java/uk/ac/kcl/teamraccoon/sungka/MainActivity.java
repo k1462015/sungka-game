@@ -1,5 +1,6 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void run() {
+
                         final String ipString = OnlineServer.getServerIP();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -158,9 +160,18 @@ public class MainActivity extends AppCompatActivity {
                                 gameStatus.setText(ipString);
                             }
                         });
-                        onlineServer = new OnlineServer();
 
-                        if(onlineServer != null) {
+                        boolean serverInitialised;
+
+                        try {
+                            onlineServer = new OnlineServer();
+                            serverInitialised = true;
+                        } catch(IOException e) {
+                            Log.e("MainActivity","onlineServer failed to initialise properly, " + Log.getStackTraceString(e));
+                            serverInitialised = false;
+                        }
+
+                        if(serverInitialised == true) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -190,8 +201,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else {
                             Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
-                            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"ServerInitialiseFail");
-                            startActivity(returnMultiplayerMenuIntent);
+                            returnMultiplayerMenuIntent.putExtra(GAME_EXIT, "ServerInitialiseFail");
+                            setResult(Activity.RESULT_OK, returnMultiplayerMenuIntent);
+                            finish();
                         }
                     }
                 });
@@ -207,14 +219,19 @@ public class MainActivity extends AppCompatActivity {
                 Thread clientThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
+
+                        boolean clientInitialisedCorrectly;
+
                         //checks to see if a connection can be made at serverIPAddress
                         try {
                             onlineClient = new OnlineClient(serverIPAddress);
+                            clientInitialisedCorrectly = true;
                         } catch (IOException e) {
                             Log.e("MainActivity","Error when initalising onlineClient " + Log.getStackTraceString(e));
+                            clientInitialisedCorrectly = false;
                         }
 
-                        if(onlineClient != null) {
+                        if(clientInitialisedCorrectly == true) {
                             clientHasConnected = true;
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -245,7 +262,8 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
                             returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"HostConnectFail");
-                            startActivity(returnMultiplayerMenuIntent);
+                            setResult(Activity.RESULT_OK, returnMultiplayerMenuIntent);
+                            finish();
                         }
                     }
                 });
@@ -880,7 +898,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 final int oppositionIndex = onlineServer.receiveMove();
                 if(oppositionIndex == -1) {
-                    endActivity();
+                    onEndActivity();
+                    onConnectionLost();
                 } else {
                     gameBoard.takeTurn(oppositionIndex);
                     runOnUiThread(new Runnable() {
@@ -905,7 +924,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 final int oppositionIndex = onlineClient.receiveMove();
                 if(oppositionIndex == -1) {
-                    endActivity();
+                    onEndActivity();
+                    onConnectionLost();
                 } else {
                     gameBoard.takeTurn(oppositionIndex);
                     runOnUiThread(new Runnable() {
@@ -936,20 +956,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void onConnectionLost() {
+
+        Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+        if(isServer) {
+            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"ConnectionLostToClient");
+        } else if(isClient) {
+            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"ConnectionLostToServer");
+        }
+        setResult(Activity.RESULT_OK,returnMultiplayerMenuIntent);
+        finish();
+
+    }
+
     public static void setServerIP(String ip) {
 
         serverIP = ip;
 
     }
 
-    private void endActivity() {
+    private void onEndActivity() {
 
+        Log.i("MainActivity", "onEndActivity actually gets called");
         if(onlineClient != null) {
             onlineClient.closeConnection();
         } else if(onlineServer != null) {
+            Log.i("MainActivity","in onEndActivity() knows it's a server");
             onlineServer.closeConnection();
         }
 
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        Log.i("MainActivity","Back button pressed");
+        onEndActivity();
+        finish();
     }
 
 }
