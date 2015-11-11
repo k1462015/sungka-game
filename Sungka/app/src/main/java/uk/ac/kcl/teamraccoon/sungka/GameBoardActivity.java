@@ -629,6 +629,9 @@ public class GameBoardActivity extends AppCompatActivity {
                 }
             }
         }
+        if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+            disableBoard();
+        }
 
         if (gameBoard.isGameOver()) {
             displayDialog();
