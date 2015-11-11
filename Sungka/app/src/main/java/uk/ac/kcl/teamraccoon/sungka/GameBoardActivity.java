@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +32,7 @@ import uk.ac.kcl.teamraccoon.sungka.online.OnlineServer;
 
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity {
+public class GameBoardActivity extends AppCompatActivity {
 
     public static final String GAME_EXIT = "com.uk.ac.kcl.teamraccoon.sungka.EXIT_TOAST";
 
@@ -170,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                             serverInitialised = true;
                             serverStreamsInitialised = true;
                         } catch(IOException e) {
-                            Log.e("MainActivity","onlineServer failed to initialise properly, " + Log.getStackTraceString(e));
+                            Log.e("GameBoardActivity","onlineServer failed to initialise properly, " + Log.getStackTraceString(e));
                             serverInitialised = false;
                         }
 
@@ -203,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                                 serverWaitForMove();
                             }
                         } else {
-                            Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+                            Intent returnMultiplayerMenuIntent = new Intent(GameBoardActivity.this,MultiplayerMenu.class);
                             returnMultiplayerMenuIntent.putExtra(GAME_EXIT, "ServerInitialiseFail");
                             setResult(Activity.RESULT_OK, returnMultiplayerMenuIntent);
                             finish();
@@ -216,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             } else if(isClient) {
 
                 final String serverIPAddress = serverIP;
-                Log.i("MainActivity", "client initialisation is called");
+                Log.i("GameBoardActivity", "client initialisation is called");
                 gameStatus.setText("Attempting to connect to server...please wait");
 
                 Thread clientThread = new Thread(new Runnable() {
@@ -230,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                             onlineClient = new OnlineClient(serverIPAddress);
                             clientInitialisedCorrectly = true;
                         } catch (IOException e) {
-                            Log.e("MainActivity","Error when initalising onlineClient " + Log.getStackTraceString(e));
+                            Log.e("GameBoardActivity","Error when initalising onlineClient " + Log.getStackTraceString(e));
                             clientInitialisedCorrectly = false;
                         }
 
@@ -263,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                                 });
                             }
                         } else {
-                            Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+                            Intent returnMultiplayerMenuIntent = new Intent(GameBoardActivity.this,MultiplayerMenu.class);
                             returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"HostConnectFail");
                             setResult(Activity.RESULT_OK, returnMultiplayerMenuIntent);
                             finish();
@@ -342,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
      * @param selectedIndex - Index to start animation from
      */
     public void updateBoard(final int selectedIndex, final Player playerCaller){
-        Log.i("MainActivity","updateBoard(int,player) called");
+        Log.i("GameBoardActivity","updateBoard(int,player) called");
         final Player methodCaller = playerCaller;
         final int[] arrayOfTrays = gameBoard.getArrayOfTrays();
         //First get the number of shells in that tray
@@ -576,7 +575,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateBoard() {
 
-        Log.i("MainActivity","updateBoard() called");
+        Log.i("GameBoardActivity","updateBoard() called");
 
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
 
@@ -656,7 +655,7 @@ public class MainActivity extends AppCompatActivity {
             if (gameBoard.getCurrentPlayer() == Player.PLAYER_TWO && isServer) {
                 serverWaitForMove();
             } else if (gameBoard.getCurrentPlayer() == Player.PLAYER_ONE && isClient && clientHasConnected) {
-                Log.i("MainActivity", "clientWaitForActivity called from update board");
+                Log.i("GameBoardActivity", "clientWaitForActivity called from update board");
                 clientWaitForMove();
             }
         }
@@ -671,7 +670,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.i("MainActivity", "Still in starting position");
+        Log.i("GameBoardActivity", "Still in starting position");
         return  true;
     }
 
@@ -884,7 +883,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void serverWaitForMove() {
 
-        Log.i("MainActivity","serverWaitForMove() called");
+        Log.i("GameBoardActivity","serverWaitForMove() called");
         Thread serverWaitForMoveThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -910,7 +909,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void clientWaitForMove() {
 
-        Log.i("MainActivity","clientWaitForMove() called");
+        Log.i("GameBoardActivity","clientWaitForMove() called");
         Thread clientWaitForMoveThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -950,7 +949,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void onConnectionLost() {
 
-        Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+        Intent returnMultiplayerMenuIntent = new Intent(GameBoardActivity.this,MultiplayerMenu.class);
         if(isServer) {
             returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"ConnectionLostToClient");
         } else if(isClient) {
@@ -969,7 +968,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void onEndActivity() {
 
-        Log.i("MainActivity", "onEndActivity actually gets called");
+        Log.i("GameBoardActivity", "onEndActivity actually gets called");
         if(onlineClient != null) {
             onlineClient.closeConnection();
         } else if(onlineServer != null) {
@@ -985,7 +984,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-        Log.i("MainActivity","Back button pressed");
+        Log.i("GameBoardActivity","Back button pressed");
         onEndActivity();
         finish();
     }

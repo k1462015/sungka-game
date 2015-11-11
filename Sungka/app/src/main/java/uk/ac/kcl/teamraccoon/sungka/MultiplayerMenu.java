@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -28,7 +27,7 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                String option = data.getStringExtra(MainActivity.GAME_EXIT);
+                String option = data.getStringExtra(GameBoardActivity.GAME_EXIT);
                 if(option.equals("HostConnectFail")) {
                     Toast toast = Toast.makeText(this,"Server not initialised or incorrect IP address",Toast.LENGTH_LONG);
                     toast.show();
@@ -46,7 +45,7 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     public void startAsHost(View view ){
         if(isConnectedToWifi()) {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, GameBoardActivity.class);
             intent.putExtra(GAME_OPTION, "Server");
             startActivityForResult(intent, 1);
         } else {
@@ -73,10 +72,10 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     @Override
     public void OnDialogDismissed(String serverIP) {
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this,GameBoardActivity.class);
         intent.putExtra(GAME_OPTION, "Client");
         startActivityForResult(intent,1);
-        MainActivity.setServerIP(serverIP);
+        GameBoardActivity.setServerIP(serverIP);
     }
 
     @Override
