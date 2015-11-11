@@ -63,6 +63,8 @@ public class SungkaContract {
         public static final String COLUMN_PLAYER = "player";
         // Column with scores achieved by players
         public static final String COLUMN_SCORE = "player_score";
+        // Column with dates
+        public static final String COLUMN_DATE = "match_date";
 
         public static Uri buildHighScoresUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

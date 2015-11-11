@@ -2,6 +2,7 @@ package uk.ac.kcl.teamraccoon.sungka.highscores;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class HighScoresAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        TextView tvPosition = (TextView) view.findViewById(R.id.list_item_position);
         TextView tvPlayerName = (TextView) view.findViewById(R.id.list_item_player);
         TextView tvPlayerScore = (TextView) view.findViewById(R.id.list_item_scores);
 
@@ -32,6 +34,8 @@ public class HighScoresAdapter extends CursorAdapter {
         int playerScore = cursor.getInt(
                 cursor.getColumnIndexOrThrow(SungkaContract.HighScoresEntry.COLUMN_SCORE));
 
+        tvPosition.setText("" + (cursor.getPosition() + 1));
+        tvPosition.setGravity(Gravity.CENTER);
         tvPlayerName.setText(playerName);
         tvPlayerScore.setText("" + playerScore);
     }

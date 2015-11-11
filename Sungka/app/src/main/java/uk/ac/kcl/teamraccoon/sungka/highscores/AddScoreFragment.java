@@ -8,10 +8,15 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import uk.ac.kcl.teamraccoon.sungka.R;
 import uk.ac.kcl.teamraccoon.sungka.data.PlayerData;
@@ -65,6 +70,13 @@ public class AddScoreFragment extends DialogFragment {
         mScores = dialogBundle.getIntArray(BUNDLE_TAG);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().setCanceledOnTouchOutside(false);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     @Override
     public void onDismiss(DialogInterface dialog) {
         // Display the high scores list
@@ -94,6 +106,9 @@ public class AddScoreFragment extends DialogFragment {
         ContentValues values = new ContentValues();
         values.put(SungkaContract.HighScoresEntry.COLUMN_PLAYER, playerName);
         values.put(SungkaContract.HighScoresEntry.COLUMN_SCORE, score);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        values.put(SungkaContract.HighScoresEntry.COLUMN_DATE, dateFormat.format(new Date()));
 
         getActivity().getContentResolver().insert(
                 SungkaContract.HighScoresEntry.CONTENT_URI,
