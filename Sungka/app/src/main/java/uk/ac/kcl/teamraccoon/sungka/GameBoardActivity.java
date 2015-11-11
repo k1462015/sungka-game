@@ -820,7 +820,6 @@ public class GameBoardActivity extends AppCompatActivity {
                 }
             });
         }
-
         updateBoard();
     }
 
