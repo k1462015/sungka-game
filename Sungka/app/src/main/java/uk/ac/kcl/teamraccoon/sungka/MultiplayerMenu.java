@@ -73,4 +73,8 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
         startActivity(intent);
         MainActivity.setServerIP(serverIP);
     }
+
+    public void returnToMainMenu(View view) {
+        finish();
+    }
 }
