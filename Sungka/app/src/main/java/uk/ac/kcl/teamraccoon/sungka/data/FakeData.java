@@ -52,9 +52,6 @@ public class FakeData {
             int[] mScores = {randomInt, 98 - randomInt};
             insertScore(playerName, mScores[0]);
             updateUserData(playerName, 0, mScores);
-
-            insertScore(playerName, mScores[1]);
-            updateUserData(playerName, 1, mScores);
         }
     }
 
