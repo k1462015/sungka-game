@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+    <dimen name="player_statistics_horizontal_padding">32dp</dimen>
+    <dimen name="player_statistics_vertical_padding">24dp</dimen>
+</resources>

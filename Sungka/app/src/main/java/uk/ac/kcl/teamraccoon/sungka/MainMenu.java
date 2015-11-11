@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import uk.ac.kcl.teamraccoon.sungka.data.FakeData;
 import uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresActivity;
 
 public class MainMenu extends AppCompatActivity {
@@ -14,7 +13,7 @@ public class MainMenu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new FakeData(this);
+      //  new FakeData(this);
         setContentView(R.layout.activity_main_menu);
     }
 

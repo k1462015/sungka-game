@@ -7,10 +7,10 @@
     app:columnCount="2">
 
     <android.support.v7.widget.Space
-        android:layout_height="8dp"
+        android:layout_height="16dp"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"
-        app:layout_rowWeight="0.5" />
+        app:layout_rowWeight="1" />
 
     <TextView
         android:id="@+id/player_name_label"
@@ -25,12 +25,18 @@
         app:layout_gravity="fill_horizontal"
         android:textSize="24sp" />
 
+    <android.support.v7.widget.Space
+        android:layout_height="16dp"
+        app:layout_columnSpan="2"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="0.5" />
+
     <android.support.v7.widget.RecyclerView
         android:layout_height="16dp"
         android:id="@+id/scores_recycler_view"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"
-        app:layout_rowWeight="1" />
+        app:layout_rowWeight="0.5" />
 
 </android.support.v7.widget.GridLayout>
 
