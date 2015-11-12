@@ -25,16 +25,20 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        //checks for a result when game returns to this activity
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 String option = data.getStringExtra(GameBoardActivity.GAME_EXIT);
                 if(option.equals("HostConnectFail")) {
+                    //displays toast if the client could not find the server
                     Toast toast = Toast.makeText(this,"Server not initialised or incorrect IP address",Toast.LENGTH_LONG);
                     toast.show();
                 } else if(option.equals("ServerInitialiseFail")) {
+                    //displays toast if the server could not be initialised for some reason
                     Toast toast = Toast.makeText(this,"Server could not be initialised. Try again",Toast.LENGTH_LONG);
                     toast.show();
                 } else if(option.equals("ConnectionLostToClient") || option.equals("ConnectionLostToServer")) {
+                    //displays toast for if server or client lost connection to opponent
                     Toast toast = Toast.makeText(this,"Sorry, connection with opponent was lost",Toast.LENGTH_LONG);
                     toast.show();
                 }
@@ -43,27 +47,42 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     }
 
+    /**
+     * for when start as host button is pressed
+     * @param view
+     */
     public void startAsHost(View view ){
         if(isConnectedToWifi()) {
+            //starts GameBoardActivity as server if connected to WiFi
             Intent intent = new Intent(this, GameBoardActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             intent.putExtra(GAME_OPTION, "Server");
             startActivityForResult(intent, 1);
         } else {
+            //if not connected to WiFi informs user via a toast
             Toast toast = Toast.makeText(this,"You are not currently connected to WiFi",Toast.LENGTH_LONG);
             toast.show();
         }
     }
 
+    /**
+     * for when start as client button is pressed
+     * @param view
+     */
     public void startAsClient(View view){
         if(isConnectedToWifi()) {
+            //displays dialog box for inputting IP address
             displayIPDialog();
         } else {
+            //if not connected to WiFi informs user via a toast
             Toast toast = Toast.makeText(this,"You are not currently connected to WiFi",Toast.LENGTH_LONG);
             toast.show();
         }
     }
 
+    /**
+     * displays the SetIPAddressFragment dialog box
+     */
     private void displayIPDialog() {
 
         SetIPAddressFragment setIPDialog = new SetIPAddressFragment();
@@ -71,6 +90,10 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     }
 
+    /**
+     * start activity when dialog box is dismissed
+     * @param serverIP inputted IP address
+     */
     @Override
     public void OnDialogDismissed(String serverIP) {
         Intent intent = new Intent(this,GameBoardActivity.class);
@@ -89,6 +112,10 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
         finish();
     }
 
+    /**
+     * checks whether the device is connected to WiFi
+     * @return a boolean of whether it is connected to WiFi or not
+     */
     private boolean isConnectedToWifi() {
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
