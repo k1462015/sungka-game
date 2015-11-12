@@ -30,14 +30,11 @@ public class OnlineClient {
         } catch (UnknownHostException e) {
             Log.e("OnlineClient", "Exception was caught with error message " + Log.getStackTraceString(e));
         }
-        try {
 
-            //initialise the streams for receiving data from and sending data to server
-            initialiseStreams();
+        //initialise the streams for receiving data from and sending data to server
+        initialiseStreams();
 
-        } catch (IOException e) {
-            Log.e("OnlineClient", "Exception was caught with error message " + Log.getStackTraceString(e));
-        }
+
     }
 
     /**
