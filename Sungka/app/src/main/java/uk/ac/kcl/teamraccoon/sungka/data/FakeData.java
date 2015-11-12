@@ -17,14 +17,14 @@ public class FakeData {
         Random rnd = new Random();
 
         String[] players = {"Dominik", "Tahmidul", "Ana", "Rosen", "Ben",
-                "Tim Cook", "Peter Thiel", "Elon Musk", "Larry Page", "HRH Reggie the Lion",
+                "Peter Thiel", "Elon Musk", "HRH Reggie the Lion",
                 "Virginia Woolf", "John Keats", "Peter Higgs", "James Clerk Maxwell"};
 
         for(int i=0; i<players.length; ++i){
             String playerName = players[i];
-            int counter = rnd.nextInt(10) + 10;
+            int counter = rnd.nextInt(3) + 5;
             for (int k = 0; k < counter; ++k) {
-                int randomInt = rnd.nextInt(81) + 8;
+                int randomInt = rnd.nextInt(50) + 20;
                 int[] mScores = {randomInt, 98 - randomInt};
                 int randomOpponent = rnd.nextInt(players.length);
                 while(randomOpponent == i) { randomOpponent = rnd.nextInt(players.length); }
