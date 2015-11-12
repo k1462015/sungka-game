@@ -59,6 +59,7 @@ public class GameBoardActivity extends AppCompatActivity {
     OnlineClient onlineClient;
     static String serverIP;
     boolean stopGame;
+    AlertDialog restartAlertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1020,6 +1021,11 @@ public class GameBoardActivity extends AppCompatActivity {
             }
         })
         .show();
+        restartAlertDialog = alertbox;
+    }
+
+    public AlertDialog returnRestartAlertDialog() {
+        return restartAlertDialog;
     }
 
     public void returnToMainMenu(View view){
