@@ -1,9 +1,12 @@
 package uk.ac.kcl.teamraccoon.sungka.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 
 
@@ -82,4 +85,59 @@ public class SungkaDbTest extends AndroidTestCase {
 
         db.close();
     }
+
+    public void testHighScoresTable() {
+        SungkaDbHelper dbHelper = new SungkaDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(SungkaContract.HighScoresEntry.COLUMN_PLAYER, "uk.ac.kcl.teamraccoon.sungka.TEST");
+        values.put(SungkaContract.HighScoresEntry.COLUMN_SCORE, 50);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        values.put(SungkaContract.HighScoresEntry.COLUMN_DATE, dateFormat.format(new Date()));
+
+        long highScoresRowId = db.insert(SungkaContract.HighScoresEntry.TABLE_NAME, null, values);
+        assertTrue(highScoresRowId != -1);
+
+        Cursor highScoresCursor = db.query(
+                SungkaContract.HighScoresEntry.TABLE_NAME,
+                null, null, null, null, null, null
+        );
+
+        assertTrue("No records returned from the High Scores table", highScoresCursor.moveToFirst());
+
+        assertFalse("More than one record returned from the High Scores table", highScoresCursor.moveToNext());
+
+        highScoresCursor.close();
+        dbHelper.close();
+    }
+
+    public void testPlayerTable() {
+        SungkaDbHelper dbHelper = new SungkaDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(SungkaContract.PlayerEntry.COLUMN_PLAYER_NAME, "uk.ac.kcl.teamraccoon.sungka.TEST");
+        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED, 1);
+        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_WON, 1);
+        values.put(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST, 0);
+        values.put(SungkaContract.PlayerEntry.COLUMN_HIGH_SCORE, 50);
+
+        long playerRowId = db.insert(SungkaContract.PlayerEntry.TABLE_NAME, null, values);
+        assertTrue(playerRowId != -1);
+
+        Cursor playerCursor = db.query(
+                SungkaContract.PlayerEntry.TABLE_NAME,
+                null, null, null, null, null, null
+        );
+
+        assertTrue("No records returned from the Player table", playerCursor.moveToFirst());
+
+        assertFalse("More than one record returned from the Player table", playerCursor.moveToNext());
+
+        playerCursor.close();
+        dbHelper.close();
+    }
+
 }
