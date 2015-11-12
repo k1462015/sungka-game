@@ -15,8 +15,7 @@
             android:name=".GameBoardActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
-            android:theme="@style/AppFullScreenTheme"
-            android:noHistory="true">
+            android:theme="@style/AppFullScreenTheme">
         </activity>
 
         <provider

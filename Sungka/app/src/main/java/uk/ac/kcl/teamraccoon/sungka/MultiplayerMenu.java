@@ -46,6 +46,7 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
     public void startAsHost(View view ){
         if(isConnectedToWifi()) {
             Intent intent = new Intent(this, GameBoardActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             intent.putExtra(GAME_OPTION, "Server");
             startActivityForResult(intent, 1);
         } else {
@@ -73,6 +74,7 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
     @Override
     public void OnDialogDismissed(String serverIP) {
         Intent intent = new Intent(this,GameBoardActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.putExtra(GAME_OPTION, "Client");
         startActivityForResult(intent,1);
         GameBoardActivity.setServerIP(serverIP);
