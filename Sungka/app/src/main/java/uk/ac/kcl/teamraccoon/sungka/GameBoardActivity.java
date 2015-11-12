@@ -13,11 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -29,7 +29,6 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.Random;
 
-import uk.ac.kcl.teamraccoon.sungka.data.PlayerData;
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
 import uk.ac.kcl.teamraccoon.sungka.online.OnlineClient;
 import uk.ac.kcl.teamraccoon.sungka.online.OnlineServer;
@@ -280,6 +279,7 @@ public class GameBoardActivity extends AppCompatActivity {
                 clientThread.start();
             }
         }
+        displayDialog();
     }
 
 
@@ -878,6 +878,7 @@ public class GameBoardActivity extends AppCompatActivity {
         Bundle bundleDialog = new Bundle();
         int[] scores = {arrayOfTrays[7], arrayOfTrays[15]};
         bundleDialog.putIntArray(AddScoreFragment.BUNDLE_TAG, scores);
+        bundleDialog.putBoolean(AddScoreFragment.BUNDLE_AI_TAG, aiChosen);
 
         AddScoreFragment addScoreFragment = new AddScoreFragment();
         addScoreFragment.setArguments(bundleDialog);

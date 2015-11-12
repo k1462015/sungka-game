@@ -29,8 +29,10 @@ public class AddScoreFragment extends DialogFragment {
 
     private int[] mScores;
     private View rootView;
+    boolean aiChosen;
 
     static final public String BUNDLE_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.SCORES";
+    static final public String BUNDLE_AI_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.AI";
 
     public AddScoreFragment() {}
 
@@ -46,6 +48,12 @@ public class AddScoreFragment extends DialogFragment {
         String statistics =  getString(R.string.add_score_players, mScores[0], mScores[1]);
 
         tvStatistics.setText(statistics);
+
+        if(aiChosen) {
+            EditText etPlayerTwo = (EditText) rootView.findViewById(R.id.player_two_name);
+            etPlayerTwo.setText(R.string.ai_name);
+            etPlayerTwo.setEnabled(false);
+        }
 
         builder.setView(rootView)
                 .setPositiveButton(R.string.save_score, new DialogInterface.OnClickListener() {
@@ -68,6 +76,7 @@ public class AddScoreFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         Bundle dialogBundle = this.getArguments();
         mScores = dialogBundle.getIntArray(BUNDLE_TAG);
+        aiChosen = dialogBundle.getBoolean(BUNDLE_AI_TAG);
     }
 
     @Nullable
