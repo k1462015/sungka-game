@@ -61,7 +61,8 @@ public class GameBoardActivity extends AppCompatActivity {
     static String serverIP;
     boolean stopGame;
     AlertDialog restartAlertDialog;
-
+    Button p1Status;
+    Button p2Status;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +75,10 @@ public class GameBoardActivity extends AppCompatActivity {
         gameToast = Toast.makeText(this,"Game Info",Toast.LENGTH_SHORT);
         stopGame = false;
         trayCapturedSound = MediaPlayer.create(getApplicationContext(),R.raw.traycapturedsound);
+        p1Status = (Button) findViewById(R.id.p1Status);
+        p1Status.setEnabled(false);
+        p2Status = (Button) findViewById(R.id.p2Status);
+        p2Status.setEnabled(false);
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
         if(option != null && option.equals("P1P2")){
@@ -555,7 +560,7 @@ public class GameBoardActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(!stopGame) {
+                if (!stopGame) {
                     gameToast.setText(text);
                     gameToast.show();
                 }
@@ -611,6 +616,10 @@ public class GameBoardActivity extends AppCompatActivity {
                     gameStatus.setText("Other player's turn");
                 }
             }
+            if(playerChosen){
+                p1Status.setEnabled(true);
+                p2Status.setEnabled(false);
+            }
         } else if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO) {
 
 
@@ -643,12 +652,19 @@ public class GameBoardActivity extends AppCompatActivity {
                     gameStatus.setText("Other player's turn");
                 }
             }
+            if(playerChosen){
+                p1Status.setEnabled(false);
+                p2Status.setEnabled(true);
+            }
         }
         if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
             disableBoard();
         }
 
         if (gameBoard.isGameOver()) {
+            p1Status.setEnabled(false);
+            p2Status.setEnabled(false);
+            gameStatus.setText("Game Over!");
             displayDialog();
         }
 
