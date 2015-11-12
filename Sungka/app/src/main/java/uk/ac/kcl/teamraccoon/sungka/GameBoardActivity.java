@@ -117,8 +117,10 @@ public class GameBoardActivity extends AppCompatActivity {
                             gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
                             updateBoard();
                             simulateAiMove();
+                            gameStatus.setText("AI starts");
                         } else {
                             updateBoard();
+                            gameStatus.setText("Player 1 starts");
                         }
                     }
                     startButton.setVisibility(View.INVISIBLE);
