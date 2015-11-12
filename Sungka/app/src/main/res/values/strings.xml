@@ -13,4 +13,5 @@
     <string name="empty_high_scores">The high scores list is empty</string>
     <string name="high_scores">High Scores</string>
     <string name="match_score">%1$s : %2$s</string>
+    <string name="ai_name">Fred AI</string>
 </resources>
