@@ -999,11 +999,11 @@ public class GameBoardActivity extends AppCompatActivity {
             // do something when the button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
                 Log.i("GameBoardActivity", "Back button pressed");
-                onEndActivity();
                 handler.removeCallbacks(aiMove);
                 stopGame = true;
                 gameToast.cancel(); //Cancel any showing toasts
                 finish();
+                onEndActivity();
 
             }
         })
