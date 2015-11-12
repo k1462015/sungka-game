@@ -20,7 +20,7 @@ public class FakeData {
                 "Peter Thiel", "Elon Musk", "HRH Reggie the Lion",
                 "Virginia Woolf", "John Keats", "Peter Higgs", "James Clerk Maxwell"};
 
-        for(int i=0; i<players.length; ++i){
+        for(int i=0; i<players.length; ++i) {
             String playerName = players[i];
             int counter = rnd.nextInt(3) + 5;
             for (int k = 0; k < counter; ++k) {
