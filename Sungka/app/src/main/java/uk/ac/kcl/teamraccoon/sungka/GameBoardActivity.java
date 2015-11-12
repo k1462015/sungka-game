@@ -279,7 +279,6 @@ public class GameBoardActivity extends AppCompatActivity {
                 clientThread.start();
             }
         }
-        displayDialog();
     }
 
 
