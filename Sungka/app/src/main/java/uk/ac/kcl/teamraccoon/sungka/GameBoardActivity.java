@@ -1,5 +1,8 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -10,11 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -32,7 +35,7 @@ import uk.ac.kcl.teamraccoon.sungka.online.OnlineServer;
 
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity {
+public class GameBoardActivity extends AppCompatActivity {
 
     public static final String GAME_EXIT = "com.uk.ac.kcl.teamraccoon.sungka.EXIT_TOAST";
 
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isClient;
     boolean isMultiplayer;
     boolean clientHasConnected = false;
+    boolean serverStreamsInitialised = false;
     ImageView shell;
     Button startButton;
     Toast gameToast;
@@ -55,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     OnlineServer onlineServer;
     OnlineClient onlineClient;
     static String serverIP;
+    boolean stopGame;
+    AlertDialog restartAlertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +68,11 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_game_board);
         shell = (ImageView) findViewById(R.id.shell);
         startButton = (Button) findViewById(R.id.startButton);
         gameToast = Toast.makeText(this,"Game Info",Toast.LENGTH_SHORT);
+        stopGame = false;
         trayCapturedSound = MediaPlayer.create(getApplicationContext(),R.raw.traycapturedsound);
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
@@ -115,14 +122,7 @@ public class MainActivity extends AppCompatActivity {
             resetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    gameToast.cancel(); //Cancel any showing toasts
-                    //First Remove and reset current board
-                    if (!aiChosen) {
-                        playerChosen = false;
-                    }
-                    handler.removeCallbacks(aiMove);
-                    resetBoard();
-                    gameStatus.setText(""); //Clears game status
+                    restartDialog();
                 }
             });
 
@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void run() {
+
                         final String ipString = OnlineServer.getServerIP();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -158,33 +159,58 @@ public class MainActivity extends AppCompatActivity {
                                 gameStatus.setText(ipString);
                             }
                         });
-                        onlineServer = new OnlineServer();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameStatus.setText("Connected to client");
+
+                        boolean serverInitialised;
+
+                        try {
+                            onlineServer = new OnlineServer();
+                            onlineServer.findConnection();
+                            serverInitialised = true;
+                            serverStreamsInitialised = true;
+                        } catch(IOException e) {
+                            Log.e("GameBoardActivity","onlineServer failed to initialise properly, " + Log.getStackTraceString(e));
+                            serverInitialised = false;
+                        }
+
+                        if(serverInitialised == true) {
+
+                            //for when connection has been made to client
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gameStatus.setText("Connected to client");
+                                }
+                            });
+                            //choose the player to start and inform the client
+                            if (chooseRandomPlayer() == Player.PLAYER_ONE) {
+                                onlineServer.sendPlayer(Player.PLAYER_ONE);
+                                gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("You start...take a move");
+                                        updateBoard();
+                                    }
+                                });
+                            } else {
+                                onlineServer.sendPlayer(Player.PLAYER_TWO);
+                                gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        gameStatus.setText("Other player starts...please wait");
+                                    }
+                                });
+                                serverWaitForMove();
                             }
-                        });
-                        if(chooseRandomPlayer() == Player.PLAYER_ONE) {
-                            onlineServer.sendPlayer(Player.PLAYER_ONE);
-                            gameBoard.setCurrentPlayer(Player.PLAYER_ONE);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameStatus.setText("You start...take a move");
-                                    updateBoard();
-                                }
-                            });
                         } else {
-                            onlineServer.sendPlayer(Player.PLAYER_TWO);
-                            gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameStatus.setText("Other player starts...please wait");
-                                }
-                            });
-                            serverWaitForMove();
+
+                            //for if connection was not made with client
+                            //return to previous menu explaining the server could not be initialised in a toast
+                            Intent returnMultiplayerMenuIntent = new Intent(GameBoardActivity.this,MultiplayerMenu.class);
+                            returnMultiplayerMenuIntent.putExtra(GAME_EXIT, "ServerInitialiseFail");
+                            setResult(Activity.RESULT_OK, returnMultiplayerMenuIntent);
+                            finish();
                         }
                     }
                 });
@@ -193,23 +219,27 @@ public class MainActivity extends AppCompatActivity {
 
             } else if(isClient) {
 
-                final String serverIpAddress = serverIP;
-                Log.i("MainActivity", "client initialisation is called");
+                //gets the IP address of the server to connect to
+                final String serverIPAddress = serverIP;
+                Log.i("GameBoardActivity", "client initialisation is called");
+                gameStatus.setText("Attempting to connect to server...please wait");
 
                 Thread clientThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        boolean connectedSuccesfully;
-                        //checks to see if a connection can be made at serverIpAddress
-                        try {
-                            onlineClient = new OnlineClient(serverIpAddress);
-                            connectedSuccesfully = true;
-                        } catch (IOException e) {
 
-                            connectedSuccesfully = false;
+                        boolean clientInitialisedCorrectly;
+
+                        //checks to see if a connection can be made at serverIPAddress
+                        try {
+                            onlineClient = new OnlineClient(serverIPAddress);
+                            clientInitialisedCorrectly = true;
+                        } catch (IOException e) {
+                            Log.e("GameBoardActivity","Error when initalising onlineClient " + Log.getStackTraceString(e));
+                            clientInitialisedCorrectly = false;
                         }
 
-                        if(connectedSuccesfully == true) {
+                        if(clientInitialisedCorrectly == true) {
                             clientHasConnected = true;
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -238,9 +268,11 @@ public class MainActivity extends AppCompatActivity {
                                 });
                             }
                         } else {
-                            Intent returnMultiplayerMenuIntent = new Intent(MainActivity.this,MultiplayerMenu.class);
+                            //on the set timeout of 3000 milliseconds go to multiplayer menu and tell it to display a toast
+                            Intent returnMultiplayerMenuIntent = new Intent(GameBoardActivity.this,MultiplayerMenu.class);
                             returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"HostConnectFail");
-                            startActivity(returnMultiplayerMenuIntent);
+                            setResult(Activity.RESULT_OK, returnMultiplayerMenuIntent);
+                            finish();
                         }
                     }
                 });
@@ -301,22 +333,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * Clears all linear layouts on the board
-     * Also setups up a new board and starts the timer
-     */
-    public void resetBoard(){
-        gameBoard = new Board();
-        updateBoard();
-        disableBoard();
-        startButton.setVisibility(View.VISIBLE);
-    }
-
-    /**
      * Update board method with Animations
      * @param selectedIndex - Index to start animation from
      */
     public void updateBoard(final int selectedIndex, final Player playerCaller){
-        Log.i("MainActivity","updateBoard(int,player) called");
+        Log.i("GameBoardActivity","updateBoard(int,player) called");
         final Player methodCaller = playerCaller;
         final int[] arrayOfTrays = gameBoard.getArrayOfTrays();
         //First get the number of shells in that tray
@@ -356,12 +377,11 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //Loops around board
-                while(remainingShells > 0){
+                while(remainingShells > 0 && !stopGame){
                     Log.i("MYAPP","ANIMATION INDEX: "+index);
                     Log.i("MYAPP","REMAINING SHELLS: "+remainingShells);
                     final int indexCount = index % 16;
                     //Don't show shell going into enemies store
-//                    int newShellCount = gameBoard.getArrayOfTrays()[indexCount];
                     final int oldShellCount = Integer.parseInt(arrayOfBoardButtons[indexCount].getText().toString());
                     final Button tray = arrayOfBoardButtons[indexCount];
                     //If the value of tray doesn't change - Then do nothing
@@ -413,39 +433,25 @@ public class MainActivity extends AppCompatActivity {
                 if(aiChosen){
                     checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
                     if(methodCaller == Player.PLAYER_ONE){
-//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             simulateAiMove();
                         }else{
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameToast.setText("Player 1 gets another go!");
-                                    gameToast.show();
-                                }
-                            });
+                            updateGameStatus("Player 1 gets another go!");
                         }
                     }else{
-//                        checkIfCapturedTray("Ai",traysBefore,startIndex,selectedIndex);
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gameToast.setText("Ai gets another go!");
-                                    gameToast.show();
-                                }
-                            });
+                            updateGameStatus("Ai gets another go!");
                             simulateAiMove();
                         }
                     }
                 }else{
-//                    if(methodCaller == Player.PLAYER_ONE){
-//                        checkIfCapturedTray("Player 1",traysBefore,startIndex,selectedIndex);
-//                    }else{
-//                        checkIfCapturedTray("Player 2",traysBefore,startIndex,selectedIndex);
-//                    }
-                    checkIfCapturedTray(playerCaller,traysBefore,selectedIndex);
-
+                    checkIfCapturedTray(playerCaller, traysBefore, selectedIndex);
+                    if(methodCaller == Player.PLAYER_ONE && gameBoard.getCurrentPlayer() == Player.PLAYER_ONE){
+                        updateGameStatus("Player 1 gets another go!");
+                    }
+                    if(methodCaller == Player.PLAYER_TWO && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+                        updateGameStatus("Player 2 gets another go!");
+                    }
                 }
 
                 runOnUiThread(new Runnable() {
@@ -476,6 +482,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * check if an opponent's tray has been captured, if it has play sound and start animation
+     * @param player the Player who took the move
+     * @param traysBefore the int array of the trays before the move
+     * @param selectedTray the index of the tray of the move selected by the player
+     */
     public void checkIfCapturedTray(final Player player,int[] traysBefore,int selectedTray){
         //Get shells in hand from selected Tray
         int shellsInHand = traysBefore[selectedTray];
@@ -527,7 +539,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     Log.i("MYAPP",nameOfPlayer+" captured "+lastTrayIndex);
-                    gameToast.setText(nameOfPlayer + " captured tray " + lastTrayIndex);
+                    gameToast.setText(nameOfPlayer + " captured a tray ");
                     gameToast.show();
                     makeTrayBlink(arrayOfBoardButtons[lastTrayIndex]);
                     makeTrayBlink(arrayOfBoardButtons[14 - lastTrayIndex]);
@@ -537,6 +549,18 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Log.i("MYAPP","TRAY NOT CAPTURED");
         }
+    }
+
+    public void updateGameStatus(final String text){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!stopGame) {
+                    gameToast.setText(text);
+                    gameToast.show();
+                }
+            }
+        });
     }
 
     public void makeTrayBlink(View view){
@@ -550,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateBoard() {
 
-        Log.i("MainActivity","updateBoard() called");
+        Log.i("GameBoardActivity","updateBoard() called");
 
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
 
@@ -620,6 +644,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        if(aiChosen && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
+            disableBoard();
+        }
 
         if (gameBoard.isGameOver()) {
             displayDialog();
@@ -630,12 +657,16 @@ public class MainActivity extends AppCompatActivity {
             if (gameBoard.getCurrentPlayer() == Player.PLAYER_TWO && isServer) {
                 serverWaitForMove();
             } else if (gameBoard.getCurrentPlayer() == Player.PLAYER_ONE && isClient && clientHasConnected) {
-                Log.i("MainActivity", "clientWaitForActivity called from update board");
+                Log.i("GameBoardActivity", "clientWaitForActivity called from update board");
                 clientWaitForMove();
             }
         }
     }
 
+    /**
+     * checks whether anybody has played a move yet by checking all values are the starting values
+     * @return
+     */
     public boolean stillStartingBoard() {
         int[] toCheckArrayOfTrays = gameBoard.getArrayOfTrays();
         for(int i = 0; i < 16; i++) {
@@ -645,7 +676,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.i("MainActivity","Still in starting position");
+        Log.i("GameBoardActivity", "Still in starting position");
         return  true;
     }
 
@@ -677,15 +708,9 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameStatus.setText("Ai's turn");
-                            }
-                        });
+                        updateGameStatus("Ai's turn");
                         int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
                         Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
-                        Toast.makeText(getApplicationContext(), "Ai choose tray "+aiTrayIndex, Toast.LENGTH_SHORT).show();
                         gameBoard.takeTurn(aiTrayIndex);
                         updateBoard(aiTrayIndex,Player.PLAYER_TWO);
                     }
@@ -743,11 +768,16 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     } else if(isServer) {
+                        //for when the player is the server
                         Thread serverTurnThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                //takes turn
                                 gameBoard.takeTurn(p1index);
+                                //sends move to client
                                 onlineServer.sendMove(p1index);
+                                //disables the board so no more buttons can be pressed
+                                //calls updateBoard method
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -789,11 +819,16 @@ public class MainActivity extends AppCompatActivity {
                             gameStatus.setText("Player 1's turn");
                         }
                     } else if(isClient) {
+                        //for when the player is the client
                         Thread clientTurnThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                //takes turn on the gameBoard so logic can be updated
                                 gameBoard.takeTurn(p2index);
+                                //sends move to server
                                 onlineClient.sendMove(p2index);
+                                //disables board so no new moves can be taken
+                                //calls updateBoard method
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -814,7 +849,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
         updateBoard();
     }
 
@@ -834,13 +868,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Display a dialog to save game result and show statistics
+    /**
+     * Display a dialog to save game result and show statistics
+     */
     private void displayDialog() {
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
 
         Bundle bundleDialog = new Bundle();
         int[] scores = {arrayOfTrays[7], arrayOfTrays[15]};
         bundleDialog.putIntArray(AddScoreFragment.BUNDLE_TAG, scores);
+        bundleDialog.putBoolean(AddScoreFragment.BUNDLE_AI_TAG, aiChosen);
 
         AddScoreFragment addScoreFragment = new AddScoreFragment();
         addScoreFragment.setArguments(bundleDialog);
@@ -867,20 +904,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * method for when the client is taking their turn and the server is waiting
+     */
     private void serverWaitForMove() {
 
-        Log.i("MainActivity","serverWaitForMove() called");
+        Log.i("GameBoardActivity","serverWaitForMove() called");
         Thread serverWaitForMoveThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                // sets received move to oppositonIndex int
                 final int oppositionIndex = onlineServer.receiveMove();
-                gameBoard.takeTurn(oppositionIndex);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateBoard(oppositionIndex, Player.PLAYER_TWO);
-                    }
-                });
+                //checks to see if receiving the move failed and if so ends game due to connection loss
+                if(oppositionIndex == -1) {
+                    onEndActivity();
+                    onConnectionLost();
+                } else {
+                    //otherwise take turn on gameBoard and call updateBoard method
+                    gameBoard.takeTurn(oppositionIndex);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateBoard(oppositionIndex, Player.PLAYER_TWO);
+                        }
+                    });
+                }
             }
         });
 
@@ -888,26 +936,41 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * method for when the server is taking their turn and the client is waiting
+     */
     private void clientWaitForMove() {
 
-        Log.i("MainActivity","clientWaitForMove() called");
+        Log.i("GameBoardActivity","clientWaitForMove() called");
         Thread clientWaitForMoveThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                // sets received move to oppositonIndex int
                 final int oppositionIndex = onlineClient.receiveMove();
-                gameBoard.takeTurn(oppositionIndex);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateBoard(oppositionIndex, Player.PLAYER_ONE);
-                    }
-                });
+                //checks to see if receiving the move failed and if so ends game due to connection loss
+                if(oppositionIndex == -1) {
+                    onEndActivity();
+                    onConnectionLost();
+                } else {
+                    //otherwise take turn on gameBoard and call updateBoard method
+                    gameBoard.takeTurn(oppositionIndex);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateBoard(oppositionIndex, Player.PLAYER_ONE);
+                        }
+                    });
+                }
             }
         });
         clientWaitForMoveThread.start();
 
     }
 
+    /**
+     * randomly picks a player to take the first turn when in multiplayer
+     * @return the Player enum of the player selected
+     */
     private Player chooseRandomPlayer() {
 
         Random rand = new Random();
@@ -923,10 +986,110 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * describes what to do when connection is lost with opponent
+     */
+    private void onConnectionLost() {
+
+        Intent returnMultiplayerMenuIntent = new Intent(GameBoardActivity.this,MultiplayerMenu.class);
+        //decides the data to include with the return intent
+        //which changes the toast message displayed in the next menu
+        if(isServer) {
+            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"ConnectionLostToClient");
+        } else if(isClient) {
+            returnMultiplayerMenuIntent.putExtra(GAME_EXIT,"ConnectionLostToServer");
+        }
+        setResult(Activity.RESULT_OK,returnMultiplayerMenuIntent);
+        finish();
+
+    }
+
+    /**
+     * a static method so that the IP address can be set
+     * @param ip String of the IPv4 address
+     */
     public static void setServerIP(String ip) {
 
         serverIP = ip;
 
+    }
+
+    public void restartDialog(){
+        AlertDialog alertbox = new AlertDialog.Builder(this)
+        .setMessage("Are you sure you want to restart the game?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+                finish();
+                handler.removeCallbacks(aiMove);
+                stopGame = true;
+                gameToast.cancel(); //Cancel any showing toasts
+                startActivity(getIntent());
+            }
+        })
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        })
+        .show();
+        restartAlertDialog = alertbox;
+    }
+
+    public AlertDialog returnRestartAlertDialog() {
+        return restartAlertDialog;
+    }
+
+    public void returnToMainMenu(View view){
+        showBackDialog();
+    }
+
+    /**
+     * closes appropriate connections for when multiplayer game is finished
+     */
+    private void onEndActivity() {
+        Log.i("GameBoardActivity", "onEndActivity actually gets called");
+        if(onlineClient != null) {
+            onlineClient.closeConnection();
+        } else if(onlineServer != null) {
+            if(serverStreamsInitialised) {
+                onlineServer.closeConnection();
+            } else {
+                onlineServer.closeServerSocket();
+            }
+        }
+
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        showBackDialog();
+    }
+
+    public void showBackDialog(){
+        AlertDialog alertbox = new AlertDialog.Builder(this)
+        .setMessage("Are you sure you want to return to the main menu?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+                Log.i("GameBoardActivity", "Back button pressed");
+                handler.removeCallbacks(aiMove);
+                stopGame = true;
+                gameToast.cancel(); //Cancel any showing toasts
+                finish();
+                onEndActivity();
+
+            }
+        })
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+            // do something when the button is clicked
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        })
+        .show();
     }
 
 }

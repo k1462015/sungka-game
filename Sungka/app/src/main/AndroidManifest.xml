@@ -3,6 +3,7 @@
     package="uk.ac.kcl.teamraccoon.sungka" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 
     <application
         android:allowBackup="true"
@@ -11,10 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".GameBoardActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
-            android:noHistory="true">
+            android:theme="@style/AppFullScreenTheme">
         </activity>
 
         <provider
@@ -24,12 +25,15 @@
 
         <activity
             android:name=".highscores.HighScoresActivity"
+            android:label="@string/high_scores"
             android:configChanges="orientation|screenSize"
+            android:theme="@style/HighScoresFullScreenTheme"
             android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".MainMenu"
             android:configChanges="orientation|screenSize"
+            android:theme="@style/AppFullScreenTheme"
             android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,6 +45,7 @@
             android:name=".MultiplayerMenu"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="landscape"
+            android:theme="@style/AppFullScreenTheme"
             android:parentActivityName=".MainMenu" >
         </activity>
     </application>

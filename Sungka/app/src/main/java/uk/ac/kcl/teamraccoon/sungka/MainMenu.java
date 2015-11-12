@@ -2,11 +2,10 @@ package uk.ac.kcl.teamraccoon.sungka;
 
 import android.content.Intent;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
 import uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresActivity;
 
 public class MainMenu extends AppCompatActivity {
@@ -19,13 +18,13 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void startP1P2(View view){
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this,GameBoardActivity.class);
         intent.putExtra(GAME_OPTION, "P1P2");
         startActivity(intent);
     }
 
     public void startP1Comp(View view){
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this,GameBoardActivity.class);
         intent.putExtra(GAME_OPTION,"P1Comp");
         startActivity(intent);
     }

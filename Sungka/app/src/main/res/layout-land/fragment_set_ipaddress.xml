@@ -28,7 +28,7 @@
         android:layout_marginBottom="4dp"
         android:fontFamily="sans-serif"
         android:hint="Enter IP address here"
-        android:inputType="number"
+        android:inputType="phone"
         android:digits="0123456789."/>
 
 </LinearLayout>

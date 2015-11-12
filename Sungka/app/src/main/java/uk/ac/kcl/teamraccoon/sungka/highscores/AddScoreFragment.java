@@ -8,10 +8,15 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import uk.ac.kcl.teamraccoon.sungka.R;
 import uk.ac.kcl.teamraccoon.sungka.data.PlayerData;
@@ -24,8 +29,10 @@ public class AddScoreFragment extends DialogFragment {
 
     private int[] mScores;
     private View rootView;
+    boolean aiChosen;
 
     static final public String BUNDLE_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.SCORES";
+    static final public String BUNDLE_AI_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.AI";
 
     public AddScoreFragment() {}
 
@@ -41,6 +48,12 @@ public class AddScoreFragment extends DialogFragment {
         String statistics =  getString(R.string.add_score_players, mScores[0], mScores[1]);
 
         tvStatistics.setText(statistics);
+
+        if(aiChosen) {
+            EditText etPlayerTwo = (EditText) rootView.findViewById(R.id.player_two_name);
+            etPlayerTwo.setText(R.string.ai_name);
+            etPlayerTwo.setEnabled(false);
+        }
 
         builder.setView(rootView)
                 .setPositiveButton(R.string.save_score, new DialogInterface.OnClickListener() {
@@ -63,6 +76,14 @@ public class AddScoreFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         Bundle dialogBundle = this.getArguments();
         mScores = dialogBundle.getIntArray(BUNDLE_TAG);
+        aiChosen = dialogBundle.getBoolean(BUNDLE_AI_TAG);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().setCanceledOnTouchOutside(false);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -94,6 +115,9 @@ public class AddScoreFragment extends DialogFragment {
         ContentValues values = new ContentValues();
         values.put(SungkaContract.HighScoresEntry.COLUMN_PLAYER, playerName);
         values.put(SungkaContract.HighScoresEntry.COLUMN_SCORE, score);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        values.put(SungkaContract.HighScoresEntry.COLUMN_DATE, dateFormat.format(new Date()));
 
         getActivity().getContentResolver().insert(
                 SungkaContract.HighScoresEntry.CONTENT_URI,

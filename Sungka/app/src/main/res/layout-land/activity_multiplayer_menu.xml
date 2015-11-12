@@ -1,53 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/beach_background"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="uk.ac.kcl.teamraccoon.sungka.MultiplayerMenu">
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="8"
-        android:gravity="center_vertical">
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/menu_multiplayer_hostgame"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="10dp"
-            android:onClick="startAsHost"/>
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/menu_multiplayer_joingame_states"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="10dp"
-            android:onClick="startAsClient"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="10dp"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:onClick="startAsHost"
+                android:scaleType="centerCrop"
+                android:src="@drawable/menu_multiplayer_hostgame" />
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="10dp"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:onClick="startAsClient"
+                android:scaleType="centerCrop"
+                android:src="@drawable/menu_multiplayer_joingame_states" />
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/racoonMascot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_weight="10"
+            android:adjustViewBounds="true"
+            android:src="@drawable/racoon" />
 
     </LinearLayout>
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_weight="10"
-        android:src="@drawable/racoon"
-        android:adjustViewBounds="true"/>
 
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/back"
+        android:onClick="returnToMainMenu"
+        android:layout_marginBottom="5dp"/>
 
-
-
-
-</LinearLayout>
+</RelativeLayout>

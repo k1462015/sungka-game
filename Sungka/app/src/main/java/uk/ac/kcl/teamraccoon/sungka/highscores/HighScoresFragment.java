@@ -48,6 +48,9 @@ public class HighScoresFragment extends Fragment {
 
         HighScoresAdapter highScoresAdapter = new HighScoresAdapter(getActivity(), cursor) ;
         lvHighScores.setAdapter(highScoresAdapter);
+        lvHighScores.setEmptyView(rootView.findViewById(R.id.empty_element));
+
+        selectFirstItem(highScoresAdapter);
 
         lvHighScores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -58,6 +61,22 @@ public class HighScoresFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void selectFirstItem(HighScoresAdapter adapter) {
+        Cursor cursor = (Cursor) adapter.getItem(0);
+        int index = cursor.getColumnIndexOrThrow(SungkaContract.HighScoresEntry.COLUMN_PLAYER);
+        if(cursor.getCount() == 0 || cursor.isNull(index)) {
+            ((CallbackHighScores) getActivity()).onItemSelected("");
+            return;
+        }
+
+        String firstPlayerItem = cursor.getString(index);
+
+        if(firstPlayerItem != null && !firstPlayerItem.isEmpty()) {
+            ((CallbackHighScores) getActivity()).onItemSelected(firstPlayerItem);
+        }
+
     }
 
 

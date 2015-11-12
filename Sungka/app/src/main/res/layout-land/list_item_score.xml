@@ -4,11 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.25"
-        android:src="@android:drawable/btn_star"/>
+        android:layout_weight="0.25">
+
+         <ImageView
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:src="@android:drawable/btn_star"
+             android:id="@+id/iv_star"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/iv_star"
+            android:layout_alignTop="@+id/iv_star"
+            android:layout_alignRight="@+id/iv_star"
+            android:layout_alignBottom="@+id/iv_star"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:id="@+id/list_item_position"/>
+
+    </RelativeLayout>
 
     <TextView
         android:layout_width="0dp"

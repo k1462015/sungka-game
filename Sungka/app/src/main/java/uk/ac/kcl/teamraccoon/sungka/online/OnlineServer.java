@@ -2,7 +2,6 @@ package uk.ac.kcl.teamraccoon.sungka.online;
 
 import android.util.Log;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -22,43 +21,44 @@ public class OnlineServer {
     private ServerSocket serverSocket;
     private Socket serverConnection;
 
-    public OnlineServer() {
+    public OnlineServer() throws IOException {
 
-        Log.d("OnlineServer", "OnlineServer class constructed");
-
-        try {
-
-            //setup a new ServerSocket at port number 6273
-            serverSocket = new ServerSocket(6273);
-
-            Log.d("OnlineServer", "ServerSocket serverSocket initialised");
-
-            //listen for client to connect to server and accept the socket
-            serverConnection = serverSocket.accept();
-
-            Log.d("OnlineServer", "Connection with client made");
-
-            //initialise the streams for receiving data from and sending data to client
-            initialiseStreams();
-
-            Log.d("OnlineServer", "ObjectOutputStream outputStream and ObjectInputStream inputStream initialised");
-
-        } catch (IOException e) {
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
-        }
+        //setup a new ServerSocket at port number 6273
+        serverSocket = new ServerSocket(6273);
 
     }
 
+    /**
+     * first, connect to opponent via a socket
+     * then, initalise input and output streams
+     * @throws IOException
+     */
+    public void findConnection() throws IOException {
+
+        //listen for client to connect to server and accept the socket
+        serverConnection = serverSocket.accept();
+
+        //initialise the streams for receiving data from and sending data to client
+        initialiseStreams();
+
+    }
+
+    /**
+     * initialises the data streams for receiving data from and sending data to client
+     * @throws IOException
+     */
     private void initialiseStreams() throws IOException {
 
-        Log.d("OnlineServer", "initialiseStreams method called");
         outputStream = new ObjectOutputStream(serverConnection.getOutputStream());
         outputStream.flush();
         inputStream = new ObjectInputStream(serverConnection.getInputStream());
-        Log.d("OnlineServer", "outputStream and inputStream initialised");
 
     }
 
+    /**
+     * finds the local IPv4 address of the device
+     * @return the IP address of the device as a String
+     */
     public static String getServerIP() {
 
         try {
@@ -74,48 +74,81 @@ public class OnlineServer {
             }
 
         } catch(SocketException e) {
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
+            Log.e("OnlineServer","SocketException when finding local IP address of device " + Log.getStackTraceString(e));
         }
 
         return null;
 
     }
 
-    //send a Player object to the client
+    /**
+     * send a Player enum to the client
+     * @param chosenPlayer Player enum of the randomly chosen starting player
+     */
     public void sendPlayer(Player chosenPlayer) {
         try {
             outputStream.writeObject(chosenPlayer);
             outputStream.flush();
         } catch(IOException e) {
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
+            Log.e("OnlineServer","IOException when sending Player object to client " + Log.getStackTraceString(e));
         }
     }
 
-    //send a move in the form of a tray index integer to client
+    /**
+     * send a move in the form of a tray index integer to client
+     * @param index
+     */
     public void sendMove(int index) {
         try {
             outputStream.writeInt(index);
             Log.i("OnlineServer", "Server successfully sent move " + index);
             outputStream.flush();
         } catch(IOException e) {
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
+            Log.e("OnlineServer","IOException when sending move to client " + Log.getStackTraceString(e));
         }
     }
 
-    //receive a move in the from of a tray index integer from server
+    /**
+     * receive a move in the from of a tray index integer from server
+     * @return the index of the move received from client
+     */
     public int receiveMove() {
-        Log.i("OnlineServer","Server attempting to receive move");
         try {
             int index = inputStream.readInt();
-            Log.i("OnlineServer", "Server successfully received move " + index);
             return index;
         } catch (IOException e) {
-            Log.i("OnlineServer","Server failed to receive move");
-            Log.e("OnlineServer","" + Log.getStackTraceString(e));
+            Log.e("OnlineServer","IOException when receiving move from client " + Log.getStackTraceString(e));
         }
 
         return -1;
 
+    }
+
+    /**
+     * closes streams and sockets so that no conflicts occur later if reuse of them is needed
+     */
+    public void closeConnection() {
+        try {
+            Log.i("OnlineServer","onlineServer closeConnection() called");
+            outputStream.close();
+            inputStream.close();
+            serverConnection.close();
+            serverSocket.close();
+            Log.i("OnlineServer","onlineServer connection successfully closed");
+        } catch (IOException e) {
+            Log.e("OnlineServer","IOException when closing server connection " + Log.getStackTraceString(e));
+        }
+    }
+
+    /**
+     * just closes ServerSocket for situations when sockets and streams have not been initialised
+     */
+    public void closeServerSocket() {
+        try {
+            serverSocket.close();
+        } catch(IOException e) {
+            Log.e("OnlineServer","IOException when closing serverSocket");
+        }
     }
 
 }
