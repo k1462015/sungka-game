@@ -77,36 +77,16 @@ public class GameBoardActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String option = intent.getStringExtra(MainMenu.GAME_OPTION);
         if(option != null && option.equals("P1P2")){
-            aiChosen = false;
-            playerChosen = false;
-            isMultiplayer = false;
-            isClient = false;
-            isServer = false;
+            setModeData(false,false,false,false,false);
         } else if(option != null && option.equals("P1Comp")){
-            aiChosen = true;
-            playerChosen = true;
-            isMultiplayer = false;
-            isClient = false;
-            isServer = false;
+            setModeData(true,true,false,false,false);
         } else if(option != null && option.equals("Server")){
-            isServer = true;
-            isClient = false;
-            isMultiplayer = true;
-            aiChosen = false;
-            playerChosen = true;
+            setModeData(false,true,true,true,false);
         } else if(option !=null && option.equals("Client")){
-            isClient = true;
-            isServer = false;
-            isMultiplayer = true;
-            aiChosen = false;
-            playerChosen = true;
+            setModeData(false,true,true,true,false);
         } else {
             //Since no option found - start as p1 vs p2
-            aiChosen = false;
-            playerChosen = false;
-            isMultiplayer = false;
-            isClient = false;
-            isServer = false;
+            setModeData(false,false,false,false,false);
         }
 
         //initialises the game board with trays = 7, store = zero
@@ -1011,6 +991,16 @@ public class GameBoardActivity extends AppCompatActivity {
     public static void setServerIP(String ip) {
 
         serverIP = ip;
+
+    }
+
+    private void setModeData(boolean aiChosen, boolean playerChosen, boolean isMultiplayer, boolean isServer, boolean isClient) {
+
+        this.aiChosen = aiChosen;
+        this.playerChosen = playerChosen;
+        this.isMultiplayer = isMultiplayer;
+        this.isServer = isServer;
+        this.isClient = isClient;
 
     }
 
