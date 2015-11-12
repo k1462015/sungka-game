@@ -113,7 +113,13 @@ public class GameBoardActivity extends AppCompatActivity {
                     if (!aiChosen) {
                         setUpTimer();
                     } else {
-                        updateBoard();
+                        if(chooseRandomPlayer().equals(Player.PLAYER_TWO)) {
+                            gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
+                            updateBoard();
+                            simulateAiMove();
+                        } else {
+                            updateBoard();
+                        }
                     }
                     startButton.setVisibility(View.INVISIBLE);
                 }
@@ -279,7 +285,7 @@ public class GameBoardActivity extends AppCompatActivity {
             gameStatus.setText((3-seconds)+"");
             handler.postDelayed(this,0);
             if(seconds == 3){
-                gameStatus.setText("SELECT YOUR PIT!!");
+                gameStatus.setText("SELECT YOUR PIT!");
                 handler.removeCallbacks(this);
                 enableBoard();
             }
@@ -420,7 +426,7 @@ public class GameBoardActivity extends AppCompatActivity {
                         }
                     }else{
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                            updateGameStatus("Ai gets another go!");
+                            updateGameStatus("AI gets another go!");
                             simulateAiMove();
                         }
                     }
@@ -513,7 +519,7 @@ public class GameBoardActivity extends AppCompatActivity {
                         nameOfPlayer = "Player 1";
                     }else{
                         if(aiChosen){
-                            nameOfPlayer = "Ai";
+                            nameOfPlayer = "AI";
                         }else{
                             nameOfPlayer = "Player 2";
                         }
@@ -611,7 +617,7 @@ public class GameBoardActivity extends AppCompatActivity {
                     gameStatus.setText("HURRY!");
                 } else {
                     if (aiChosen) {
-                        gameStatus.setText("Ai's turn");
+                        gameStatus.setText("AI's turn");
                     } else {
                         gameStatus.setText("Player 2's turn");
                     }
@@ -688,7 +694,7 @@ public class GameBoardActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        updateGameStatus("Ai's turn");
+                        updateGameStatus("AI took their turn");
                         int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
                         Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
                         gameBoard.takeTurn(aiTrayIndex);
