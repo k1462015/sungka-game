@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:drawable="@drawable/arrowdowndark"/>
+    <item android:state_pressed="false"
+        android:drawable="@drawable/arrowdown" /> <!-- pressed -->
+    <item android:state_pressed="true"
+        android:drawable="@drawable/arrowdown" /> <!-- focused -->
+    <item android:state_enabled="true" android:drawable="@drawable/arrowdown"/>
+</selector>
