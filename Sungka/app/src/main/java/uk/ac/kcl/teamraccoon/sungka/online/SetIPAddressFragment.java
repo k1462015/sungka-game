@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import uk.ac.kcl.teamraccoon.sungka.MultiplayerMenu;
 import uk.ac.kcl.teamraccoon.sungka.R;
 
 public class SetIPAddressFragment extends DialogFragment {
@@ -21,6 +20,7 @@ public class SetIPAddressFragment extends DialogFragment {
 
     public SetIPAddressFragment() {}
 
+    //creates dialog for inputting IP address
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -48,6 +48,7 @@ public class SetIPAddressFragment extends DialogFragment {
 
     }
 
+    //interface for passing serverIP string to another activity
     public static interface OnSetIPListener {
         void OnDialogDismissed(String serverIP);
     }
