@@ -1003,7 +1003,6 @@ public class GameBoardActivity extends AppCompatActivity {
                 handler.removeCallbacks(aiMove);
                 stopGame = true;
                 gameToast.cancel(); //Cancel any showing toasts
-                startActivity(new Intent(getApplicationContext(), MainMenu.class));
                 finish();
 
             }
