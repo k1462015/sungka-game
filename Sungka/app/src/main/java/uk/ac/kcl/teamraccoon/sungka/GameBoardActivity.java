@@ -122,10 +122,10 @@ public class GameBoardActivity extends AppCompatActivity {
                             gameBoard.setCurrentPlayer(Player.PLAYER_TWO);
                             updateBoard();
                             simulateAiMove();
-                            gameStatus.setText("AI starts");
+                            gameStatus.setText(R.string.game_status_ai_starts);
                         } else {
                             updateBoard();
-                            gameStatus.setText("Player 1 starts");
+                            gameStatus.setText(R.string.game_status_player_one_starts);
                         }
                     }
                     startButton.setVisibility(View.INVISIBLE);
@@ -171,7 +171,7 @@ public class GameBoardActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    gameStatus.setText("Connected to client");
+                                    gameStatus.setText(R.string.game_status_connected_to_client);
                                 }
                             });
                             //choose the player to start and inform the client
@@ -181,7 +181,7 @@ public class GameBoardActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        gameStatus.setText("You start...take a move");
+                                        gameStatus.setText(R.string.game_status_you_start);
                                         updateBoard();
                                     }
                                 });
@@ -191,7 +191,7 @@ public class GameBoardActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        gameStatus.setText("Other player starts...please wait");
+                                        gameStatus.setText(R.string.game_status_other_player_starts);
                                     }
                                 });
                                 serverWaitForMove();
@@ -215,7 +215,7 @@ public class GameBoardActivity extends AppCompatActivity {
                 //gets the IP address of the server to connect to
                 final String serverIPAddress = serverIP;
                 Log.i("GameBoardActivity", "client initialisation is called");
-                gameStatus.setText("Attempting to connect to server...please wait");
+                gameStatus.setText(R.string.game_status_connecting_to_server);
 
                 Thread clientThread = new Thread(new Runnable() {
                     @Override
@@ -237,7 +237,7 @@ public class GameBoardActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    gameStatus.setText("Connected to server");
+                                    gameStatus.setText(R.string.game_status_connected_to_server);
                                 }
                             });
                             Player chosenPlayer = onlineClient.receivePlayer();
@@ -246,7 +246,7 @@ public class GameBoardActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        gameStatus.setText("Other player starts...please wait");
+                                        gameStatus.setText(R.string.game_status_other_player_starts);
                                     }
                                 });
                                 clientWaitForMove();
@@ -255,7 +255,7 @@ public class GameBoardActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        gameStatus.setText("You start...take a move");
+                                        gameStatus.setText(R.string.game_status_you_start);
                                         updateBoard();
                                     }
                                 });
@@ -292,7 +292,7 @@ public class GameBoardActivity extends AppCompatActivity {
             gameStatus.setText((3-seconds)+"");
             handler.postDelayed(this,0);
             if(seconds == 3){
-                gameStatus.setText("SELECT YOUR PIT!");
+                gameStatus.setText(R.string.game_status_select_your_pit);
                 handler.removeCallbacks(this);
                 enableBoard();
             }
@@ -429,21 +429,21 @@ public class GameBoardActivity extends AppCompatActivity {
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
                             simulateAiMove();
                         }else{
-                            updateGameStatus("Player 1 gets another go!");
+                            updateGameStatus(getString(R.string.game_status_player_one_add));
                         }
                     }else{
                         if(gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                            updateGameStatus("AI gets another go!");
+                            updateGameStatus(getString(R.string.game_status_ai_add));
                             simulateAiMove();
                         }
                     }
                 }else{
                     checkIfCapturedTray(playerCaller, traysBefore, selectedIndex);
                     if(methodCaller == Player.PLAYER_ONE && gameBoard.getCurrentPlayer() == Player.PLAYER_ONE){
-                        updateGameStatus("Player 1 gets another go!");
+                        updateGameStatus(getString(R.string.game_status_player_one_add));
                     }
                     if(methodCaller == Player.PLAYER_TWO && gameBoard.getCurrentPlayer() == Player.PLAYER_TWO){
-                        updateGameStatus("Player 2 gets another go!");
+                        updateGameStatus(getString(R.string.game_status_player_two_add));
                     }
                 }
 
@@ -593,15 +593,15 @@ public class GameBoardActivity extends AppCompatActivity {
             }
             if(!isMultiplayer) {
                 if (!playerChosen) {
-                    gameStatus.setText("HURRY!");
+                    gameStatus.setText(R.string.game_status_hurry);
                 } else {
-                    gameStatus.setText("Player 1's turn");
+                    gameStatus.setText(R.string.game_status_player_one_turn);
                 }
             } else {
                 if(isServer) {
-                    gameStatus.setText("Your turn!");
+                    gameStatus.setText(R.string.game_status_your_turn);
                 } else {
-                    gameStatus.setText("Other player's turn");
+                    gameStatus.setText(R.string.game_status_other_player_turn);
                 }
             }
             if(playerChosen){
@@ -625,19 +625,19 @@ public class GameBoardActivity extends AppCompatActivity {
             }
             if(!isMultiplayer) {
                 if (!playerChosen) {
-                    gameStatus.setText("HURRY!");
+                    gameStatus.setText(R.string.game_status_hurry);
                 } else {
                     if (aiChosen) {
-                        gameStatus.setText("AI's turn");
+                        gameStatus.setText(R.string.game_status_ai_turn);
                     } else {
-                        gameStatus.setText("Player 2's turn");
+                        gameStatus.setText(R.string.game_status_player_two_turn);
                     }
                 }
             } else {
                 if(isClient) {
-                    gameStatus.setText("Your turn");
+                    gameStatus.setText(R.string.game_status_your_turn);
                 } else {
-                    gameStatus.setText("Other player's turn");
+                    gameStatus.setText(R.string.game_status_other_player_turn);
                 }
             }
             if(playerChosen){
@@ -652,7 +652,7 @@ public class GameBoardActivity extends AppCompatActivity {
         if (gameBoard.isGameOver()) {
             p1Status.setEnabled(false);
             p2Status.setEnabled(false);
-            gameStatus.setText("Game Over!");
+            gameStatus.setText(R.string.game_status_game_over);
             displayDialog();
         }
 
@@ -712,7 +712,7 @@ public class GameBoardActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        updateGameStatus("AI took their turn");
+                        updateGameStatus(getString(R.string.game_status_ai_took_turn));
                         int aiTrayIndex = SungkaAI.takeTurn(gameBoard,2);
                         Log.i("MYAPP", "AI TAKING MOVE AT INDEX: " + aiTrayIndex);
                         gameBoard.takeTurn(aiTrayIndex);
@@ -768,7 +768,7 @@ public class GameBoardActivity extends AppCompatActivity {
                             enableBoard();
                         }else{
                             playerChosen = true;
-                            gameStatus.setText("Player 2's turn");
+                            gameStatus.setText(R.string.game_status_player_two_turn);
                         }
 
                     } else if(isServer) {
@@ -820,7 +820,7 @@ public class GameBoardActivity extends AppCompatActivity {
                             enableBoard();
                         }else{
                             playerChosen = true;
-                            gameStatus.setText("Player 1's turn");
+                            gameStatus.setText(R.string.game_status_player_one_turn);
                         }
                     } else if(isClient) {
                         //for when the player is the client
@@ -1030,8 +1030,8 @@ public class GameBoardActivity extends AppCompatActivity {
 
     public void restartDialog(){
         AlertDialog alertbox = new AlertDialog.Builder(this)
-        .setMessage("Are you sure you want to restart the game?")
-        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        .setMessage(R.string.dialog_restart_message)
+        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 
             // do something when the button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
@@ -1042,7 +1042,7 @@ public class GameBoardActivity extends AppCompatActivity {
                 startActivity(getIntent());
             }
         })
-        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             // do something when the button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
             }
@@ -1084,8 +1084,8 @@ public class GameBoardActivity extends AppCompatActivity {
 
     public void showBackDialog(){
         AlertDialog alertbox = new AlertDialog.Builder(this)
-        .setMessage("Are you sure you want to return to the main menu?")
-        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        .setMessage(R.string.dialog_return_message)
+        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 
             // do something when the button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
@@ -1098,7 +1098,7 @@ public class GameBoardActivity extends AppCompatActivity {
 
             }
         })
-        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             // do something when the button is clicked
             public void onClick(DialogInterface arg0, int arg1) {
             }
