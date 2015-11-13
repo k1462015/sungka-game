@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<Button
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    android:textAlignment="gravity"
     android:gravity="top"
-    android:textSize="16dp"
+    android:textAlignment="gravity"
     android:textColor="#FFFFFF"
-    xmlns:android="http://schemas.android.com/apk/res/android" />
+    android:textSize="16sp" />

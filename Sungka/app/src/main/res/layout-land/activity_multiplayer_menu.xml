@@ -61,8 +61,8 @@
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/back"
-        android:onClick="returnToMainMenu"
-        android:layout_marginBottom="5dp"/>
+        android:onClick="returnToMainMenu" />
 
 </RelativeLayout>

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import uk.ac.kcl.teamraccoon.sungka.R;
 
 public class PlayerScoresAdapter extends RecyclerView.Adapter<PlayerScoresAdapter.ViewHolder> {
+
     private ArrayList<String[]> scoresData;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -32,7 +33,7 @@ public class PlayerScoresAdapter extends RecyclerView.Adapter<PlayerScoresAdapte
 
     @Override
     public PlayerScoresAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+                                                             int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_player_score_rv, parent, false);
@@ -45,13 +46,14 @@ public class PlayerScoresAdapter extends RecyclerView.Adapter<PlayerScoresAdapte
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.tvScores.setText(scoresData.get(position)[0]);
         String date = scoresData.get(position)[1];
-        if(date.isEmpty()) { date = "No date"; }
-        holder.tvDate.setText(date);
+        if (!date.isEmpty()) {
+            holder.tvDate.setText(date);
+        }
     }
 
     @Override
     public int getItemCount() {
-        if(scoresData == null) { return 0; }
+        if (scoresData == null) { return 0; }
         return scoresData.size();
     }
 }

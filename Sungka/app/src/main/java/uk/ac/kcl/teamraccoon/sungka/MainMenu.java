@@ -17,24 +17,24 @@ public class MainMenu extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
     }
 
-    public void startP1P2(View view){
-        Intent intent = new Intent(this,GameBoardActivity.class);
+    public void startP1P2(View view) {
+        Intent intent = new Intent(this, GameBoardActivity.class);
         intent.putExtra(GAME_OPTION, "P1P2");
         startActivity(intent);
     }
 
-    public void startP1Comp(View view){
-        Intent intent = new Intent(this,GameBoardActivity.class);
-        intent.putExtra(GAME_OPTION,"P1Comp");
+    public void startP1Comp(View view) {
+        Intent intent = new Intent(this, GameBoardActivity.class);
+        intent.putExtra(GAME_OPTION, "P1Comp");
         startActivity(intent);
     }
 
-    public void startMultiplayer(View view){
-        Intent intent = new Intent(this,MultiplayerMenu.class);
+    public void startMultiplayer(View view) {
+        Intent intent = new Intent(this, MultiplayerMenu.class);
         startActivity(intent);
     }
 
-    public void showHighScores(View view){
+    public void showHighScores(View view) {
         Intent intent = new Intent(this, HighScoresActivity.class);
         startActivity(intent);
     }

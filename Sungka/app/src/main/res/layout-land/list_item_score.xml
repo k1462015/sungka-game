@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" 
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.25">
 
-         <ImageView
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:src="@android:drawable/btn_star"
-             android:id="@+id/iv_star"/>
+        <ImageView
+            android:id="@+id/iv_star"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@android:drawable/btn_star" />
 
         <TextView
+            android:id="@+id/list_item_position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/iv_star"
-            android:layout_alignTop="@+id/iv_star"
-            android:layout_alignRight="@+id/iv_star"
             android:layout_alignBottom="@+id/iv_star"
+            android:layout_alignLeft="@+id/iv_star"
+            android:layout_alignRight="@+id/iv_star"
+            android:layout_alignTop="@+id/iv_star"
             android:layout_margin="1dp"
             android:gravity="center"
-            android:textStyle="bold"
-            android:id="@+id/list_item_position"/>
+            android:textStyle="bold" />
 
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/list_item_player"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
         android:layout_weight="0.5"
-        android:id="@+id/list_item_player" />
+        android:gravity="center_vertical" />
 
     <TextView
+        android:id="@+id/list_item_scores"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:layout_weight="0.25"
-        android:id="@+id/list_item_scores" />
+        android:gravity="center" />
 
 </LinearLayout>

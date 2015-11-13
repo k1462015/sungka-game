@@ -14,36 +14,43 @@
     android:paddingTop="@dimen/player_statistics_vertical_padding"
     app:columnCount="2">
 
-    <TextView style="@style/PlayerStatisticsTextRight"
+    <TextView
         android:id="@+id/games_played_label"
+        style="@style/PlayerStatisticsTextRight"
         android:layout_height="wrap_content"
-        android:text="Games played"
+        android:text="@string/games_played"
         app:layout_columnWeight="1"
         app:layout_gravity="fill"
         app:layout_rowWeight="1" />
 
-    <TextView style="@style/PlayerStatisticsTextLeft"
+    <TextView
         android:id="@+id/games_played_number"
+        style="@style/PlayerStatisticsTextLeft"
         app:layout_gravity="fill" />
 
-    <TextView style="@style/PlayerStatisticsTextRight"
+    <TextView
         android:id="@+id/games_won_label"
-        android:text="Games won"
+        style="@style/PlayerStatisticsTextRight"
+        android:text="@string/games_won"
         app:layout_gravity="fill"
         app:layout_rowWeight="1" />
 
-    <TextView style="@style/PlayerStatisticsTextLeft"
+    <TextView
         android:id="@+id/games_won_number"
-        app:layout_gravity="fill"/>
+        style="@style/PlayerStatisticsTextLeft"
+        app:layout_gravity="fill" />
 
-    <TextView style="@style/PlayerStatisticsTextRight"
+    <TextView
         android:id="@+id/games_lost_label"
-        android:text="Games lost"
+        style="@style/PlayerStatisticsTextRight"
+        android:text="@string/games_lost"
         app:layout_gravity="fill"
         app:layout_rowWeight="1" />
 
-    <TextView style="@style/PlayerStatisticsTextLeft"
+    <TextView
         android:id="@+id/games_lost_number"
+        style="@style/PlayerStatisticsTextLeft"
         app:layout_gravity="fill" />
+
 </android.support.v7.widget.GridLayout>
 

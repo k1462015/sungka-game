@@ -1,75 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/beach_background"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:orientation="horizontal"
-    android:gravity="center_horizontal"
-    android:background="@drawable/beach_background"
     tools:context="uk.ac.kcl.teamraccoon.sungka.MainMenu">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="8">
+        android:layout_weight="8"
+        android:orientation="vertical">
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/menu_p1p2_states"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_weight="3"
             android:layout_marginBottom="10dp"
-            android:onClick="startP1P2"/>
+            android:layout_weight="3"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:onClick="startP1P2"
+            android:scaleType="centerCrop"
+            android:src="@drawable/menu_p1p2_states" />
+
         <ImageButton
+            android:id="@+id/p1vsAI"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/menu_p1comp_states"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_weight="3"
             android:layout_marginBottom="10dp"
+            android:layout_weight="3"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
             android:onClick="startP1Comp"
-            android:id="@+id/p1vsAI" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/menu_p1comp_states" />
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/menu_multiplayer_states"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_weight="3"
             android:layout_marginBottom="10dp"
-            android:onClick="startMultiplayer"/>
+            android:layout_weight="3"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:onClick="startMultiplayer"
+            android:scaleType="centerCrop"
+            android:src="@drawable/menu_multiplayer_states" />
+
         <ImageButton
+            android:id="@+id/main_menu_highscores"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/menu_table_states"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_weight="3"
             android:layout_marginBottom="10dp"
+            android:layout_weight="3"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
             android:onClick="showHighScores"
-            android:id="@+id/main_menu_highscores"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/menu_table_states" />
 
     </LinearLayout>
+
     <ImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:layout_weight="10"
-        android:src="@drawable/racoon"
-        android:adjustViewBounds="true"/>
-
-
+        android:adjustViewBounds="true"
+        android:src="@drawable/racoon" />
 
 </LinearLayout>

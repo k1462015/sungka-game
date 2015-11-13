@@ -29,7 +29,7 @@ public class SetIPAddressFragment extends DialogFragment {
         rootView = inflater.inflate(R.layout.fragment_set_ipaddress, null);
 
         builder.setView(rootView)
-                .setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         EditText ipEditText = (EditText) rootView.findViewById(R.id.ip_address_edittext);
@@ -44,7 +44,7 @@ public class SetIPAddressFragment extends DialogFragment {
     public void onAttach(Activity activity) {
 
         super.onAttach(activity);
-        this.onSetIPListener = (OnSetIPListener)activity;
+        this.onSetIPListener = (OnSetIPListener) activity;
 
     }
 

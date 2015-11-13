@@ -3,6 +3,7 @@
 
     <string name="save_score">Save scores</string>
     <string name="cancel">Cancel</string>
+    <string name="start">Start</string>
     <string name="player_one">Player One</string>
     <string name="player_two">Player Two</string>
 
@@ -12,6 +13,51 @@
 
     <string name="empty_high_scores">The high scores list is empty</string>
     <string name="high_scores">High Scores</string>
-    <string name="match_score">%1$s : %2$s</string>
-    <string name="ai_name">Fred AI</string>
+    <string name="match_score" translatable="false">%1$s : %2$s</string>
+    <string name="ai_name" translatable="false">Fred AI</string>
+
+    <string name="lost_connection_toast">Sorry, connection with opponent was lost</string>
+    <string name="host_connect_fail_toast">Server not initialised or incorrect IP address</string>
+    <string name="server_initialise_fail_toast">Server could not be initialised. Try again</string>
+    <string name="network_connection_toast">You are not currently connected to WiFi</string>
+
+    <string name="game_status_ai_starts">AI starts</string>
+    <string name="game_status_player_one_starts">Player 1 starts</string>
+    <string name="game_status_connected_to_client">Connected to client</string>
+    <string name="game_status_you_start">You start... take a move</string>
+    <string name="game_status_other_player_starts">Other player starts... please wait</string>
+    <string name="game_status_connecting_to_server">Attempting to connect to server... please wait</string>
+    <string name="game_status_connected_to_server">Connected to server</string>
+    <string name="game_status_select_your_pit">SELECT YOUR PIT!</string>
+    <string name="game_status_player_one_add">Player 1 gets another go!</string>
+    <string name="game_status_player_two_add">Player 2 gets another go!</string>
+    <string name="game_status_ai_add">AI gets another go!</string>
+    <string name="game_status_hurry">HURRY!</string>
+    <string name="game_status_player_one_turn">Player 1\'s turn</string>
+    <string name="game_status_player_two_turn">Player 2\'s turn</string>
+    <string name="game_status_ai_turn">AI\'s turn</string>
+    <string name="game_status_other_player_turn">Other player\'s turn</string>
+    <string name="game_status_your_turn">Your turn!</string>
+    <string name="game_status_game_over">Game Over!</string>
+    <string name="game_status_ai_took_turn">AI took their turn</string>
+
+    <string name="dialog_restart_message">Are you sure you want to restart the game?</string>
+    <string name="dialog_return_message">Are you sure you want to return to the main menu?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="player">Player %1$d</string>
+    <string name="ai">AI</string>
+    <string name="player_captured_a_tray">%1$s captured a tray</string>
+
+    <string name="no_date">No date</string>
+
+    <string name="games_played">Games played:</string>
+    <string name="games_won">Games won:</string>
+    <string name="games_lost">Games lost:</string>
+
+    <string name="set_ip_address">Set IP address of server</string>
+    <string name="enter_ip_address">Enter IP address here</string>
+
+    <string name="set">Set</string>
 </resources>

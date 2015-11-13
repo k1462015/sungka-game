@@ -1,7 +1,5 @@
 package uk.ac.kcl.teamraccoon.sungka;
 
-import android.util.Log;
-
 public class Board {
 
     private int arrayOfTrays[] = new int[16];
@@ -31,7 +29,7 @@ public class Board {
         return arrayOfTrays;
     }
 
-    public void setArrayOfTrays(int[] arrayOfTrays){
+    public void setArrayOfTrays(int[] arrayOfTrays) {
         this.arrayOfTrays = arrayOfTrays;
     }
 
@@ -150,9 +148,7 @@ public class Board {
                 arrayOfTrays[indexEnd + 1] = arrayOfTrays[indexEnd + 1] + 1 + arrayOfTrays[opponentTray];
                 arrayOfTrays[opponentTray] = 0;
 
-                if (isGameOver()) {
-
-                } else {
+                if (!isGameOver()) {
                     switchPlayer();
                 }
             } else {
