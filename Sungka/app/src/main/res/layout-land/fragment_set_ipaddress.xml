@@ -15,7 +15,7 @@
         android:paddingLeft="10dp"
         android:paddingStart="10dp"
         android:scaleType="center"
-        android:text="Set IP address of server"
+        android:text="@string/set_ip_address"
         android:textSize="20sp" />
 
     <EditText
@@ -28,7 +28,7 @@
         android:layout_marginTop="16dp"
         android:digits="0123456789."
         android:fontFamily="sans-serif"
-        android:hint="Enter IP address here"
+        android:hint="@string/enter_ip_address"
         android:inputType="phone" />
 
 </LinearLayout>

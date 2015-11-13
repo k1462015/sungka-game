@@ -17,8 +17,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Start"
-        android:textSize="30dp" />
+        android:text="@string/start"
+        android:textSize="30sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,8 +32,7 @@
             android:layout_marginLeft="60dp"
             android:layout_marginRight="60dp"
             android:layout_weight="2"
-            android:orientation="horizontal"></LinearLayout>
-
+            android:orientation="horizontal" />
 
         <!-- MIDDLE -->
         <LinearLayout
@@ -48,7 +47,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="2"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical" />
 
             <Button
                 android:id="@+id/p2Status"
@@ -65,7 +64,7 @@
                 android:gravity="center_vertical"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="@dimen/gameStatusTextSize" />
+                android:textSize="@dimen/game_status_text_size" />
 
             <Button
                 android:id="@+id/p1Status"

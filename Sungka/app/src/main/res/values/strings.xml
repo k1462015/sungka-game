@@ -3,6 +3,7 @@
 
     <string name="save_score">Save scores</string>
     <string name="cancel">Cancel</string>
+    <string name="start">Start</string>
     <string name="player_one">Player One</string>
     <string name="player_two">Player Two</string>
 
@@ -54,6 +55,9 @@
     <string name="games_played">Games played:</string>
     <string name="games_won">Games won:</string>
     <string name="games_lost">Games lost:</string>
+
+    <string name="set_ip_address">Set IP address of server</string>
+    <string name="enter_ip_address">Enter IP address here</string>
 
     <string name="set">Set</string>
 </resources>

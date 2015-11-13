@@ -7,4 +7,4 @@
     android:gravity="top"
     android:textAlignment="gravity"
     android:textColor="#FFFFFF"
-    android:textSize="16dp" />
+    android:textSize="16sp" />
