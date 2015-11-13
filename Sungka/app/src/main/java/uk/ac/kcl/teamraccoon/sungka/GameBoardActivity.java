@@ -875,7 +875,7 @@ public class GameBoardActivity extends AppCompatActivity {
     /**
      * Display a dialog to save game result and show statistics
      */
-    private void displayDialog() {
+    public void displayDialog() {
         int[] arrayOfTrays = gameBoard.getArrayOfTrays();
 
         Bundle bundleDialog = new Bundle();
@@ -885,7 +885,7 @@ public class GameBoardActivity extends AppCompatActivity {
 
         AddScoreFragment addScoreFragment = new AddScoreFragment();
         addScoreFragment.setArguments(bundleDialog);
-        addScoreFragment.show(getFragmentManager(), "dialog");
+        addScoreFragment.show(getFragmentManager(), AddScoreFragment.DIALOG_TAG);
     }
 
     @Override

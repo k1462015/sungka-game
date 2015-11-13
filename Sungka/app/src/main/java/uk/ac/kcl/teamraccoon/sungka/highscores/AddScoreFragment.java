@@ -33,6 +33,7 @@ public class AddScoreFragment extends DialogFragment {
 
     static final public String BUNDLE_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.SCORES";
     static final public String BUNDLE_AI_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.AI";
+    static final public String DIALOG_TAG = "uk.ac.kcl.teamraccoon.sungka.AddScoreFragment.DIALOG";
 
     public AddScoreFragment() {}
 
