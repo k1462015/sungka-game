@@ -3,7 +3,7 @@
     package="uk.ac.kcl.teamraccoon.sungka" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -28,7 +28,8 @@
             android:label="@string/high_scores"
             android:configChanges="orientation|screenSize"
             android:theme="@style/HighScoresFullScreenTheme"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="landscape"
+            android:parentActivityName=".MainMenu" >
         </activity>
         <activity
             android:name=".MainMenu"
