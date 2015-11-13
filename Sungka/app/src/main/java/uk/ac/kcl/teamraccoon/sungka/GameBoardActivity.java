@@ -494,11 +494,15 @@ public class GameBoardActivity extends AppCompatActivity {
             if(player == Player.PLAYER_ONE){
                 if(trayIndex != 15){
                     traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
+                } else {
+                    shellsInHand++;
                 }
             }
             if(player == Player.PLAYER_TWO){
                 if(trayIndex != 7){
                     traysBefore[trayIndex] = traysBefore[trayIndex] + 1;
+                } else {
+                    shellsInHand++;
                 }
             }
             shellsInHand--;
@@ -507,7 +511,7 @@ public class GameBoardActivity extends AppCompatActivity {
         //Find last tray and check if == 1 and on players side
         final int lastTrayIndex = index % 16;
         boolean isTrayCaptured = false;
-        if(traysBefore[lastTrayIndex] == 1){
+        if(traysBefore[lastTrayIndex] == 1 || traysBefore[lastTrayIndex] == 15){
             if(player == Player.PLAYER_ONE && (lastTrayIndex > 0 && lastTrayIndex < 7)){
                 isTrayCaptured = true;
             }
