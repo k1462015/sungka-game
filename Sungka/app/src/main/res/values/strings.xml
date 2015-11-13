@@ -45,5 +45,15 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="player">Player %1$d</string>
+    <string name="ai">AI</string>
+    <string name="player_captured_a_tray">%1$s captured a tray</string>
+
+    <string name="no_date">No date</string>
+
+    <string name="games_played">Games played:</string>
+    <string name="games_won">Games won:</string>
+    <string name="games_lost">Games lost:</string>
+
     <string name="set">Set</string>
 </resources>

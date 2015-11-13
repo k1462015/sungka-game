@@ -44,7 +44,7 @@ public class SetIPAddressFragment extends DialogFragment {
     public void onAttach(Activity activity) {
 
         super.onAttach(activity);
-        this.onSetIPListener = (OnSetIPListener)activity;
+        this.onSetIPListener = (OnSetIPListener) activity;
 
     }
 

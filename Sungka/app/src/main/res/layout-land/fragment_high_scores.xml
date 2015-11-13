@@ -1,17 +1,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresFragment">
 
     <ListView
+        android:id="@+id/lv_high_scores"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lv_high_scores" />
+        android:layout_height="match_parent" />
 
-    <TextView android:id="@+id/empty_element"
-        android:gravity="center"
+    <TextView
+        android:id="@+id/empty_element"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:text="@string/empty_high_scores" />
 
 </RelativeLayout>

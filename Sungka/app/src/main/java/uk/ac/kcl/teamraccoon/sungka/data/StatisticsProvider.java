@@ -33,7 +33,7 @@ public class StatisticsProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor returnCursor;
 
-        switch(sUriMatcher.match(uri)) {
+        switch (sUriMatcher.match(uri)) {
             case PLAYER: {
                 returnCursor = mDbHelper.getReadableDatabase().query(
                         SungkaContract.PlayerEntry.TABLE_NAME,
@@ -93,7 +93,7 @@ public class StatisticsProvider extends ContentProvider {
         switch (match) {
             case PLAYER: {
                 long _id = db.insert(SungkaContract.PlayerEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = SungkaContract.PlayerEntry.buildPlayerUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -101,7 +101,7 @@ public class StatisticsProvider extends ContentProvider {
             }
             case HIGH_SCORES: {
                 long _id = db.insert(SungkaContract.HighScoresEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = SungkaContract.HighScoresEntry.buildHighScoresUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);

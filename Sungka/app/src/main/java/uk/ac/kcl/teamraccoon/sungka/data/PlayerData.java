@@ -24,7 +24,7 @@ public class PlayerData {
                 SungkaContract.PlayerEntry.CONTENT_URI,
                 null,
                 selectionClause,
-                new String[] {playerName},
+                new String[]{playerName},
                 null);
 
         if (cursor == null) {
@@ -32,7 +32,7 @@ public class PlayerData {
         } else if (cursor.getCount() < 1) {
             return null;
         } else if (cursor.moveToNext()) {
-            return new int[] {
+            return new int[]{
                     cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_PLAYED)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_WON)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(SungkaContract.PlayerEntry.COLUMN_GAMES_LOST)),
@@ -51,7 +51,7 @@ public class PlayerData {
                 SungkaContract.HighScoresEntry.CONTENT_URI,
                 null,
                 selectionClause,
-                new String[] {playerName},
+                new String[]{playerName},
                 null);
 
         ArrayList<String[]> alPlayerScores = new ArrayList<>();
@@ -66,7 +66,7 @@ public class PlayerData {
                 String opponentScore = "" + (98 - Integer.parseInt(score));
                 score = context.getString(R.string.match_score, score, opponentScore);
                 String date = cursor.getString(indexDate);
-                alPlayerScores.add(new String[] {score, date});
+                alPlayerScores.add(new String[]{score, date});
             }
         }
 

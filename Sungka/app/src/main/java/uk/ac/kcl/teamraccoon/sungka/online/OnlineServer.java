@@ -16,6 +16,8 @@ import uk.ac.kcl.teamraccoon.sungka.Player;
 
 public class OnlineServer {
 
+    public static final String LOG_TAG = OnlineServer.class.getSimpleName();
+
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private ServerSocket serverSocket;
@@ -31,6 +33,7 @@ public class OnlineServer {
     /**
      * first, connect to opponent via a socket
      * then, initalise input and output streams
+     *
      * @throws IOException
      */
     public void findConnection() throws IOException {
@@ -45,6 +48,7 @@ public class OnlineServer {
 
     /**
      * initialises the data streams for receiving data from and sending data to client
+     *
      * @throws IOException
      */
     private void initialiseStreams() throws IOException {
@@ -57,6 +61,7 @@ public class OnlineServer {
 
     /**
      * finds the local IPv4 address of the device
+     *
      * @return the IP address of the device as a String
      */
     public static String getServerIP() {
@@ -65,16 +70,16 @@ public class OnlineServer {
 
             for (Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces(); networkInterfaceEnumeration.hasMoreElements(); ) {
                 NetworkInterface tempNetworkInterface = networkInterfaceEnumeration.nextElement();
-                for(Enumeration<InetAddress> inetAddressEnumeration = tempNetworkInterface.getInetAddresses(); inetAddressEnumeration.hasMoreElements();) {
+                for (Enumeration<InetAddress> inetAddressEnumeration = tempNetworkInterface.getInetAddresses(); inetAddressEnumeration.hasMoreElements(); ) {
                     InetAddress tempInetAddress = inetAddressEnumeration.nextElement();
-                    if(!tempInetAddress.isLoopbackAddress() && tempInetAddress.isSiteLocalAddress()) {
+                    if (!tempInetAddress.isLoopbackAddress() && tempInetAddress.isSiteLocalAddress()) {
                         return tempInetAddress.getHostAddress().toString();
                     }
                 }
             }
 
-        } catch(SocketException e) {
-            Log.e("OnlineServer","SocketException when finding local IP address of device " + Log.getStackTraceString(e));
+        } catch (SocketException e) {
+            Log.e(LOG_TAG, "SocketException when finding local IP address of device " + Log.getStackTraceString(e));
         }
 
         return null;
@@ -83,33 +88,36 @@ public class OnlineServer {
 
     /**
      * send a Player enum to the client
+     *
      * @param chosenPlayer Player enum of the randomly chosen starting player
      */
     public void sendPlayer(Player chosenPlayer) {
         try {
             outputStream.writeObject(chosenPlayer);
             outputStream.flush();
-        } catch(IOException e) {
-            Log.e("OnlineServer","IOException when sending Player object to client " + Log.getStackTraceString(e));
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "IOException when sending Player object to client " + Log.getStackTraceString(e));
         }
     }
 
     /**
      * send a move in the form of a tray index integer to client
+     *
      * @param index
      */
     public void sendMove(int index) {
         try {
             outputStream.writeInt(index);
-            Log.i("OnlineServer", "Server successfully sent move " + index);
+            Log.i(LOG_TAG, "Server successfully sent move " + index);
             outputStream.flush();
-        } catch(IOException e) {
-            Log.e("OnlineServer","IOException when sending move to client " + Log.getStackTraceString(e));
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "IOException when sending move to client " + Log.getStackTraceString(e));
         }
     }
 
     /**
      * receive a move in the from of a tray index integer from server
+     *
      * @return the index of the move received from client
      */
     public int receiveMove() {
@@ -117,7 +125,7 @@ public class OnlineServer {
             int index = inputStream.readInt();
             return index;
         } catch (IOException e) {
-            Log.e("OnlineServer","IOException when receiving move from client " + Log.getStackTraceString(e));
+            Log.e(LOG_TAG, "IOException when receiving move from client " + Log.getStackTraceString(e));
         }
 
         return -1;
@@ -129,14 +137,14 @@ public class OnlineServer {
      */
     public void closeConnection() {
         try {
-            Log.i("OnlineServer","onlineServer closeConnection() called");
+            Log.i(LOG_TAG, "onlineServer closeConnection() called");
             outputStream.close();
             inputStream.close();
             serverConnection.close();
             serverSocket.close();
-            Log.i("OnlineServer","onlineServer connection successfully closed");
+            Log.i(LOG_TAG, "onlineServer connection successfully closed");
         } catch (IOException e) {
-            Log.e("OnlineServer","IOException when closing server connection " + Log.getStackTraceString(e));
+            Log.e(LOG_TAG, "IOException when closing server connection " + Log.getStackTraceString(e));
         }
     }
 
@@ -146,8 +154,8 @@ public class OnlineServer {
     public void closeServerSocket() {
         try {
             serverSocket.close();
-        } catch(IOException e) {
-            Log.e("OnlineServer","IOException when closing serverSocket");
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "IOException when closing serverSocket");
         }
     }
 

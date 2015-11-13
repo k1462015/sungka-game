@@ -46,11 +46,11 @@ public class AddScoreFragment extends DialogFragment {
 
         TextView tvStatistics = (TextView) rootView.findViewById(R.id.dialog_statistics);
 
-        String statistics =  getString(R.string.add_score_players, mScores[0], mScores[1]);
+        String statistics = getString(R.string.add_score_players, mScores[0], mScores[1]);
 
         tvStatistics.setText(statistics);
 
-        if(aiChosen) {
+        if (aiChosen) {
             EditText etPlayerTwo = (EditText) rootView.findViewById(R.id.player_two_name);
             etPlayerTwo.setText(R.string.ai_name);
             etPlayerTwo.setEnabled(false);
@@ -101,12 +101,12 @@ public class AddScoreFragment extends DialogFragment {
         String playerOneName = "" + etPlayerOne.getText();
         String playerTwoName = "" + etPlayerTwo.getText();
 
-        if(!playerOneName.isEmpty()) {
+        if (!playerOneName.isEmpty()) {
             insertScore(playerOneName, mScores[0]);
             updateUserData(playerOneName, 0);
         }
 
-        if(!playerTwoName.isEmpty()) {
+        if (!playerTwoName.isEmpty()) {
             insertScore(playerTwoName, mScores[1]);
             updateUserData(playerTwoName, 1);
         }
@@ -131,13 +131,13 @@ public class AddScoreFragment extends DialogFragment {
         boolean isWinner = mScores[playerIndex] > mScores[(playerIndex + 1) % 2];
         boolean isLoser = mScores[playerIndex] < mScores[(playerIndex + 1) % 2];
 
-        if(userData == null) {
+        if (userData == null) {
             createUserRow(playerName, mScores[playerIndex], isWinner, isLoser);
         } else {
             ContentValues values = new ContentValues();
 
             int gamesWon = isWinner ? userData[PlayerData.INDEX_GAMES_WON] + 1 : userData[PlayerData.INDEX_GAMES_WON];
-            int gamesLost = isLoser ? userData[PlayerData.INDEX_GAMES_LOST] + 1  : userData[PlayerData.INDEX_GAMES_LOST];
+            int gamesLost = isLoser ? userData[PlayerData.INDEX_GAMES_LOST] + 1 : userData[PlayerData.INDEX_GAMES_LOST];
             int highScore = mScores[playerIndex] > userData[PlayerData.INDEX_HIGH_SCORE]
                     ? mScores[playerIndex] : userData[PlayerData.INDEX_HIGH_SCORE];
 
@@ -152,7 +152,7 @@ public class AddScoreFragment extends DialogFragment {
                     SungkaContract.PlayerEntry.CONTENT_URI,
                     values,
                     selectionClause,
-                    new String[] {playerName}
+                    new String[]{playerName}
             );
         }
     }

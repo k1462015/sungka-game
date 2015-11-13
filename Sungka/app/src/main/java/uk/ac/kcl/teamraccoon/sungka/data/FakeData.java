@@ -20,14 +20,16 @@ public class FakeData {
                 "Peter Thiel", "Elon Musk", "HRH Reggie the Lion",
                 "Virginia Woolf", "John Keats", "Peter Higgs", "James Clerk Maxwell"};
 
-        for(int i=0; i<players.length; ++i) {
+        for (int i = 0; i < players.length; ++i) {
             String playerName = players[i];
             int counter = rnd.nextInt(3) + 5;
             for (int k = 0; k < counter; ++k) {
                 int randomInt = rnd.nextInt(50) + 20;
                 int[] mScores = {randomInt, 98 - randomInt};
                 int randomOpponent = rnd.nextInt(players.length);
-                while(randomOpponent == i) { randomOpponent = rnd.nextInt(players.length); }
+                while (randomOpponent == i) {
+                    randomOpponent = rnd.nextInt(players.length);
+                }
 
                 insertScore(playerName, mScores[0]);
                 updateUserData(playerName, 0, mScores);
@@ -58,13 +60,13 @@ public class FakeData {
         boolean isWinner = mScores[playerIndex] > mScores[(playerIndex + 1) % 2];
         boolean isLoser = mScores[playerIndex] < mScores[(playerIndex + 1) % 2];
 
-        if(userData == null) {
+        if (userData == null) {
             createUserRow(playerName, mScores[playerIndex], isWinner, isLoser);
         } else {
             ContentValues values = new ContentValues();
 
             int gamesWon = isWinner ? userData[PlayerData.INDEX_GAMES_WON] + 1 : userData[PlayerData.INDEX_GAMES_WON];
-            int gamesLost = isLoser ? userData[PlayerData.INDEX_GAMES_LOST] + 1  : userData[PlayerData.INDEX_GAMES_LOST];
+            int gamesLost = isLoser ? userData[PlayerData.INDEX_GAMES_LOST] + 1 : userData[PlayerData.INDEX_GAMES_LOST];
             int highScore = mScores[playerIndex] > userData[PlayerData.INDEX_HIGH_SCORE]
                     ? mScores[playerIndex] : userData[PlayerData.INDEX_HIGH_SCORE];
 
@@ -79,7 +81,7 @@ public class FakeData {
                     SungkaContract.PlayerEntry.CONTENT_URI,
                     values,
                     selectionClause,
-                    new String[] {playerName}
+                    new String[]{playerName}
             );
         }
     }

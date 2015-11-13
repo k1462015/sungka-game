@@ -28,17 +28,17 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
         //checks for a result when game returns to this activity
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 String option = data.getStringExtra(GameBoardActivity.GAME_EXIT);
-                if(option.equals("HostConnectFail")) {
+                if (option.equals("HostConnectFail")) {
                     //displays toast if the client could not find the server
-                    Toast.makeText(this, getString(R.string.host_connect_fail_toast),Toast.LENGTH_LONG).show();
-                } else if(option.equals("ServerInitialiseFail")) {
+                    Toast.makeText(this, getString(R.string.host_connect_fail_toast), Toast.LENGTH_LONG).show();
+                } else if (option.equals("ServerInitialiseFail")) {
                     //displays toast if the server could not be initialised for some reason
                     Toast.makeText(this, getString(R.string.server_initialise_fail_toast), Toast.LENGTH_LONG).show();
-                } else if(option.equals("ConnectionLostToClient") || option.equals("ConnectionLostToServer")) {
+                } else if (option.equals("ConnectionLostToClient") || option.equals("ConnectionLostToServer")) {
                     //displays toast for if server or client lost connection to opponent
-                    Toast.makeText(this, getString(R.string.lost_connection_toast),Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.lost_connection_toast), Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -47,10 +47,11 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     /**
      * for when start as host button is pressed
+     *
      * @param view
      */
-    public void startAsHost(View view ){
-        if(isConnectedToWifi()) {
+    public void startAsHost(View view) {
+        if (isConnectedToWifi()) {
             //starts GameBoardActivity as server if connected to WiFi
             Intent intent = new Intent(this, GameBoardActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -64,15 +65,16 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     /**
      * for when start as client button is pressed
+     *
      * @param view
      */
-    public void startAsClient(View view){
-        if(isConnectedToWifi()) {
+    public void startAsClient(View view) {
+        if (isConnectedToWifi()) {
             //displays dialog box for inputting IP address
             displayIPDialog();
         } else {
             //if not connected to WiFi informs user via a toast
-            Toast.makeText(this, getString(R.string.network_connection_toast),Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.network_connection_toast), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -88,14 +90,15 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     /**
      * start activity when dialog box is dismissed
+     *
      * @param serverIP inputted IP address
      */
     @Override
     public void OnDialogDismissed(String serverIP) {
-        Intent intent = new Intent(this,GameBoardActivity.class);
+        Intent intent = new Intent(this, GameBoardActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.putExtra(GAME_OPTION, "Client");
-        startActivityForResult(intent,1);
+        startActivityForResult(intent, 1);
         GameBoardActivity.setServerIP(serverIP);
     }
 
@@ -121,22 +124,20 @@ public class MultiplayerMenu extends AppCompatActivity implements SetIPAddressFr
 
     /**
      * checks whether the device is connected to WiFi
+     *
      * @return a boolean of whether it is connected to WiFi or not
      */
     private boolean isConnectedToWifi() {
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo currentActiveNetwork = connectivityManager.getActiveNetworkInfo();
-        if(currentActiveNetwork != null) {
-
-            if(currentActiveNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+        if (currentActiveNetwork != null) {
+            if (currentActiveNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 return true;
             }
-
         }
 
         return false;
-
     }
 
 }
