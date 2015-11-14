@@ -19,6 +19,7 @@
         android:orientation="vertical">
 
         <ImageButton
+            android:id="@+id/p1vsp2"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginBottom="10dp"
@@ -42,6 +43,7 @@
             android:src="@drawable/menu_p1comp_states" />
 
         <ImageButton
+            android:id="@+id/p1vsp2lan"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginBottom="10dp"
@@ -53,7 +55,7 @@
             android:src="@drawable/menu_multiplayer_states" />
 
         <ImageButton
-            android:id="@+id/main_menu_highscores"
+            android:id="@+id/highscores"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginBottom="10dp"

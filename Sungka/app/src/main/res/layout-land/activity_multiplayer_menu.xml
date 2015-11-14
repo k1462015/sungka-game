@@ -23,6 +23,7 @@
             android:orientation="vertical">
 
             <ImageButton
+                android:id="@+id/host"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginBottom="10dp"
@@ -33,6 +34,7 @@
                 android:src="@drawable/menu_multiplayer_hostgame" />
 
             <ImageButton
+                android:id="@+id/join"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginBottom="10dp"
@@ -57,6 +59,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/backButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"

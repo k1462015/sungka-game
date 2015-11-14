@@ -10,7 +10,7 @@ import uk.ac.kcl.teamraccoon.sungka.highscores.HighScoresActivity;
 
 public class MainMenu extends AppCompatActivity {
     public final static String GAME_OPTION = "com.uk.ac.kcl.teamraccoon.sungka.OPTION_P1_P2";
-
+    private static boolean activityVisible = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,5 +54,16 @@ public class MainMenu extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
             }
         }
+        activityVisible = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        activityVisible = false;
+    }
+
+    public boolean isActivityVisible(){
+        return activityVisible;
     }
 }
