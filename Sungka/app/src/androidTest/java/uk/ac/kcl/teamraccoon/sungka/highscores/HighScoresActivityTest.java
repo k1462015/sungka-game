@@ -81,7 +81,7 @@ public class HighScoresActivityTest extends ActivityInstrumentationTestCase2<Mai
         MainMenu mainActivity = getActivity();
         Instrumentation instrumentation = getInstrumentation();
         Instrumentation.ActivityMonitor am = instrumentation.addMonitor(HighScoresActivity.class.getName(), null, false);
-        final ImageButton btnHighScores = (ImageButton) mainActivity.findViewById(R.id.main_menu_highscores);
+        final ImageButton btnHighScores = (ImageButton) mainActivity.findViewById(R.id.highscores);
         TouchUtils.clickView(this, btnHighScores);
         Thread.sleep(3000);
         HighScoresActivity scoresActivity = (HighScoresActivity) instrumentation.waitForMonitorWithTimeout(am, 2);
