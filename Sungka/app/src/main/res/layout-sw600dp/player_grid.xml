@@ -35,7 +35,7 @@
         android:layout_height="16dp"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"
-        app:layout_rowWeight="0.5" />
+        app:layout_rowWeight="@dimen/match_item_row_weight" />
 
 </android.support.v7.widget.GridLayout>
 

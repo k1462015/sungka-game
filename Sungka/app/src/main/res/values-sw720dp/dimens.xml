@@ -1,0 +1,3 @@
+<resources>
+    <item name="match_item_row_weight" format="float" type="dimen">0.5</item>
+</resources>

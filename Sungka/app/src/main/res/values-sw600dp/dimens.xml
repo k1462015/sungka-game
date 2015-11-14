@@ -2,4 +2,5 @@
     <dimen name="activity_horizontal_margin">64dp</dimen>
     <dimen name="player_statistics_horizontal_padding">32dp</dimen>
     <dimen name="player_statistics_vertical_padding">24dp</dimen>
+    <item name="match_item_row_weight" format="float" type="dimen">1.0</item>
 </resources>

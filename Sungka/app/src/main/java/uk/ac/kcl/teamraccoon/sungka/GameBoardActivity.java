@@ -29,7 +29,6 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.Random;
 
-import uk.ac.kcl.teamraccoon.sungka.data.FakeData;
 import uk.ac.kcl.teamraccoon.sungka.highscores.AddScoreFragment;
 import uk.ac.kcl.teamraccoon.sungka.online.OnlineClient;
 import uk.ac.kcl.teamraccoon.sungka.online.OnlineServer;
@@ -66,7 +65,6 @@ public class GameBoardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FakeData fd = new FakeData(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_game_board);
