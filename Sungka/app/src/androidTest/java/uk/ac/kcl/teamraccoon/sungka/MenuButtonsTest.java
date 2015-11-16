@@ -52,63 +52,6 @@ public class MenuButtonsTest extends ActivityInstrumentationTestCase2<MainMenu> 
         nextActivity.finish();
     }
 
-    public void testMPJoin() throws InterruptedException {
-        final ImageButton mpMenu = (ImageButton) mainMenu.findViewById(R.id.p1vsp2lan);
-        // monitors for MultiplayerMenu and GameBoardActivity
-        Instrumentation.ActivityMonitor amMPMenu = instrumentation.addMonitor(MultiplayerMenu.class.getName(), null, false);
-        Instrumentation.ActivityMonitor amGame = instrumentation.addMonitor(GameBoardActivity.class.getName(), null, false);
-
-        //go to MultiplayerMenu
-        TouchUtils.clickView(this, mpMenu);
-//        Thread.sleep(1000);
-
-        //go to GameBoardActivtiy as a client
-        MultiplayerMenu nextActivity = (MultiplayerMenu) amMPMenu.waitForActivity();
-        final ImageButton join = (ImageButton) nextActivity.findViewById(R.id.join);
-        TouchUtils.clickView(this, join);
-//        Thread.sleep(1000);
-
-        //enter valid IP address
-        instrumentation.sendStringSync("5.5.5.5");
-        instrumentation.sendKeySync(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB));
-        instrumentation.sendKeySync(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_TAB));
-        instrumentation.sendKeySync(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-        instrumentation.sendKeySync(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
-
-        //assert that player entered as client
-        GameBoardActivity gameActivity = (GameBoardActivity) amGame.waitForActivity();
-        assertNotNull(gameActivity);
-        assertTrue(gameActivity.isClient);
-        gameActivity.finish();
-        nextActivity.finish();
-    }
-
-
-    public void testMPHost() throws InterruptedException {
-        final ImageButton mpMenu = (ImageButton) mainMenu.findViewById(R.id.p1vsp2lan);
-        // initialise monitors for MultiplayerMenu and GameBoardActivity
-        Instrumentation.ActivityMonitor amMPMenu = instrumentation.addMonitor(MultiplayerMenu.class.getName(), null, false);
-        Instrumentation.ActivityMonitor amGame = instrumentation.addMonitor(GameBoardActivity.class.getName(), null, false);
-
-        //go to MultiplayerMenu
-        TouchUtils.clickView(this, mpMenu);
-//        Thread.sleep(2000);
-
-        // host a game
-        MultiplayerMenu nextActivity = (MultiplayerMenu) amMPMenu.waitForActivity();
-        final ImageButton host = (ImageButton) nextActivity.findViewById(R.id.host);
-        TouchUtils.clickView(this, host);
-//        Thread.sleep(2000);
-
-        //assert player is a server
-        GameBoardActivity gameActivity = (GameBoardActivity) amGame.waitForActivity();
-        assertNotNull(gameActivity);
-        assertTrue(gameActivity.isServer);
-        gameActivity.finish();
-        nextActivity.finish();
-
-    }
-
     public void testVSP2Button() throws InterruptedException {
         // monitor for GameBoardActivity
         Instrumentation.ActivityMonitor am = instrumentation.addMonitor(GameBoardActivity.class.getName(), null, false);
