@@ -122,6 +122,7 @@
         android:background="@drawable/shell" />
 
     <Button
+        android:id="@+id/backButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
