@@ -86,7 +86,7 @@ public class GameBoardActivity extends AppCompatActivity {
         } else if (option != null && option.equals("Server")) {
             setModeData(false, true, true, true, false);
         } else if (option != null && option.equals("Client")) {
-            setModeData(false, true, true, true, false);
+            setModeData(false, true, true, false, true);
         } else {
             //Since no option found - start as p1 vs p2
             setModeData(false, false, false, false, false);
