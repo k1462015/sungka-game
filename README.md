@@ -20,3 +20,5 @@ You must implement an Android application that allows two players to use a singl
 - The app may allow two players to play a game from their own Android devices.  This requires two Android devices to communicate with one another.  For this purpose, you could use the relatively basic Java Sockets API to set up interprocess communication as a starting point.  If you implement this feature, you still need to allow two players to play the game using a single screen/device.
 - The app may be extended with an AI player.  The relatively basic minimax search algorithm used for turn based games is a good starting point.  Bear in mind, however, that your search tree will grow very rapidly as up to seven moves are possible per turn.  If you implement this feature, you still need to allow two human players to play the game.
 - The app must not include a splash screen.
+<a href="https://www.youtube.com/watch?v=YqIOuuY8LgU"><img src="https://i.gyazo.com/d6c0e9a048a3afc5dbf884b5e4543263.png" border="0"></a> 
+
